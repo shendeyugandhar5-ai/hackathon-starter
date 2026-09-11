@@ -21,9 +21,10 @@ export function useChat(studentId) {
   const nextId = () => `m${++idRef.current}`;
 
   const send = useCallback(
-    async (text) => {
+    async (text, image = null) => {
       const trimmed = (text || '').trim();
-      if (!trimmed || sending || !studentId) return null;
+      // Either words or an image is enough to ask a question
+      if ((!trimmed && !image) || sending || !studentId) return null;
 
       setError(null);
       setSending(true);
@@ -32,6 +33,7 @@ export function useChat(studentId) {
         id: nextId(),
         role: 'student',
         content: trimmed,
+        imageUrl: image?.dataUrl || null,
         createdAt: new Date().toISOString(),
       };
       setMessages((prev) => [...prev, studentMsg]);
@@ -40,6 +42,7 @@ export function useChat(studentId) {
         studentId,
         message: trimmed,
         conversationId,
+        image: image?.dataUrl || null,
       });
 
       setSending(false);
@@ -73,8 +76,24 @@ export function useChat(studentId) {
         contextUsed: d.context_used || null,
         recommendation: d.recommendation || null,
         latencyMs: res.latencyMs,
+        // Real execution record from the LangGraph orchestration
+        events: d.trace_events || [],
+        teachingStrategy: d.teaching_strategy || null,
+        supportingAgents: d.supporting_agents || [],
+        retrievedContext: d.retrieved_context || [],
+        verification: d.verification || null,
+        knowledgeCheck: d.knowledge_check || null,
+        ocr: d.ocr || null,
       };
       setLastTrace(trace);
+
+      // Attach what OCR read back onto the student's own message, so the
+      // extracted text sits directly under the image it came from.
+      if (d.ocr) {
+        setMessages((prev) =>
+          prev.map((m) => (m.id === studentMsg.id ? { ...m, ocr: d.ocr } : m)),
+        );
+      }
 
       setMessages((prev) => [
         ...prev,

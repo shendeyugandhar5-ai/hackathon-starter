@@ -20,19 +20,15 @@ class Settings(BaseSettings):
     # CORS Origins (default covers standard local frontend dev ports:
     # Vite 5173, CRA/Next 3000, Vue 8080, Angular 4200, Vite preview 4173)
     CORS_ORIGINS: Union[List[str], str] = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:5174",
-    "http://127.0.0.1:5174",
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://localhost:8080",
-    "http://127.0.0.1:8080",
-    "http://localhost:4200",
-    "http://127.0.0.1:4200",
-    "http://localhost:4173",
-    "http://127.0.0.1:4173",
-]
+        # Vite picks the next free port when 5173 is occupied, so cover the range
+        "http://localhost:5173", "http://127.0.0.1:5173",
+        "http://localhost:5174", "http://127.0.0.1:5174",
+        "http://localhost:5175", "http://127.0.0.1:5175",
+        "http://localhost:3000", "http://127.0.0.1:3000",
+        "http://localhost:8080", "http://127.0.0.1:8080",
+        "http://localhost:4200", "http://127.0.0.1:4200",
+        "http://localhost:4173", "http://127.0.0.1:4173",
+    ]
 
     # Dev escape hatch: set CORS_ALLOW_ALL=True in .env when your UI runs on a
     # port not listed above. Never leave this on for a public deployment.
@@ -61,17 +57,43 @@ class Settings(BaseSettings):
     POSTGRES_PORT: int = 5432
     POSTGRES_DB: str = "postgres"
 
-    # LLM / Agent Layer Configuration (idea.md sections 3.1, 7)
+    # LLM / Agent Layer Configuration
+    #
+    # Provider selection: "auto" picks whichever key is present, preferring
+    # Gemini. Set explicitly to "gemini" or "openai_compatible" to force one.
+    LLM_PROVIDER: str = "auto"
+
     GEMINI_API_KEY: str = ""
+    # Use an alias rather than a pinned version: Google retires dated Gemini
+    # model ids (gemini-2.0-flash and gemini-2.5-flash both 404 now), and a
+    # retired id fails as a 404 at call time, not at startup.
+    LLM_MODEL: str = "gemini-flash-latest"
+
+    # Any OpenAI-compatible endpoint: Groq, OpenRouter, Cerebras, Together,
+    # local Ollama/LM Studio. Only the key and base URL differ.
+    #   Groq        https://api.groq.com/openai/v1        key starts "gsk_"
+    #   OpenRouter  https://openrouter.ai/api/v1          key starts "sk-or-"
+    #   Ollama      http://localhost:11434/v1             key can be "ollama"
+    OPENAI_API_KEY: str = ""
+    OPENAI_BASE_URL: str = "https://api.groq.com/openai/v1"
+    OPENAI_MODEL: str = "llama-3.3-70b-versatile"
+
+    # Specific Provider Fallback Keys
     GROQ_API_KEY: str = ""
     CEREBRAS_API_KEY: str = ""
     OPENROUTER_API_KEY: str = ""
     CLOUDFLARE_API_TOKEN: str = ""
     CLOUDFLARE_ACCOUNT_ID: str = ""
     OLLAMA_BASE_URL: str = "http://localhost:11434"
-    LLM_MODEL: str = "gemini-2.0-flash"
+
     # Tier-1 router confidence below which the coordinator falls back to the LLM classifier
     ROUTER_CONFIDENCE_THRESHOLD: float = 0.6
+
+    # Hard ceiling on a single LLM call. Without this the Gemini SDK retries
+    # rate-limit errors with exponential backoff and a turn can hang for 60-90s,
+    # which is unusable interactively. Exceeding it degrades to the normal
+    # error path rather than blocking the request.
+    LLM_TIMEOUT_SECONDS: float = 20.0
     
     @field_validator("DATABASE_URL", mode="before")
     @classmethod

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useOutletContext, Link, useSearchParams } from 'react-router-dom';
-import { Send, Sparkles, Cpu, Plus, AlertTriangle, ArrowRight, Bot } from 'lucide-react';
+import { Sparkles, Cpu, Plus, AlertTriangle } from 'lucide-react';
 import TopBar from '../components/layout/TopBar';
 import ChatThread from '../components/tutor/ChatThread';
 import AgentTracePanel from '../components/tutor/AgentTracePanel';
+import Composer from '../components/tutor/Composer';
+import KnowledgeCheckCard from '../components/tutor/KnowledgeCheckCard';
 import { useChat, useBackendHealth } from '../hooks/useChat';
 import { useStudentId } from '../hooks/useStudentId';
 import { useRootCause } from '../hooks/useStudent';
@@ -32,9 +34,7 @@ export default function Tutor() {
   } = useChat(studentId);
 
   const { online, database } = useBackendHealth(30000);
-  const { topGap } = useRootCause(studentId);
-
-  const [inputQuery, setInputQuery] = useState('');
+  const { topGap, refresh: refreshRootCause } = useRootCause(studentId);
 
   // Resume a thread when opened from History (/app/tutor?conversation=<id>)
   // or prefill agent if /app/tutor?agent=maths
@@ -63,17 +63,8 @@ export default function Tutor() {
     'I have 2 months before placements — what should I focus on?',
   ];
 
-  const handleSubmit = async (e) => {
-    e?.preventDefault();
-    const text = inputQuery.trim();
-    if (!text || sending) return;
-    setInputQuery('');
-    await send(text);
-  };
-
   const handlePrompt = async (prompt) => {
     if (sending) return;
-    setInputQuery('');
     await send(prompt);
   };
 
@@ -197,44 +188,19 @@ export default function Tutor() {
               }
             />
 
-            {/* Composer */}
-            <form onSubmit={handleSubmit} className="border-t border-[#EAE5DC] p-3">
-              {error && (
-                <p className="mb-2 font-sans text-[11px] text-red-600">{error}</p>
-              )}
-              <div className="flex items-end gap-2">
-                <textarea
-                  value={inputQuery}
-                  onChange={(e) => setInputQuery(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSubmit(e);
-                    }
-                  }}
-                  rows={2}
-                  placeholder="Ask your tutor…  (Enter to send, Shift+Enter for newline, or tag @maths, @aiml, @dsa, @dbms)"
-                  className="max-h-32 flex-1 resize-none rounded-lg border border-[#EAE5DC] bg-[#FAF7F2] px-3 py-2 font-sans text-sm text-[#1C1917] outline-none transition-colors placeholder:text-[#A8A29E] focus:border-[#A8421E]"
+            {/* Knowledge check, when the coordinator generated one */}
+            {lastTrace?.knowledgeCheck && (
+              <div className="border-t border-[#EAE5DC] p-3">
+                <KnowledgeCheckCard
+                  check={lastTrace.knowledgeCheck}
+                  studentId={studentId}
+                  onGraded={() => refreshRootCause()}
                 />
-                <button
-                  type="submit"
-                  disabled={sending || !inputQuery.trim()}
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#A8421E] hover:bg-[#8E3516] text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer shadow-xs"
-                >
-                  <Send className="h-4 w-4" />
-                </button>
               </div>
+            )}
 
-              <div className="mt-2 flex items-center justify-between text-xs font-mono text-[#78716C]">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] uppercase text-[#8C827A]">Quick Agent:</span>
-                  <button type="button" onClick={() => setInputQuery(q => q + '@maths ')} className="hover:text-[#1C1917] px-1 py-0.5 rounded bg-[#FAF7F2] border border-[#EAE5DC] text-[10px]">@maths</button>
-                  <button type="button" onClick={() => setInputQuery(q => q + '@aiml ')} className="hover:text-[#1C1917] px-1 py-0.5 rounded bg-[#FAF7F2] border border-[#EAE5DC] text-[10px]">@aiml</button>
-                  <button type="button" onClick={() => setInputQuery(q => q + '@dsa ')} className="hover:text-[#1C1917] px-1 py-0.5 rounded bg-[#FAF7F2] border border-[#EAE5DC] text-[10px]">@dsa</button>
-                  <button type="button" onClick={() => setInputQuery(q => q + '@dbms ')} className="hover:text-[#1C1917] px-1 py-0.5 rounded bg-[#FAF7F2] border border-[#EAE5DC] text-[10px]">@dbms</button>
-                </div>
-              </div>
-            </form>
+            {/* Composer: type, speak, or attach an image */}
+            <Composer onSend={send} sending={sending} error={error} />
           </div>
 
           {/* Agent Trace */}

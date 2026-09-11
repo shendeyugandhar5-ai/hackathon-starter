@@ -5,10 +5,21 @@ pydantic-settings>=2.2.0,<3.0.0
 python-dotenv>=1.0.0,<2.0.0
 sqlalchemy>=2.0.25,<3.0.0
 psycopg2-binary>=2.9.9,<3.0.0
-
 # Agent layer (backend/app/agents) - Person A
 google-generativeai>=0.8.0,<1.0.0
 
-# Lets the backend load Person C's trained router artifacts (ml/router/*.joblib) directly
+# Stateful multi-agent orchestration graph (app/agents/graph.py).
+# Optional at runtime: graph.py falls back to sequential execution if absent.
+langgraph>=1.2.0,<2.0.0
+
+# Loads the trained router artifacts (ml/router/*.joblib) and powers
+# TF-IDF retrieval for the RAG knowledge layer (app/knowledge/retriever.py)
 scikit-learn>=1.4.0,<2.0.0
 joblib>=1.3.0,<2.0.0
+pandas>=2.0.0,<3.0.0
+
+# OCR for image questions (app/services/ocr.py). Pure pip - bundles its own
+# ONNX models, so no Tesseract binary or system install is required.
+# Pillow decodes the uploaded image; numpy/opencv arrive with rapidocr.
+rapidocr-onnxruntime>=1.3.0,<2.0.0
+Pillow>=10.0.0,<13.0.0

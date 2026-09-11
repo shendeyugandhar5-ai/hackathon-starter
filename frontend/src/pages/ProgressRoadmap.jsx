@@ -1,38 +1,46 @@
-import React, { useState, useEffect } from 'react';
-import { useOutletContext, Link } from 'react-router-dom';
-import { Download, Sliders, Play, FileText, AlertTriangle } from 'lucide-react';
-import TopBar from '../components/layout/TopBar';
-import ProgressMetrics from '../components/progress/ProgressMetrics';
-import RoadmapPathway from '../components/progress/RoadmapPathway';
-import PlacementBenchmark from '../components/progress/PlacementBenchmark';
-import TelemetryStream from '../components/brain/TelemetryStream';
-import { useAuth } from '../context/AuthContext';
-import { progressService } from '../services/progressService';
-import { studentProfile } from '../data/mockData';
+import React, { useState, useEffect } from "react";
+import { useOutletContext, Link } from "react-router-dom";
+import { Download, Sliders, Play, FileText, AlertTriangle } from "lucide-react";
+import TopBar from "../components/layout/TopBar";
+import ProgressMetrics from "../components/progress/ProgressMetrics";
+import RoadmapPathway from "../components/progress/RoadmapPathway";
+import PlacementBenchmark from "../components/progress/PlacementBenchmark";
+import TelemetryStream from "../components/brain/TelemetryStream";
+import { useAuth } from "../context/AuthContext";
+import { progressService } from "../services/progressService";
+import { studentProfile } from "../data/mockData";
 
 export default function ProgressRoadmap() {
   const { setSidebarOpen } = useOutletContext();
   const { profile, user } = useAuth();
-  const studentId = profile?.auth_user_id || profile?.id || user?.id || 'rahul';
-  const studentGoal = profile?.goal || 'Placement Preparation';
+  const studentId = profile?.student_id || profile?.id || user?.id || "guest";
+  const studentGoal = profile?.goal || "Placement Preparation";
 
   const [progressData, setProgressData] = useState({
     overallMastery: studentProfile.overallMastery,
     placementFit: studentProfile.placementFit,
-    targetRole: 'Data Scientist',
+    targetRole: "Data Scientist",
     sprintPace: { currentWeek: 2, totalWeeks: 8 },
   });
+  const weakestTopic = progressData.topics?.reduce(
+    (weakest, topic) =>
+      !weakest || topic.score < weakest.score ? topic : weakest,
+    null,
+  );
 
   useEffect(() => {
     let mounted = true;
     async function loadProgress() {
       try {
-        const res = await progressService.getStudentProgress(studentId, studentGoal);
+        const res = await progressService.getStudentProgress(
+          studentId,
+          studentGoal,
+        );
         if (mounted && res) {
           setProgressData(res);
         }
       } catch (err) {
-        console.error('Failed to load dynamic student progress:', err);
+        console.error("Failed to load dynamic student progress:", err);
       }
     }
     loadProgress();
@@ -60,7 +68,7 @@ export default function ProgressRoadmap() {
 
   const customRightActions = (
     <div className="flex items-center gap-2">
-      <button 
+      <button
         type="button"
         onClick={() => window.print()}
         className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#FAF7F2] hover:bg-[#EAE4D7] text-[#57534E] border border-[#DDD5C5] text-xs font-mono font-medium transition-colors cursor-pointer"
@@ -68,7 +76,7 @@ export default function ProgressRoadmap() {
         <Download className="w-3.5 h-3.5" />
         <span className="hidden sm:inline">Export Report</span>
       </button>
-      <Link 
+      <Link
         to="/app/profile"
         className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#FAF7F2] hover:bg-[#EAE4D7] text-[#57534E] border border-[#DDD5C5] text-xs font-mono font-medium transition-colors"
       >
@@ -81,7 +89,7 @@ export default function ProgressRoadmap() {
   return (
     <div className="min-h-screen bg-[#FAF7F2] pb-12">
       {/* Top Workspace Header */}
-      <TopBar 
+      <TopBar
         onMenuClick={() => setSidebarOpen(true)}
         breadcrumbCustom={customBreadcrumbs}
         rightActions={customRightActions}
@@ -89,7 +97,6 @@ export default function ProgressRoadmap() {
 
       {/* Main Workspace Body */}
       <div className="max-w-7xl mx-auto px-4 md:px-8 pt-6 space-y-6">
-        
         {/* Page Title & Top Stats Banner */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
           <div>
@@ -101,29 +108,45 @@ export default function ProgressRoadmap() {
               Learning Progress & Milestones
             </h1>
             <p className="mt-1 text-sm text-[#57534E] max-w-2xl leading-relaxed">
-              A combined view of your real-time mastery analytics, cognitive retention, and weekly curriculum targets—orchestrated by EduHive's adaptive AI specialists.
+              A combined view of your real-time mastery analytics, cognitive
+              retention, and weekly curriculum targets—orchestrated by EduHive's
+              adaptive AI specialists.
             </p>
           </div>
 
           {/* Top Right Quick Stats */}
           <div className="flex items-center gap-3 bg-white p-3 rounded-xl border border-[#EAE5DC] shadow-[0_1px_3px_rgba(0,0,0,0.02)] shrink-0 font-mono">
             <div className="px-3 py-1 border-r border-[#F0ECE1]">
-              <div className="text-[9px] uppercase tracking-wider text-[#8C827A]">OVERALL MASTERY</div>
-              <div className="text-xl font-bold text-[#1C1917]">{progressData.overallMastery}%</div>
+              <div className="text-[9px] uppercase tracking-wider text-[#8C827A]">
+                OVERALL MASTERY
+              </div>
+              <div className="text-xl font-bold text-[#1C1917]">
+                {progressData.overallMastery}%
+              </div>
             </div>
             <div className="px-3 py-1 border-r border-[#F0ECE1]">
-              <div className="text-[9px] uppercase tracking-wider text-[#8C827A]">SPRINT PACE</div>
-              <div className="text-xl font-bold text-[#2E7D52]">Week {progressData.sprintPace?.currentWeek || 2} <span className="text-xs text-[#8C827A]">/ 8</span></div>
+              <div className="text-[9px] uppercase tracking-wider text-[#8C827A]">
+                SPRINT PACE
+              </div>
+              <div className="text-xl font-bold text-[#2E7D52]">
+                Week {progressData.sprintPace?.currentWeek || 2}{" "}
+                <span className="text-xs text-[#8C827A]">/ 8</span>
+              </div>
             </div>
             <div className="px-3 py-1">
-              <div className="text-[9px] uppercase tracking-wider text-[#8C827A]">PLACEMENT FIT</div>
-              <div className="text-xl font-bold text-[#A8421E]">{progressData.placementFit}<span className="text-xs text-[#8C827A]">/100</span></div>
+              <div className="text-[9px] uppercase tracking-wider text-[#8C827A]">
+                PLACEMENT FIT
+              </div>
+              <div className="text-xl font-bold text-[#A8421E]">
+                {progressData.placementFit}
+                <span className="text-xs text-[#8C827A]">/100</span>
+              </div>
             </div>
           </div>
         </div>
 
         {/* 4 Metric Summary Cards */}
-        <ProgressMetrics />
+        <ProgressMetrics progressData={progressData} />
 
         {/* Diagnostic Blocker Alert */}
         <div className="bg-[#FDF4F0] border border-[#F5C7B8] rounded-xl p-4 md:p-5 shadow-[0_2px_10px_rgba(168,66,30,0.05)] flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -137,14 +160,19 @@ export default function ProgressRoadmap() {
                   CURRICULUM DIAGNOSTIC BLOCKER
                 </span>
                 <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-[#FDF0ED] text-[#B93826] border border-[#F7CFC2] font-semibold">
-                  42% Weak Score
+                  {weakestTopic
+                    ? `${Math.round(weakestTopic.score * 100)}% Weak Score`
+                    : "Diagnostic pending"}
                 </span>
               </div>
               <div className="text-sm font-semibold text-[#1C1917] mt-0.5">
-                Conditional Probability is holding back your Week 2 Naive Bayes progress
+                {weakestTopic
+                  ? `${weakestTopic.topic.replace(/_/g, " ")} is your current focus area`
+                  : "Your first diagnostic is ready to identify a focus area"}
               </div>
               <div className="text-xs text-[#57534E] mt-0.5">
-                The Maths specialist detected prior vs. posterior confusion. A quick 10-minute guided Socratic exercise will clear this milestone and unlock Gate 2.
+                Complete a guided Socratic exercise on this topic to update your
+                mastery and unlock the next milestone.
               </div>
             </div>
           </div>
@@ -164,12 +192,12 @@ export default function ProgressRoadmap() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Left Column: 8-Week Pathway */}
           <div className="lg:col-span-8">
-            <RoadmapPathway />
+            <RoadmapPathway progressData={progressData} />
           </div>
 
           {/* Right Column: Facets Summary + Placement Match + Mentor */}
           <div className="lg:col-span-4 space-y-5">
-            <PlacementBenchmark />
+            <PlacementBenchmark progressData={progressData} />
           </div>
         </div>
 
@@ -177,7 +205,6 @@ export default function ProgressRoadmap() {
         <div className="mt-4">
           <TelemetryStream />
         </div>
-
       </div>
     </div>
   );
