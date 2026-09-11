@@ -15,10 +15,33 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import TopBar from '../components/layout/TopBar';
+import { useAgents, useTrace } from '../hooks/useStudent';
+import { useStudentId } from '../hooks/useStudentId';
 import { specialistAgents } from '../data/mockData';
 
 export default function Agents() {
   const { setSidebarOpen } = useOutletContext();
+
+  // Live agent roster + how often each has actually been routed to
+  const studentId = useStudentId();
+  const { agents: liveAgents } = useAgents();
+  const { entries } = useTrace(studentId, 100);
+
+  const routeCounts = entries.reduce((acc, e) => {
+    acc[e.agent] = (acc[e.agent] || 0) + 1;
+    return acc;
+  }, {});
+
+  // Average confidence the trained router gave each agent, from real traffic
+  const avgConfidence = entries.reduce((acc, e) => {
+    if (e.confidence == null) return acc;
+    const prev = acc[e.agent] || { sum: 0, n: 0 };
+    acc[e.agent] = { sum: prev.sum + e.confidence, n: prev.n + 1 };
+    return acc;
+  }, {});
+
+  /** Scope text from GET /api/agents, keyed by backend agent name. */
+  const liveScope = Object.fromEntries(liveAgents.map((a) => [a.name, a.scope]));
 
   const agentDetails = [
     {
@@ -145,9 +168,22 @@ export default function Agents() {
                     </div>
                   </div>
 
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#EAF4EE] text-[#2E7D52] font-semibold border border-[#CDE5D5]">
-                    {agent.confidence}
-                  </span>
+                  {/* Live: mean router confidence and how often this agent was chosen */}
+                  {avgConfidence[agent.id] ? (
+                    <span
+                      className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#EAF4EE] text-[#2E7D52] font-semibold border border-[#CDE5D5]"
+                      title={`Routed to ${routeCounts[agent.id]} time(s)`}
+                    >
+                      {Math.round(
+                        (avgConfidence[agent.id].sum / avgConfidence[agent.id].n) * 100
+                      )}
+                      % · {routeCounts[agent.id]}×
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#FAF7F2] text-[#8C827A] font-semibold border border-[#E7E2D7]">
+                      idle
+                    </span>
+                  )}
                 </div>
 
                 <div className="text-xs font-medium text-[#A8421E] mt-3">
@@ -155,7 +191,7 @@ export default function Agents() {
                 </div>
 
                 <p className="text-xs text-[#57534E] mt-2 leading-relaxed">
-                  {agent.description}
+                  {liveScope[agent.id] || agent.description}
                 </p>
 
                 {/* Active Topics */}

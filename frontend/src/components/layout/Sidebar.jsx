@@ -5,20 +5,16 @@ import {
   BrainCircuit, 
   Network, 
   TrendingUp, 
-  GitFork, 
   History, 
   Settings, 
-  HelpCircle, 
   ShieldAlert, 
   ChevronRight,
-  Radio,
-  ExternalLink,
   LogOut,
   UserCheck
 } from 'lucide-react';
 import EduLogo from '../ui/EduLogo';
 import { useAuth } from '../../context/AuthContext';
-import { studentProfile, specialistAgents } from '../../data/mockData';
+import { studentProfile } from '../../data/mockData';
 
 export default function Sidebar({ isOpen, onClose }) {
   const location = useLocation();
@@ -39,9 +35,9 @@ export default function Sidebar({ isOpen, onClose }) {
     navigate('/login', { replace: true });
   };
 
-  const displayName = profile?.full_name || user?.user_metadata?.full_name || studentProfile.name;
+  const displayName = profile?.name || profile?.full_name || user?.user_metadata?.full_name || studentProfile.name;
   const displayInitials = profile?.initials || studentProfile.initials;
-  const displayTrack = profile?.track || studentProfile.track;
+  const displayTrack = profile?.track || `${profile?.goal || studentProfile.goal} Track`;
   const displayMastery = profile?.mastery ?? studentProfile.overallMastery;
 
   return (
@@ -122,12 +118,14 @@ export default function Sidebar({ isOpen, onClose }) {
               {/* Agent badges grid */}
               <div className="grid grid-cols-4 gap-1.5 pt-1">
                 {['MATH', 'AIML', 'DSA', 'DBMS'].map((agentCode) => (
-                  <div 
+                  <NavLink
                     key={agentCode}
+                    to={`/app/tutor?agent=${agentCode.toLowerCase()}`}
+                    onClick={() => onClose && onClose()}
                     className="flex items-center justify-center py-1.5 px-1 rounded-md bg-[#242220] hover:bg-[#2F2C28] border border-[#33302C] text-[10px] font-mono font-medium text-[#C5BFB5] hover:text-white transition-colors cursor-pointer"
                   >
                     {agentCode}
-                  </div>
+                  </NavLink>
                 ))}
               </div>
             </div>
@@ -147,8 +145,6 @@ export default function Sidebar({ isOpen, onClose }) {
           </div>
 
           {/* Settings & Help */}
-<<<<<<< HEAD
-          {/* Settings & Help */}
           <div className="px-1 space-y-1">
             <NavLink
               to="/app/profile"
@@ -161,16 +157,6 @@ export default function Sidebar({ isOpen, onClose }) {
               </div>
               <ChevronRight className="w-3.5 h-3.5 text-[#635F5A]" />
             </NavLink>
-=======
-          <div className="px-1 space-y-1">
-            <button className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs text-[#8E8880] hover:text-[#D1CCC5] hover:bg-[#201E1C] transition-colors">
-              <div className="flex items-center gap-2">
-                <Settings className="w-3.5 h-3.5" />
-                <span className="text-[11px]">Workspace Settings</span>
-              </div>
-              <HelpCircle className="w-3.5 h-3.5 text-[#635F5A]" />
-            </button>
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
           </div>
         </div>
 
@@ -179,7 +165,6 @@ export default function Sidebar({ isOpen, onClose }) {
           
           {/* Popover / Actions Menu */}
           {showProfileMenu && (
-<<<<<<< HEAD
             <div className="absolute bottom-16 left-3 right-3 bg-[#201E1C] rounded-xl border border-[#2E2B27] p-2 shadow-xl z-20 space-y-1 text-xs animate-fade-in">
               <div className="px-2.5 py-1.5 border-b border-[#2C2926]">
                 <div className="font-semibold text-[#EDE9E3] truncate">
@@ -202,12 +187,6 @@ export default function Sidebar({ isOpen, onClose }) {
                 <span className="font-medium">Student Profile</span>
               </NavLink>
 
-=======
-            <div className="absolute bottom-16 left-3 right-3 bg-[#201E1C] rounded-xl border border-[#2E2B27] p-2 shadow-xl z-20 space-y-1 text-xs">
-              <div className="px-2.5 py-1.5 border-b border-[#2C2926] text-[11px] font-mono text-[#8E8880] truncate">
-                {user?.email || 'authenticated.student@eduhive.io'}
-              </div>
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
               <button
                 onClick={handleLogout}
                 className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-[#E07A5F] hover:bg-[#2B2825] transition-colors cursor-pointer text-left"

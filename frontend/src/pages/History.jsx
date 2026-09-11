@@ -1,80 +1,31 @@
-<<<<<<< HEAD
-import React, { useState, useEffect } from 'react';
-import { useOutletContext, Link, useNavigate } from 'react-router-dom';
-import { History as HistoryIcon, Clock, CheckCircle, ArrowRight, FileText, Bot, MessageSquare } from 'lucide-react';
-import TopBar from '../components/layout/TopBar';
-import TelemetryStream from '../components/brain/TelemetryStream';
-import { useAuth } from '../context/AuthContext';
-import { historyService } from '../services/historyService';
-
-export default function History() {
-  const navigate = useNavigate();
-  const { setSidebarOpen } = useOutletContext();
-  const { profile, user } = useAuth();
-  const studentId = profile?.auth_user_id || profile?.id || user?.id || 'rahul';
-
-  const [sessions, setSessions] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let mounted = true;
-    async function loadHistory() {
-      try {
-        const res = await historyService.getStudentHistory(studentId);
-        if (mounted && res.sessions) {
-          setSessions(res.sessions);
-        }
-      } catch (err) {
-        console.error('Failed to load student session history:', err);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    }
-    loadHistory();
-    return () => {
-      mounted = false;
-    };
-  }, [studentId]);
-=======
 import React from 'react';
-import { useOutletContext } from 'react-router-dom';
-import { History as HistoryIcon, Clock, CheckCircle, ArrowRight, FileText } from 'lucide-react';
+import { useNavigate, useOutletContext } from 'react-router-dom';
+import { Clock, MessageSquare, ArrowRight } from 'lucide-react';
 import TopBar from '../components/layout/TopBar';
-import TelemetryStream from '../components/brain/TelemetryStream';
+import LiveTelemetryStream from '../components/brain/LiveTelemetryStream';
+import { useConversations } from '../hooks/useStudent';
+import { useStudentId } from '../hooks/useStudentId';
 
+/** "3 days ago" / "Today, 14:20" style stamps from an ISO timestamp. */
+function formatWhen(iso) {
+  if (!iso) return '—';
+  const then = new Date(iso);
+  const days = Math.floor((Date.now() - then.getTime()) / 86400000);
+  const time = then.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  if (days === 0) return `Today, ${time}`;
+  if (days === 1) return `Yesterday, ${time}`;
+  return `${days} days ago`;
+}
+
+/**
+ * Session history — real conversation threads from the database.
+ * Clicking one opens it in the Tutor page, where it can be continued.
+ */
 export default function History() {
   const { setSidebarOpen } = useOutletContext();
-
-  const sessions = [
-    {
-      id: 'ses-102',
-      title: 'Bayes Theorem & Marginal Independence Diagnostic',
-      date: 'Today, 14:20',
-      duration: '18 mins',
-      agents: ['Maths Agent', 'Coordinator'],
-      outcome: 'Prerequisite Blocker Identified',
-      score: '42% Cond. Prob'
-    },
-    {
-      id: 'ses-101',
-      title: 'Advanced SQL Window Functions & Index Execution',
-      date: '2 days ago',
-      duration: '25 mins',
-      agents: ['DBMS Agent'],
-      outcome: 'Concept Mastered',
-      score: '92% Mastery'
-    },
-    {
-      id: 'ses-100',
-      title: 'Dynamic Programming Subproblems (Knapsack)',
-      date: '3 days ago',
-      duration: '32 mins',
-      agents: ['DSA Agent'],
-      outcome: 'Verified Worked Calculation',
-      score: '86% Mastery'
-    }
-  ];
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
+  const navigate = useNavigate();
+  const studentId = useStudentId();
+  const { conversations, loading, error } = useConversations(studentId, 50);
 
   return (
     <div className="min-h-screen bg-[#FAF7F2] pb-12">
@@ -83,97 +34,87 @@ export default function History() {
       <div className="max-w-7xl mx-auto px-4 md:px-8 pt-6 space-y-6">
         <div>
           <div className="text-[10px] font-mono uppercase tracking-wider text-[#8C827A] font-semibold mb-1">
-            ACADEMIC LOGS & DIAGNOSTIC ARCHIVE
+            ACADEMIC LOGS &amp; DIAGNOSTIC ARCHIVE
           </div>
-          <h1 className="font-serif text-3xl font-normal text-[#1C1917]">
-            Session History
-          </h1>
+          <h1 className="font-serif text-3xl font-normal text-[#1C1917]">Session History</h1>
           <p className="text-xs text-[#57534E] mt-1">
-            Complete audit trail of Socratic tutorials, diagnostic checkpoints, and belief score updates.
+            Every tutoring thread, persisted and resumable — the coordinator reloads the last
+            turns as context when you continue one.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-8 space-y-3">
-<<<<<<< HEAD
-            {sessions.length === 0 && !loading ? (
-              <div className="p-8 bg-white rounded-xl border border-[#EAE5DC] text-center space-y-3">
-                <MessageSquare className="w-8 h-8 text-[#8C827A] mx-auto opacity-50" />
-                <h3 className="font-semibold text-sm text-[#1C1917]">No learning sessions recorded yet</h3>
-                <p className="text-xs text-[#57534E] max-w-sm mx-auto">
-                  Start your first conversation with EduHive to build your Socratic history and audit trail.
-                </p>
-                <Link
-                  to="/app/tutor"
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#A8421E] text-white text-xs font-semibold shadow-xs"
-                >
-                  <span>Start a Tutorial</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            ) : (
-              sessions.map((ses) => (
-                <div 
-                  key={ses.id}
-                  onClick={() => navigate('/app/tutor')}
-                  className="p-5 bg-white rounded-xl border border-[#EAE5DC] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-[#D4CCBE] hover:shadow-sm transition-all cursor-pointer group"
-                >
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-mono font-bold text-[#A8421E]">{ses.id}</span>
-                      <span className="text-[10px] font-mono text-[#8C827A]">• {ses.date} ({ses.duration})</span>
-                    </div>
-                    <h3 className="text-sm font-semibold text-[#1C1917] mt-1 group-hover:text-[#A8421E] transition-colors">
-                      {ses.title}
-                    </h3>
-                    <div className="flex flex-wrap gap-1.5 mt-2">
-                      {ses.agents.map((ag) => (
-                        <span key={ag} className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#FAF7F2] text-[#57534E] border border-[#E7E2D7]">
-                          {ag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center sm:flex-col sm:items-end justify-between sm:justify-center gap-2 shrink-0">
-                    <div className="text-xs font-mono font-bold text-[#1C1917]">{ses.score}</div>
-                    <div className="text-[10px] text-[#2E7D52] font-semibold">{ses.outcome}</div>
-                  </div>
-                </div>
-              ))
+            {loading && (
+              <>
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="h-24 animate-pulse rounded-xl bg-white/60" />
+                ))}
+              </>
             )}
-=======
-            {sessions.map((ses) => (
-              <div 
-                key={ses.id}
-                className="p-5 bg-white rounded-xl border border-[#EAE5DC] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-[#D4CCBE] transition-colors"
+
+            {error && (
+              <div className="rounded-xl border border-red-200 bg-red-50 p-5">
+                <p className="font-sans text-xs font-bold text-red-800">
+                  Could not load session history
+                </p>
+                <p className="mt-1 font-sans text-[11px] text-red-700">{error}</p>
+              </div>
+            )}
+
+            {!loading && !error && conversations.length === 0 && (
+              <div className="rounded-xl border border-[#EAE5DC] bg-white p-8 text-center">
+                <MessageSquare className="mx-auto h-6 w-6 text-[#8C827A]" />
+                <h3 className="mt-2 font-sans text-sm font-bold text-[#1C1917]">
+                  No sessions yet
+                </h3>
+                <p className="mt-1 font-sans text-xs text-[#8C827A]">
+                  Start a conversation in the Tutor workspace and it will appear here.
+                </p>
+                <button
+                  onClick={() => navigate('/app/tutor')}
+                  className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-[#A8421E] px-4 py-1.5 font-sans text-xs font-semibold text-white"
+                >
+                  Open Tutor <ArrowRight className="h-3 w-3" />
+                </button>
+              </div>
+            )}
+
+            {conversations.map((c) => (
+              <button
+                key={c.id}
+                onClick={() => navigate(`/app/tutor?conversation=${c.id}`)}
+                className="flex w-full flex-col justify-between gap-4 rounded-xl border border-[#EAE5DC] bg-white p-5 text-left shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition-colors hover:border-[#D4CCBE] sm:flex-row sm:items-center cursor-pointer"
               >
-                <div>
+                <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono font-bold text-[#A8421E]">{ses.id}</span>
-                    <span className="text-[10px] font-mono text-[#8C827A]">• {ses.date} ({ses.duration})</span>
+                    <span className="font-mono text-xs font-bold text-[#A8421E]">
+                      {c.id.slice(0, 8)}
+                    </span>
+                    <span className="font-mono text-[10px] text-[#8C827A]">
+                      • {formatWhen(c.last_message_at || c.created_at)}
+                    </span>
                   </div>
-                  <h3 className="text-sm font-semibold text-[#1C1917] mt-1">{ses.title}</h3>
-                  <div className="flex flex-wrap gap-1.5 mt-2">
-                    {ses.agents.map((ag) => (
-                      <span key={ag} className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#FAF7F2] text-[#57534E] border border-[#E7E2D7]">
-                        {ag}
-                      </span>
-                    ))}
+                  <h3 className="mt-1 truncate text-sm font-semibold text-[#1C1917]">
+                    {c.title || 'Untitled session'}
+                  </h3>
+                  <div className="mt-2 flex items-center gap-1.5 font-mono text-[10px] text-[#57534E]">
+                    <Clock className="h-3 w-3" />
+                    {c.message_count} messages
                   </div>
                 </div>
 
-                <div className="text-right shrink-0">
-                  <div className="text-xs font-mono font-bold text-[#1C1917]">{ses.score}</div>
-                  <div className="text-[10px] text-[#2E7D52] font-semibold mt-0.5">{ses.outcome}</div>
+                <div className="shrink-0 text-right">
+                  <span className="inline-flex items-center gap-1 font-sans text-[11px] font-semibold text-[#A8421E]">
+                    Continue <ArrowRight className="h-3 w-3" />
+                  </span>
                 </div>
-              </div>
+              </button>
             ))}
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
           </div>
 
           <div className="lg:col-span-4">
-            <TelemetryStream />
+            <LiveTelemetryStream studentId={studentId} />
           </div>
         </div>
       </div>

@@ -1,16 +1,10 @@
-<<<<<<< HEAD
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Menu, Bell, User, LogOut, Sparkles, ChevronDown } from 'lucide-react';
-=======
-import React from 'react';
-import { Menu, Bell } from 'lucide-react';
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
 import { useAuth } from '../../context/AuthContext';
 import { studentProfile } from '../../data/mockData';
 
 export default function TopBar({ onMenuClick, rightActions, breadcrumbCustom }) {
-<<<<<<< HEAD
   const navigate = useNavigate();
   const { profile, user, signOut } = useAuth();
   const [showDropdown, setShowDropdown] = useState(false);
@@ -40,15 +34,6 @@ export default function TopBar({ onMenuClick, rightActions, breadcrumbCustom }) 
     navigate('/login', { replace: true });
   };
 
-=======
-  const { profile, user } = useAuth();
-
-  const displayName = profile?.full_name || user?.user_metadata?.full_name || studentProfile.name;
-  const displayInitials = profile?.initials || studentProfile.initials;
-  const displayTrack = profile?.track || studentProfile.track;
-  const displaySubTrack = studentProfile.subTrack;
-
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
   return (
     <header className="sticky top-0 z-30 h-14 bg-[#FAF7F2]/95 backdrop-blur-xs border-b border-[#E7E2D7] px-4 md:px-8 flex items-center justify-between">
       {/* Left Context / Breadcrumbs */}
@@ -89,11 +74,7 @@ export default function TopBar({ onMenuClick, rightActions, breadcrumbCustom }) 
         {rightActions ? (
           rightActions
         ) : (
-<<<<<<< HEAD
           <div className="flex items-center gap-2" ref={dropdownRef}>
-=======
-          <div className="flex items-center gap-2">
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
             <button 
               title="Notifications"
               className="p-1.5 rounded-full hover:bg-[#EAE5DC] text-[#57534E] transition-colors relative cursor-pointer"
@@ -101,7 +82,6 @@ export default function TopBar({ onMenuClick, rightActions, breadcrumbCustom }) 
               <Bell className="w-4 h-4" />
               <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[#A8421E]"></span>
             </button>
-<<<<<<< HEAD
 
             {/* User Avatar & Dropdown Menu */}
             <div className="relative">
@@ -148,13 +128,6 @@ export default function TopBar({ onMenuClick, rightActions, breadcrumbCustom }) 
                   </div>
                 </div>
               )}
-=======
-            <div 
-              title={displayName}
-              className="w-7 h-7 rounded-full bg-[#A8421E] text-white flex items-center justify-center text-[10px] font-mono font-semibold ring-2 ring-[#EAE5DC] cursor-pointer"
-            >
-              {displayInitials}
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
             </div>
           </div>
         )}

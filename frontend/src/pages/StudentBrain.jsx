@@ -1,115 +1,101 @@
-<<<<<<< HEAD
-import React, { useState, useEffect } from 'react';
-=======
 import React, { useState } from 'react';
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
 import { useOutletContext } from 'react-router-dom';
-import { Sparkles, Download, Layers, Activity, RefreshCw } from 'lucide-react';
+import { Download, Activity } from 'lucide-react';
 import TopBar from '../components/layout/TopBar';
 import MetricCard from '../components/brain/MetricCard';
 import BlockerAlert from '../components/brain/BlockerAlert';
 import CurricularFacetCard from '../components/brain/CurricularFacetCard';
 import TelemetryStream from '../components/brain/TelemetryStream';
 import ConceptMeshDAG from '../components/brain/ConceptMeshDAG';
-<<<<<<< HEAD
-import { useAuth } from '../context/AuthContext';
-import { studentService } from '../services/studentService';
-=======
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
+import LiveMasteryPanel from '../components/brain/LiveMasteryPanel';
+import { useMastery, useRootCause, useTrace } from '../hooks/useStudent';
+import { useStudentId } from '../hooks/useStudentId';
+import { AGENT_STYLES } from '../services/api';
 import { studentProfile, prerequisiteBlocker, curricularFacets } from '../data/mockData';
+
+/** Map one live subject rollup onto the shape CurricularFacetCard expects. */
+function toFacet(subject, topics) {
+  const mine = topics.filter((t) => t.subject === subject.subject);
+  const weakest = mine.reduce(
+    (lowest, t) => (!lowest || t.score < lowest.score ? t : lowest),
+    null
+  );
+  const strongest = mine.reduce(
+    (best, t) => (!best || t.score > best.score ? t : best),
+    null
+  );
+  const mastery = Math.round(subject.average_score * 100);
+  const isWeak = subject.weak_topics.length > 0;
+  const highlight = isWeak ? weakest : strongest;
+
+  return {
+    id: subject.subject,
+    icon: subject.subject,
+    discipline: (AGENT_STYLES[subject.subject] || AGENT_STYLES.general).label,
+    conceptCount: subject.topic_count,
+    mastery,
+    status: mastery >= 75 ? 'MASTERED' : isWeak ? 'WEAK' : 'LEARNING',
+    hasLeftAccent: isWeak,
+    topStrength: {
+      isWeak,
+      title: (highlight?.topic || '—').replace(/_/g, ' '),
+      detail: highlight ? `${Math.round(highlight.score * 100)}% mastery` : '',
+    },
+  };
+}
 
 export default function StudentBrain() {
   const { setSidebarOpen } = useOutletContext();
-<<<<<<< HEAD
-  const { profile, user } = useAuth();
   const [diagnosticActive, setDiagnosticActive] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-  const studentId = profile?.auth_user_id || profile?.id || user?.id || 'rahul';
-  const displayName = profile?.name || profile?.full_name || user?.user_metadata?.full_name || studentProfile.name;
+  const studentId = useStudentId();
+  const { topics, subjects, overallPercent, weakTopics, masteredTopics, loading, error } =
+    useMastery(studentId);
+  const { topGap } = useRootCause(studentId);
+  const { entries: liveTelemetry } = useTrace(studentId, 10);
 
-  // Dynamic Brain States
-  const [dynamicMetrics, setDynamicMetrics] = useState(studentProfile);
-  const [dynamicFacets, setDynamicFacets] = useState(curricularFacets);
-  const [dynamicTelemetry, setDynamicTelemetry] = useState([]);
+  // Live values where the backend has them; design-only fields stay from the mock
+  const liveProfile = {
+    ...studentProfile,
+    overallMastery: loading ? studentProfile.overallMastery : overallPercent,
+    nodesUnlocked: masteredTopics.length || studentProfile.nodesUnlocked,
+    totalNodes: topics.length || studentProfile.totalNodes,
+  };
 
-  useEffect(() => {
-    let mounted = true;
+  const liveFacets = subjects.length
+    ? subjects.map((s) => toFacet(s, topics))
+    : curricularFacets;
 
-    async function loadBrainData() {
-      try {
-        const [masteryRes, traceRes] = await Promise.all([
-          studentService.getMastery(studentId),
-          studentService.getTrace(studentId, 10),
-        ]);
-
-        if (mounted) {
-          if (masteryRes.ok && masteryRes.data) {
-            const m = masteryRes.data;
-            const scorePct = Math.round((m.overall_score || 0.68) * 100);
-
-            setDynamicMetrics({
-              ...studentProfile,
-              name: displayName,
-              overallMastery: scorePct,
-              bktWeight: Math.round((0.80 + scorePct * 0.0018) * 100) / 100,
-              nodesUnlocked: Math.min(26, Math.max(10, Math.round((scorePct / 100) * 26))),
-              cognitiveLoad: {
-                ...studentProfile.cognitiveLoad,
-                cliIndex: Math.round((0.55 + (100 - scorePct) * 0.002) * 100) / 100,
-              },
-              retention: {
-                ...studentProfile.retention,
-                sevenDayRetention: `${Math.min(98, Math.round(86 + scorePct * 0.12))}%`,
-              },
-            });
-
-            // Map dynamic subjects to curricular facets
-            if (m.subjects && m.subjects.length > 0) {
-              const updatedFacets = curricularFacets.map((facet) => {
-                const subMatch = m.subjects.find((s) => s.subject === facet.id);
-                if (subMatch) {
-                  const facetScore = Math.round((subMatch.average_score || 0.65) * 100);
-                  return {
-                    ...facet,
-                    mastery: facetScore,
-                    status: facetScore >= 80 ? 'MASTERED' : facetScore >= 50 ? 'LEARNING' : 'WEAK',
-                    statusColor: facetScore >= 80 ? '#2E7D52' : facetScore >= 50 ? '#C07D1C' : '#B93826',
-                  };
-                }
-                return facet;
-              });
-              setDynamicFacets(updatedFacets);
-            }
-          }
-
-          if (traceRes.ok && traceRes.data?.entries?.length > 0) {
-            setDynamicTelemetry(traceRes.data.entries);
-          }
-        }
-      } catch (err) {
-        console.error('Failed to load Student Brain telemetry:', err);
-      } finally {
-        if (mounted) setLoading(false);
+  const liveBlocker = topGap
+    ? {
+        ...prerequisiteBlocker,
+        detected: true,
+        priority: `High (${topGap.weight?.toFixed(2) ?? '0.90'})`,
+        title: `${topGap.blocks.replace(/_/g, ' ')} is blocked by a prerequisite gap`,
+        description:
+          `Your ${topGap.blocks.replace(/_/g, ' ')} mastery is capped at ` +
+          `${Math.round(topGap.blocked_score * 100)}% because it depends on ` +
+          `${topGap.prerequisite.replace(/_/g, ' ')}, currently at ` +
+          `${Math.round(topGap.score * 100)}%. Repairing the prerequisite lifts both.`,
+        sourceNode: {
+          ...prerequisiteBlocker.sourceNode,
+          category: `${(topGap.prerequisite_subject || '').toUpperCase()} Node`,
+          score: Math.round(topGap.score * 100),
+          state: 'WEAK',
+          title: topGap.prerequisite.replace(/_/g, ' '),
+        },
       }
-    }
-
-    loadBrainData();
-
-    return () => {
-      mounted = false;
-    };
-  }, [studentId, displayName]);
+    : prerequisiteBlocker;
 
   const handleExportState = () => {
     const jsonStr = JSON.stringify(
       {
         student_id: studentId,
-        student_name: displayName,
         timestamp: new Date().toISOString(),
-        metrics: dynamicMetrics,
-        facets: dynamicFacets,
-        blockers: prerequisiteBlocker,
+        overall_mastery: overallPercent,
+        topics,
+        subjects,
+        root_cause: topGap,
       },
       null,
       2
@@ -118,12 +104,9 @@ export default function StudentBrain() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `eduhive-brain-state-${studentId.slice(0, 8)}.json`;
+    a.download = `eduhive-brain-state-${String(studentId).slice(0, 8)}.json`;
     a.click();
   };
-=======
-  const [diagnosticActive, setDiagnosticActive] = useState(false);
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
 
   return (
     <div className="min-h-screen bg-[#FAF7F2] pb-12">
@@ -140,11 +123,7 @@ export default function StudentBrain() {
             <div className="flex items-center gap-2 text-[11px] font-mono text-[#8C827A]">
               <span>WORKSPACE CONTEXT</span>
               <span>/</span>
-<<<<<<< HEAD
-              <span className="text-[#A8421E] font-semibold">Student Model #{studentId.slice(0, 7)}</span>
-=======
-              <span className="text-[#A8421E] font-semibold">Student Model #0889</span>
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
+              <span className="text-[#A8421E] font-semibold">Student Model #{String(studentId).slice(0, 7)}</span>
               <span>/</span>
               <span>Bayesian Knowledge Tracing</span>
             </div>
@@ -152,21 +131,15 @@ export default function StudentBrain() {
             {/* Quick Action Pills */}
             <div className="flex items-center gap-2">
               <button 
-<<<<<<< HEAD
                 type="button"
                 onClick={() => setDiagnosticActive(!diagnosticActive)}
                 className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium border transition-colors cursor-pointer ${
-=======
-                onClick={() => setDiagnosticActive(!diagnosticActive)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium border transition-colors ${
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
                   diagnosticActive 
                     ? 'bg-[#A8421E] text-white border-[#A8421E]' 
                     : 'bg-[#F4EFE6] hover:bg-[#EAE4D7] text-[#57534E] border-[#DDD5C5]'
                 }`}
               >
                 <Activity className="w-3.5 h-3.5" />
-<<<<<<< HEAD
                 <span>{diagnosticActive ? 'Active Diagnostic' : 'Diagnostic Mode'}</span>
               </button>
 
@@ -174,13 +147,6 @@ export default function StudentBrain() {
                 type="button"
                 onClick={handleExportState}
                 className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F4EFE6] hover:bg-[#EAE4D7] text-[#57534E] border border-[#DDD5C5] text-xs font-mono font-medium transition-colors cursor-pointer"
-=======
-                <span>Diagnostic Mode</span>
-              </button>
-
-              <button 
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F4EFE6] hover:bg-[#EAE4D7] text-[#57534E] border border-[#DDD5C5] text-xs font-mono font-medium transition-colors"
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
                 title="Export Knowledge State JSON"
               >
                 <Download className="w-3.5 h-3.5" />
@@ -200,21 +166,14 @@ export default function StudentBrain() {
 
         {/* 4 Overview Metric Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-<<<<<<< HEAD
-          <MetricCard type="mastery" data={dynamicMetrics} />
-          <MetricCard type="cognitive" data={dynamicMetrics} />
-          <MetricCard type="retention" data={dynamicMetrics} />
-          <MetricCard type="strategy" data={dynamicMetrics} />
-=======
-          <MetricCard type="mastery" data={studentProfile} />
-          <MetricCard type="cognitive" data={studentProfile} />
-          <MetricCard type="retention" data={studentProfile} />
-          <MetricCard type="strategy" data={studentProfile} />
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
+          <MetricCard type="mastery" data={liveProfile} />
+          <MetricCard type="cognitive" data={liveProfile} />
+          <MetricCard type="retention" data={liveProfile} />
+          <MetricCard type="strategy" data={liveProfile} />
         </div>
 
         {/* Prerequisite Blocker Alert Banner */}
-        <BlockerAlert data={prerequisiteBlocker} />
+        <BlockerAlert data={liveBlocker} />
 
         {/* Curricular Knowledge Facets Section */}
         <div className="space-y-3">
@@ -245,27 +204,28 @@ export default function StudentBrain() {
             </div>
           </div>
 
-          {/* 4 Facet Cards in 2x2 Grid */}
+          {/* Facet cards, driven by live per-subject mastery */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-<<<<<<< HEAD
-            {dynamicFacets.map((facet) => (
-=======
-            {curricularFacets.map((facet) => (
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
+            {liveFacets.map((facet) => (
               <CurricularFacetCard key={facet.id} facet={facet} />
             ))}
           </div>
         </div>
 
+        {/* Live topic-level mastery straight from the Progress Engine */}
+        <LiveMasteryPanel
+          subjects={subjects}
+          topics={topics}
+          overallPercent={overallPercent}
+          loading={loading}
+          error={error}
+        />
+
         {/* Bottom Row: Telemetry Stream + Concept Mesh DAG */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
           {/* Telemetry Stream (5 cols) */}
           <div className="lg:col-span-5">
-<<<<<<< HEAD
-            <TelemetryStream events={dynamicTelemetry} />
-=======
-            <TelemetryStream />
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
+            <TelemetryStream events={liveTelemetry} />
           </div>
 
           {/* Concept Mesh DAG (7 cols) */}

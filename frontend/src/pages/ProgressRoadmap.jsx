@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
-=======
-import React from 'react';
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
 import { useOutletContext, Link } from 'react-router-dom';
 import { Download, Sliders, Play, FileText, AlertTriangle } from 'lucide-react';
 import TopBar from '../components/layout/TopBar';
@@ -10,16 +6,12 @@ import ProgressMetrics from '../components/progress/ProgressMetrics';
 import RoadmapPathway from '../components/progress/RoadmapPathway';
 import PlacementBenchmark from '../components/progress/PlacementBenchmark';
 import TelemetryStream from '../components/brain/TelemetryStream';
-<<<<<<< HEAD
 import { useAuth } from '../context/AuthContext';
 import { progressService } from '../services/progressService';
-=======
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
 import { studentProfile } from '../data/mockData';
 
 export default function ProgressRoadmap() {
   const { setSidebarOpen } = useOutletContext();
-<<<<<<< HEAD
   const { profile, user } = useAuth();
   const studentId = profile?.auth_user_id || profile?.id || user?.id || 'rahul';
   const studentGoal = profile?.goal || 'Placement Preparation';
@@ -48,26 +40,16 @@ export default function ProgressRoadmap() {
       mounted = false;
     };
   }, [studentId, studentGoal]);
-=======
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
 
   const customBreadcrumbs = (
     <div className="flex items-center gap-2 text-xs">
       <span className="flex items-center gap-1.5 font-medium text-[#1C1917]">
         <span className="w-2 h-2 rounded-full bg-[#A8421E]"></span>
-<<<<<<< HEAD
         {profile?.cohort || studentProfile.cohort}
       </span>
       <span className="text-[#8C827A]">/</span>
       <span className="font-mono text-[11px] px-2 py-0.5 rounded-full bg-[#EAE4D7] text-[#57534E] border border-[#DDD5C5]">
         Sprint Week {progressData.sprintPace?.currentWeek || 2}
-=======
-        {studentProfile.cohort}
-      </span>
-      <span className="text-[#8C827A]">/</span>
-      <span className="font-mono text-[11px] px-2 py-0.5 rounded-full bg-[#EAE4D7] text-[#57534E] border border-[#DDD5C5]">
-        Cohort Sprint {studentProfile.sprintCode}
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
       </span>
       <span className="text-[#8C827A] hidden sm:inline">/</span>
       <span className="font-mono text-[11px] text-[#2E7D52] hidden sm:inline">
@@ -78,7 +60,6 @@ export default function ProgressRoadmap() {
 
   const customRightActions = (
     <div className="flex items-center gap-2">
-<<<<<<< HEAD
       <button 
         type="button"
         onClick={() => window.print()}
@@ -94,16 +75,6 @@ export default function ProgressRoadmap() {
         <Sliders className="w-3.5 h-3.5" />
         <span className="hidden sm:inline">Preferences</span>
       </Link>
-=======
-      <button className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#FAF7F2] hover:bg-[#EAE4D7] text-[#57534E] border border-[#DDD5C5] text-xs font-mono font-medium transition-colors">
-        <Download className="w-3.5 h-3.5" />
-        <span className="hidden sm:inline">Export Report</span>
-      </button>
-      <button className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#FAF7F2] hover:bg-[#EAE4D7] text-[#57534E] border border-[#DDD5C5] text-xs font-mono font-medium transition-colors">
-        <Sliders className="w-3.5 h-3.5" />
-        <span className="hidden sm:inline">Settings</span>
-      </button>
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
     </div>
   );
 
@@ -138,7 +109,6 @@ export default function ProgressRoadmap() {
           <div className="flex items-center gap-3 bg-white p-3 rounded-xl border border-[#EAE5DC] shadow-[0_1px_3px_rgba(0,0,0,0.02)] shrink-0 font-mono">
             <div className="px-3 py-1 border-r border-[#F0ECE1]">
               <div className="text-[9px] uppercase tracking-wider text-[#8C827A]">OVERALL MASTERY</div>
-<<<<<<< HEAD
               <div className="text-xl font-bold text-[#1C1917]">{progressData.overallMastery}%</div>
             </div>
             <div className="px-3 py-1 border-r border-[#F0ECE1]">
@@ -148,17 +118,6 @@ export default function ProgressRoadmap() {
             <div className="px-3 py-1">
               <div className="text-[9px] uppercase tracking-wider text-[#8C827A]">PLACEMENT FIT</div>
               <div className="text-xl font-bold text-[#A8421E]">{progressData.placementFit}<span className="text-xs text-[#8C827A]">/100</span></div>
-=======
-              <div className="text-xl font-bold text-[#1C1917]">{studentProfile.overallMastery}%</div>
-            </div>
-            <div className="px-3 py-1 border-r border-[#F0ECE1]">
-              <div className="text-[9px] uppercase tracking-wider text-[#8C827A]">SPRINT PACE</div>
-              <div className="text-xl font-bold text-[#2E7D52]">Week 2 <span className="text-xs text-[#8C827A]">/ 8</span></div>
-            </div>
-            <div className="px-3 py-1">
-              <div className="text-[9px] uppercase tracking-wider text-[#8C827A]">PLACEMENT FIT</div>
-              <div className="text-xl font-bold text-[#A8421E]">{studentProfile.placementFit}<span className="text-xs text-[#8C827A]">/100</span></div>
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
             </div>
           </div>
         </div>
@@ -192,24 +151,12 @@ export default function ProgressRoadmap() {
 
           <div className="flex items-center gap-2 shrink-0">
             <Link
-<<<<<<< HEAD
               to="/app/tutor"
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#A8421E] hover:bg-[#8E3516] text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
             >
               <Play className="w-3.5 h-3.5 fill-current" />
               <span>Start Socratic Drill</span>
             </Link>
-=======
-              to="/app/tutor?mode=drill"
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[#A8421E] hover:bg-[#8E3516] text-white text-xs font-semibold shadow-xs transition-colors"
-            >
-              <Play className="w-3.5 h-3.5 fill-current" />
-              <span>Start 10-min Drill</span>
-            </Link>
-            <button className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white hover:bg-[#FAF7F2] text-[#57534E] border border-[#E7E2D7] text-xs font-medium transition-colors">
-              <span>View Derivation</span>
-            </button>
->>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
           </div>
         </div>
 
