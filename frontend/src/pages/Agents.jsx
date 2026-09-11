@@ -1,3 +1,4 @@
+import { useTranslation } from '../i18n';
 import React from 'react';
 import { useOutletContext, Link } from 'react-router-dom';
 import { 
@@ -20,6 +21,7 @@ import { useStudentId } from '../hooks/useStudentId';
 import { specialistAgents } from '../data/mockData';
 
 export default function Agents() {
+  const { t } = useTranslation();
   const { setSidebarOpen } = useOutletContext();
 
   // Live agent roster + how often each has actually been routed to
@@ -127,10 +129,10 @@ export default function Agents() {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <div>
             <div className="text-[10px] font-mono uppercase tracking-wider text-[#8C827A] font-semibold mb-1">
-              AI TUTOR FACULTY & TELEMETRY MESH
+              {t('agents.subtitle')}
             </div>
             <h1 className="font-serif text-3xl md:text-4xl font-normal text-[#1C1917] tracking-tight">
-              Specialist AI Tutors
+              {t('agents.title')}
             </h1>
             <p className="mt-1 text-xs md:text-sm text-[#57534E] max-w-2xl leading-relaxed">
               Explore your dedicated multi-agent academic faculty. Each specialist continuously monitors prerequisite depth and coordinates in real time.
@@ -197,7 +199,7 @@ export default function Agents() {
                 {/* Active Topics */}
                 <div className="mt-4 pt-3 border-t border-[#F0ECE1]">
                   <div className="text-[9.5px] font-mono uppercase tracking-wider text-[#8C827A] font-semibold mb-2">
-                    ACTIVE TELEMETRY TOPICS
+                    {t('agents.activeTopics')}
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {agent.activeTopics.map((topic) => (
@@ -218,7 +220,7 @@ export default function Agents() {
                   to={`/app/tutor?agent=${agent.id}`}
                   className="w-full py-2 px-3 rounded-lg bg-[#FAF8F5] hover:bg-[#F2ECE0] text-[#1C1917] border border-[#EAE5DC] text-xs font-mono font-semibold flex items-center justify-between transition-colors group"
                 >
-                  <span>Launch Socratic Session</span>
+                  <span>{t('agents.launchSession')}</span>
                   <ArrowRight className="w-3.5 h-3.5 text-[#A8421E] group-hover:translate-x-0.5 transition-transform" />
                 </Link>
               </div>

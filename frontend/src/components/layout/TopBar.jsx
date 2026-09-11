@@ -1,14 +1,10 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import {
-  Menu,
-  Bell,
-  User,
-  LogOut,
-  Sparkles,
-  ChevronDown,
-} from "lucide-react";
-import { useAuth } from "../../context/AuthContext";
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Menu, Bell, User, LogOut, Sparkles, ChevronDown } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from '../../i18n';
+import LanguageSwitcher from '../ui/LanguageSwitcher';
+import { studentProfile } from '../../data/mockData';
 
 export default function TopBar({
   onMenuClick,
@@ -17,7 +13,7 @@ export default function TopBar({
 }) {
   const navigate = useNavigate();
   const { profile, user, signOut } = useAuth();
-
+  const { t } = useTranslation();
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
 
@@ -114,7 +110,7 @@ export default function TopBar({
         <button
           onClick={onMenuClick}
           className="p-1.5 rounded-md hover:bg-[#EAE5DC] text-[#57534E] lg:hidden cursor-pointer"
-          aria-label="Open navigation menu"
+          aria-label={t('common.openNav')}
         >
           <Menu className="w-5 h-5" />
         </button>
@@ -157,13 +153,11 @@ export default function TopBar({
         {rightActions ? (
           rightActions
         ) : (
-          <div
-            className="flex items-center gap-2"
-            ref={dropdownRef}
-          >
-            {/* Notifications */}
-            <button
-              title="Notifications"
+          <div className="flex items-center gap-2" ref={dropdownRef}>
+            <LanguageSwitcher />
+
+            <button 
+              title={t('common.notifications')}
               className="p-1.5 rounded-full hover:bg-[#EAE5DC] text-[#57534E] transition-colors relative cursor-pointer"
             >
               <Bell className="w-4 h-4" />
@@ -205,7 +199,7 @@ export default function TopBar({
                       className="flex items-center gap-2.5 px-3.5 py-2 text-[#57534E] hover:bg-[#FAF7F2] hover:text-[#1C1917] transition-colors"
                     >
                       <User className="w-4 h-4 text-[#A8421E]" />
-                      <span>Student Profile</span>
+                      <span>{t('common.studentProfile')}</span>
                     </Link>
                   </div>
 
@@ -216,7 +210,7 @@ export default function TopBar({
                       className="w-full flex items-center gap-2.5 px-3.5 py-2 text-[#B93826] hover:bg-[#FDF0ED] transition-colors cursor-pointer text-left"
                     >
                       <LogOut className="w-4 h-4 text-[#B93826]" />
-                      <span>Sign Out</span>
+                      <span>{t('common.signOut')}</span>
                     </button>
                   </div>
                 </div>

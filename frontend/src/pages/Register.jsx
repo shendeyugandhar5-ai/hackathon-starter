@@ -1,3 +1,5 @@
+import LanguageSwitcher from '../components/ui/LanguageSwitcher';
+import { useTranslation } from '../i18n';
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -21,6 +23,7 @@ import EduLogo from "../components/ui/EduLogo";
 import { useAuth } from "../context/AuthContext";
 
 export default function Register() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { signUp, isAuthenticated } = useAuth();
 
@@ -124,9 +127,12 @@ export default function Register() {
       {/* Left Column: Interactive Topology Showcase & Editorial Notes (42% width) */}
       <div className="lg:w-5/12 bg-[#F7F2EA] p-8 lg:p-12 flex flex-col justify-between border-r border-[#E2DAD0]">
         <div>
-          <Link to="/">
-            <EduLogo variant="light" size="md" />
-          </Link>
+          <div className="flex items-center justify-between gap-3">
+            <Link to="/">
+              <EduLogo variant="light" size="md" />
+            </Link>
+            <LanguageSwitcher variant="compact" />
+          </div>
 
           <div className="mt-8">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EAE2D5] text-[#57534E] font-mono text-[10px] font-semibold tracking-wider uppercase border border-[#DDD5C5]">
@@ -135,7 +141,7 @@ export default function Register() {
             </div>
 
             <h1 className="font-serif text-3xl lg:text-4xl font-normal text-[#1C1917] tracking-tight mt-3 leading-snug">
-              Build your learning hive.
+              {t('auth.registerSub')}
             </h1>
             <p className="mt-2 text-xs lg:text-sm text-[#57534E] leading-relaxed">
               Tell EduHive where you're headed. Your AI tutors will orchestrate
@@ -407,7 +413,7 @@ export default function Register() {
       <div className="lg:w-7/12 p-8 lg:p-12 max-w-2xl mx-auto w-full">
         <div>
           <h2 className="font-serif text-2xl lg:text-3xl font-normal text-[#1C1917] tracking-tight">
-            Create your EduHive account
+            {t('auth.registerTitle')}
           </h2>
           <p className="text-xs lg:text-sm text-[#57534E] mt-1">
             Start building your personalized learning journey with synchronized
@@ -422,7 +428,7 @@ export default function Register() {
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <h3 className="font-serif text-xl text-[#1C1917]">
-              Check your academic email
+              {t('auth.checkEmail')}
             </h3>
             <p className="text-xs text-[#57534E] leading-relaxed max-w-md mx-auto">
               A verification link has been sent to{" "}
@@ -435,7 +441,7 @@ export default function Register() {
                 to="/login"
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#A8421E] text-white text-xs font-semibold shadow-xs"
               >
-                <span>Proceed to Sign In</span>
+                <span>{t('auth.proceedSignIn')}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -467,7 +473,7 @@ export default function Register() {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                   />
                 </svg>
-                <span>Continue with Google</span>
+                <span>{t('auth.continueGoogle')}</span>
               </button>
             </div>
 
@@ -477,7 +483,7 @@ export default function Register() {
                 <div className="w-full border-t border-[#EAE5DC]"></div>
               </div>
               <span className="relative px-3 bg-[#FAF7F2] text-[10px] font-mono tracking-wider text-[#8C827A] uppercase">
-                OR REGISTER VIA CREDENTIALS
+                {t('auth.orContinue')}
               </span>
             </div>
 
@@ -504,7 +510,7 @@ export default function Register() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-[10px] font-mono uppercase tracking-wider text-[#8C827A] font-semibold mb-1">
-                      FULL NAME
+                      {t('auth.fullName')}
                     </label>
                     <div className="relative">
                       <input
@@ -512,7 +518,7 @@ export default function Register() {
                         required
                         value={fullName}
                         onChange={(e) => setFullName(e.target.value)}
-                        placeholder="Enter your Full Name"
+                        placeholder={t('auth.fullNamePlaceholder')}
                         className="w-full px-3 py-2 bg-[#FAF7F2] border border-[#EAE5DC] rounded-lg text-xs font-sans text-[#1C1917] focus:outline-none focus:ring-1 focus:ring-[#A8421E]"
                       />
                     </div>
@@ -520,7 +526,7 @@ export default function Register() {
 
                   <div>
                     <label className="block text-[10px] font-mono uppercase tracking-wider text-[#8C827A] font-semibold mb-1">
-                      ACADEMIC / STUDENT EMAIL
+                      {t('auth.emailLabel')}
                     </label>
                     <div className="relative">
                       <input
@@ -528,7 +534,7 @@ export default function Register() {
                         required
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your mail id"
+                        placeholder={t('auth.emailPlaceholder')}
                         className="w-full px-3 py-2 bg-[#FAF7F2] border border-[#EAE5DC] rounded-lg text-xs font-mono text-[#1C1917] focus:outline-none focus:ring-1 focus:ring-[#A8421E]"
                       />
                     </div>
@@ -536,7 +542,7 @@ export default function Register() {
 
                   <div>
                     <label className="block text-[10px] font-mono uppercase tracking-wider text-[#8C827A] font-semibold mb-1">
-                      CREATE PASSWORD
+                      {t('auth.createPassword')}
                     </label>
                     <div className="relative">
                       <input
@@ -551,7 +557,7 @@ export default function Register() {
 
                   <div>
                     <label className="block text-[10px] font-mono uppercase tracking-wider text-[#8C827A] font-semibold mb-1">
-                      CONFIRM PASSWORD
+                      {t('auth.confirmPassword')}
                     </label>
                     <div className="relative">
                       <input
@@ -574,7 +580,7 @@ export default function Register() {
                       2
                     </span>
                     <span className="text-xs font-semibold text-[#1C1917]">
-                      What are you preparing for?
+                      {t('auth.goalQuestion')}
                     </span>
                   </div>
                   <span className="text-[10px] font-mono text-[#A8421E]">
@@ -623,7 +629,7 @@ export default function Register() {
                       3
                     </span>
                     <span className="text-xs font-semibold text-[#1C1917]">
-                      What do you want to focus on first?
+                      {t('auth.focusQuestion')}
                     </span>
                   </div>
                   <span className="text-[10px] font-mono text-[#78716C]">
@@ -716,11 +722,11 @@ export default function Register() {
                 {isSubmitting ? (
                   <>
                     <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                    <span>Creating Learning Space...</span>
+                    <span>{t('auth.creatingSpace')}</span>
                   </>
                 ) : (
                   <>
-                    <span>Create my learning space</span>
+                    <span>{t('auth.createSpace')}</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
@@ -731,12 +737,12 @@ export default function Register() {
 
         {/* Existing Account Footer Link */}
         <div className="text-center mt-5 text-xs text-[#57534E]">
-          <span>Already have an account? </span>
+          <span>{t('auth.haveAccount')} </span>
           <Link
             to="/login"
             className="font-semibold text-[#A8421E] hover:underline"
           >
-            Sign in →
+            {t('common.signIn')}
           </Link>
         </div>
 

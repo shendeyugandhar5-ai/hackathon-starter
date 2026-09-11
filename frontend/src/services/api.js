@@ -78,13 +78,16 @@ export const api = {
    * Returns: { conversation_id, agent, confidence, routed_reason, response,
    *            mastery_updates, recommendation, contributing_agents, context_used }
    */
-  sendMessage: ({ studentId, message, conversationId = null, image = null }) =>
+  sendMessage: ({ studentId, message, conversationId = null, image = null,
+                  language = null }) =>
     post('/api/chat', {
       student_id: studentId,
       message,
       conversation_id: conversationId,
       // Data URL of a photographed/screenshotted question, when attached
       image,
+      // Answer language; the backend falls back to English if unset
+      language,
     }),
 
   // ------------------------------------------------------------ students --

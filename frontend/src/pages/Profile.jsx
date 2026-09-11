@@ -1,3 +1,4 @@
+import { useTranslation } from '../i18n';
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
@@ -20,6 +21,7 @@ import AccountActions from '../components/profile/AccountActions';
 import LoadingScreen from '../components/ui/LoadingScreen';
 
 export default function Profile() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user, profile, loading: authLoading, updateStudentProfile, signOut, fetchProfile } = useAuth();
 
@@ -128,13 +130,13 @@ export default function Profile() {
         <div>
           <div className="inline-flex items-center gap-1.5 font-mono text-[11px] text-[#A8421E] uppercase tracking-wider font-semibold mb-1">
             <span className="w-1.5 h-1.5 rounded-full bg-[#A8421E]"></span>
-            ACCOUNT & LEARNER PREFERENCES
+            {t('profile.subtitle')}
           </div>
           <h1 className="font-serif text-3xl font-normal text-[#1C1917] tracking-tight">
-            Student Profile
+            {t('profile.title')}
           </h1>
           <p className="text-xs sm:text-sm text-[#57534E] mt-0.5">
-            Manage your EduHive identity, curriculum goals, and active AI tutor mesh.
+            {t('profile.description')}
           </p>
         </div>
 
@@ -148,7 +150,7 @@ export default function Profile() {
               className="px-3.5 py-2 rounded-lg bg-white hover:bg-[#FAF8F5] border border-[#EAE5DC] text-xs font-semibold text-[#57534E] flex items-center gap-1.5 transition-colors cursor-pointer shadow-2xs"
             >
               <RotateCcw className="w-3.5 h-3.5 text-[#8C827A]" />
-              <span>Discard</span>
+              <span>{t('common.discard')}</span>
             </button>
           )}
 
@@ -161,12 +163,12 @@ export default function Profile() {
             {isSaving ? (
               <>
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Saving Changes...</span>
+                <span>{t('profile.savingChanges')}</span>
               </>
             ) : (
               <>
                 <Save className="w-3.5 h-3.5" />
-                <span>Save Changes</span>
+                <span>{t('profile.saveChanges')}</span>
               </>
             )}
           </button>
@@ -178,7 +180,7 @@ export default function Profile() {
         <div className="p-3.5 rounded-xl bg-[#EAF4EE] border border-[#CDE5D5] flex items-center justify-between text-xs text-[#2E7D52] shadow-2xs animate-fade-in">
           <div className="flex items-center gap-2 font-medium">
             <CheckCircle2 className="w-4 h-4 text-[#2E7D52] shrink-0" />
-            <span>Profile changes saved successfully to your EduHive learning space.</span>
+            <span>{t('profile.saved')}</span>
           </div>
           <span className="text-[10px] font-mono text-[#2E7D52] uppercase font-semibold">
             ✓ Synchronized
@@ -202,7 +204,7 @@ export default function Profile() {
             </div>
             <div>
               <h3 className="font-semibold text-xs sm:text-sm text-[#1C1917]">
-                Your learning profile hasn't been initialized yet.
+                {t('profile.notInitialized')}
               </h3>
               <p className="text-xs text-[#57534E] mt-0.5">
                 Set up your academic trajectory and specialist tutors below, or complete onboarding.
@@ -213,7 +215,7 @@ export default function Profile() {
             to="/register"
             className="px-3.5 py-2 rounded-lg bg-[#C07D1C] hover:bg-[#A86C16] text-white text-xs font-semibold flex items-center gap-1.5 shrink-0 transition-colors shadow-2xs"
           >
-            <span>Complete onboarding</span>
+            <span>{t('profile.completeOnboarding')}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -245,7 +247,7 @@ export default function Profile() {
         <div className="sticky bottom-4 z-20 p-4 bg-[#161514] text-[#EDE9E3] rounded-xl border border-[#2E2B27] shadow-xl flex items-center justify-between gap-4 animate-slide-up">
           <div className="flex items-center gap-2 text-xs">
             <span className="w-2 h-2 rounded-full bg-[#E07A5F] animate-pulse"></span>
-            <span>You have unsaved changes to your student profile.</span>
+            <span>{t('profile.unsaved')}</span>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -254,7 +256,7 @@ export default function Profile() {
               disabled={isSaving}
               className="px-3 py-1.5 rounded-lg text-xs font-medium text-[#C5BFB5] hover:text-white hover:bg-[#252321] transition-colors cursor-pointer"
             >
-              Reset
+              {t('common.reset')}
             </button>
             <button
               type="button"

@@ -1,3 +1,4 @@
+import { useTranslation } from '../../i18n';
 import React, { useState } from 'react';
 import { CheckCircle2, XCircle, HelpCircle } from 'lucide-react';
 import api, { MISCONCEPTION_TYPES } from '../../services/api';
@@ -10,6 +11,7 @@ import api, { MISCONCEPTION_TYPES } from '../../services/api';
  * a wrong answer, and can escalate to a human teacher.
  */
 export default function KnowledgeCheckCard({ check, studentId, onGraded }) {
+  const { t } = useTranslation();
   const [answer, setAnswer] = useState('');
   const [confidence, setConfidence] = useState(3);
   const [result, setResult] = useState(null);
@@ -63,12 +65,12 @@ export default function KnowledgeCheckCard({ check, studentId, onGraded }) {
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
             rows={2}
-            placeholder="Your answer (optional — you can self-assess instead)"
+            placeholder={t('check.yourAnswer')}
             className="mt-2.5 w-full resize-none rounded-lg border border-[#EAE5DC] bg-white px-2.5 py-2 font-sans text-xs text-[#1C1917] outline-none focus:border-[#A8421E]"
           />
 
           <div className="mt-2 flex items-center gap-2">
-            <span className="font-sans text-[10px] text-[#57534E]">How sure are you?</span>
+            <span className="font-sans text-[10px] text-[#57534E]">{t('check.howSure')}</span>
             {[1, 2, 3, 4, 5].map((n) => (
               <button
                 key={n}
@@ -94,7 +96,7 @@ export default function KnowledgeCheckCard({ check, studentId, onGraded }) {
               disabled={busy}
               className="inline-flex items-center gap-1.5 rounded-lg bg-[#1C6B5A] px-3 py-1.5 font-sans text-[11px] font-semibold text-white disabled:opacity-40"
             >
-              <CheckCircle2 className="h-3.5 w-3.5" /> I got it right
+              <CheckCircle2 className="h-3.5 w-3.5" /> {t('check.gotItRight')}
             </button>
             <button
               type="button"
@@ -102,14 +104,14 @@ export default function KnowledgeCheckCard({ check, studentId, onGraded }) {
               disabled={busy}
               className="inline-flex items-center gap-1.5 rounded-lg bg-[#B93826] px-3 py-1.5 font-sans text-[11px] font-semibold text-white disabled:opacity-40"
             >
-              <XCircle className="h-3.5 w-3.5" /> I got it wrong
+              <XCircle className="h-3.5 w-3.5" /> {t('check.gotItWrong')}
             </button>
           </div>
         </>
       ) : (
         <div className="mt-3 rounded-lg border border-[#EAE5DC] bg-white p-3">
           <p className="font-sans text-[10px] font-bold uppercase tracking-wider text-[#8C827A]">
-            Mastery updated
+            {t('check.masteryUpdated')}
           </p>
           {result.new_score != null ? (
             <p className="mt-1 font-sans text-xs text-[#1C1917]">
@@ -123,7 +125,7 @@ export default function KnowledgeCheckCard({ check, studentId, onGraded }) {
               )}
             </p>
           ) : (
-            <p className="mt-1 font-sans text-xs text-[#57534E]">Answer recorded.</p>
+            <p className="mt-1 font-sans text-xs text-[#57534E]">{t('check.recorded')}</p>
           )}
 
           {result.escalate_to_human && (

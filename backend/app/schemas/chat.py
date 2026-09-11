@@ -16,6 +16,9 @@ class ChatRequest(BaseModel):
     # A question photographed or screenshotted by the student, as a browser
     # data URL: "data:image/png;base64,iVBOR..." (max ~6MB decoded)
     image: Optional[str] = None
+    # UI language code ('hi', 'mr', ...). Agents answer in it; unknown values
+    # and None fall back to English rather than failing the request.
+    language: Optional[str] = None
 
 
 class MasteryUpdate(BaseModel):

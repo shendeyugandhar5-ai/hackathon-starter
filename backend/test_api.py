@@ -15,6 +15,7 @@ Usage:
 import argparse
 import json
 import sys
+import unicodedata
 
 STUDENT = "rahul"
 results = []
@@ -300,6 +301,48 @@ def run(client):
                r.status_code == 200 and bool(b.get("response"))
                and (b.get("ocr") or {}).get("ok") is False,
                f"HTTP {r.status_code}, ocr.error={(b.get('ocr') or {}).get('error')}")
+
+    print("\n== Multilingual answers ==")
+    from app.agents.language import SUPPORTED_LANGUAGES, language_directive, normalize
+
+    record("11 languages registered", len(SUPPORTED_LANGUAGES) == 11,
+           f"English + {len(SUPPORTED_LANGUAGES) - 1} Indian languages")
+    record("Unknown/locale codes fall back safely",
+           normalize("mr-IN") == "mr" and normalize("xx") == "en" and normalize(None) == "en",
+           "mr-IN -> mr, xx -> en, None -> en")
+    record("English adds no directive", language_directive("en") == ""
+           and "Marathi" in language_directive("mr"),
+           "English prompt is left untouched")
+
+    # The directive has to lead the prompt: appended after a long English
+    # persona it measured 47% native script, prepended 69%.
+    from app.agents.dsa_agent import DSAAgent
+    prompt = DSAAgent().build_prompt("STUDENT CONTEXT: weak in recursion.", "hi")
+    record("Language directive leads the system prompt",
+           prompt.startswith("CRITICAL INSTRUCTION - OUTPUT LANGUAGE"),
+           f"starts with {prompt[:38]!r}")
+
+    from app.agents.llm_client import is_real_answer
+
+    r = client.post("/api/chat", json={
+        "student_id": STUDENT, "message": "What is recursion?", "language": "hi"})
+    body = r.json()
+    answer = body.get("response") or ""
+    letters = [c for c in answer if c.isalpha()]
+    devanagari = (sum(1 for c in letters if "DEVANAGARI" in unicodedata.name(c, ""))
+                  / len(letters)) if letters else 0.0
+
+    if not is_real_answer(answer):
+        # By this point the suite has made ~15 LLM calls; a free-tier rate
+        # limit here says nothing about the translation itself, so report it
+        # as an environment skip rather than a failure of the feature.
+        record("Hindi request -> Hindi answer", False,
+               f"provider unavailable: {answer[:60]}", skipped=True)
+    else:
+        # Technical terms stay in English by design, so a genuine Hindi answer
+        # sits around 40-70% Devanagari; an English answer scores 0%.
+        record("Hindi request -> Hindi answer", devanagari > 0.30,
+               f"{devanagari:.0%} Devanagari, agent={body.get('agent')}")
 
     print("\n== Trained models ==")
     try:

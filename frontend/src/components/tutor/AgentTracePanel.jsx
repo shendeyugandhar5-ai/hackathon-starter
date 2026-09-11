@@ -1,3 +1,4 @@
+import { useTranslation } from '../../i18n';
 import React from 'react';
 import { AGENT_STYLES } from '../../services/api';
 
@@ -68,14 +69,15 @@ function TraceRow({ event }) {
 }
 
 export default function AgentTracePanel({ trace, sending }) {
+  const { t } = useTranslation();
   if (!trace && !sending) {
     return (
       <div className="rounded-xl border border-[#EAE5DC] bg-white p-4">
         <h3 className="font-sans text-xs font-bold uppercase tracking-wider text-[#57534E]">
-          Agent Trace
+          {t('trace.title')}
         </h3>
         <p className="mt-2 font-sans text-xs text-[#8C827A]">
-          Ask a question to see how the hive routes, grounds, and verifies it.
+          {t('trace.empty')}
         </p>
       </div>
     );
@@ -85,10 +87,10 @@ export default function AgentTracePanel({ trace, sending }) {
     return (
       <div className="rounded-xl border border-[#EAE5DC] bg-white p-4">
         <h3 className="font-sans text-xs font-bold uppercase tracking-wider text-[#57534E]">
-          Agent Trace
+          {t('trace.title')}
         </h3>
         <p className="mt-2 animate-pulse font-sans text-xs text-[#57534E]">
-          Orchestrating…
+          {t('trace.orchestrating')}
         </p>
       </div>
     );
@@ -108,7 +110,7 @@ export default function AgentTracePanel({ trace, sending }) {
       <div className="rounded-xl border border-[#EAE5DC] bg-white p-4">
         <div className="flex items-center justify-between">
           <h3 className="font-sans text-xs font-bold uppercase tracking-wider text-[#57534E]">
-            Agent Trace
+            {t('trace.title')}
           </h3>
           {trace.latencyMs != null && (
             <span className="font-mono text-[10px] text-[#8C827A]">{trace.latencyMs}ms</span>
@@ -162,7 +164,7 @@ export default function AgentTracePanel({ trace, sending }) {
       {events.length > 0 && (
         <div className="rounded-xl border border-[#EAE5DC] bg-white p-4">
           <h4 className="font-sans text-[10px] font-bold uppercase tracking-wider text-[#8C827A]">
-            Execution
+            {t('trace.execution')}
           </h4>
           <ol className="mt-2.5 space-y-2">
             {events.map((e, i) => (
@@ -176,7 +178,7 @@ export default function AgentTracePanel({ trace, sending }) {
       {retrieved.length > 0 && (
         <div className="rounded-xl border border-[#EAE5DC] bg-white p-4">
           <h4 className="font-sans text-[10px] font-bold uppercase tracking-wider text-[#8C827A]">
-            Grounded on
+            {t('trace.groundedOn')}
           </h4>
           <ul className="mt-2 space-y-1.5">
             {retrieved.map((c) => {
@@ -238,7 +240,7 @@ export default function AgentTracePanel({ trace, sending }) {
       {trace.recommendation && (
         <div className="rounded-xl border border-[#C07D1C]/30 bg-[#FCF4E6] p-3">
           <p className="font-sans text-[10px] font-bold uppercase tracking-wider text-[#C07D1C]">
-            Next best action
+            {t('trace.nextBestAction')}
           </p>
           <p className="mt-1 font-sans text-xs font-bold text-[#1C1917]">
             {trace.recommendation.topic.replace(/_/g, ' ')}

@@ -76,11 +76,18 @@ class BaseAgent:
     name: AgentName = "general"
     system_prompt: str = ""
 
-    def build_prompt(self, student_context: Optional[str]) -> str:
-        """System prompt with the shared student context appended."""
-        if not student_context:
-            return self.system_prompt
-        return f"{self.system_prompt}\n\n{student_context}"
+    def build_prompt(self, student_context: Optional[str],
+                     language: Optional[str] = None) -> str:
+        """System prompt with the shared student context and answer language."""
+        from app.agents.language import language_directive
+
+        prompt = self.system_prompt
+        if student_context:
+            prompt = f"{prompt}\n\n{student_context}"
+        # Placed first, not last: the persona and the English student-context
+        # block are long, and a trailing language line loses to them. See the
+        # measurement in language_directive's docstring.
+        return f"{language_directive(language)}{prompt}"
 
     def handle(
         self,
@@ -89,11 +96,12 @@ class BaseAgent:
         context: Optional[SpecialistResponse] = None,
         student_context: Optional[str] = None,
         image: Optional[dict] = None,
+        language: Optional[str] = None,
     ) -> SpecialistResponse:
         # Imported here to keep the module import-light for tests
         from app.agents.llm_client import complete
 
-        prompt = self.build_prompt(student_context)
+        prompt = self.build_prompt(student_context, language)
 
         if context is not None:
             # Mid-turn handoff: the previous specialist's answer is the lead-in

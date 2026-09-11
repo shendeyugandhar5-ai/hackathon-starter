@@ -39,6 +39,11 @@ as ordinary `message` text.
 When an image is attached it is OCR'd first and the extracted text is what gets
 routed; the result comes back in the `ocr` field. Max image size is 6 MB.
 
+`language` selects the answer language: `en` (default) plus `hi`, `bn`, `mr`, `te`,
+`ta`, `gu`, `kn`, `ml`, `pa`, `or`. Full locale tags (`mr-IN`) and unrecognised
+values fall back to English rather than failing the request. Technical terms, code
+and formulas stay in English in every language - that is deliberate, not a gap.
+
 ```json
 // Response
 {

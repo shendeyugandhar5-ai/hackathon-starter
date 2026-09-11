@@ -25,5 +25,6 @@ def post_chat(payload: ChatRequest) -> ChatResponse:
         payload.student_id,
         conversation_id,
         image_data_url=payload.image,
+        language=payload.language,
     )
     return ChatResponse(conversation_id=conversation_id, **result)

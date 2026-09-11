@@ -36,6 +36,7 @@ from typing import Any, Dict, List, Optional, TypedDict
 
 from app.agents import decision as decision_policy
 from app.agents.base import AgentName
+from app.agents.language import language_directive
 from app.agents.llm_client import complete, is_real_answer
 from app.agents.llm_client import is_available as llm_available
 from app.agents.router import llm_classify, router_classify
@@ -69,6 +70,7 @@ class EduHiveState(TypedDict, total=False):
     user_message: str          # what the agent is asked
     routing_text: str          # what the router classifies (image transcription aware)
     image: Optional[dict]
+    language: Optional[str]   # answer language ('hi', 'mr', ...); None = English
 
     # routing
     primary_agent: AgentName
@@ -263,6 +265,7 @@ def execute_specialists(state: EduHiveState) -> EduHiveState:
             result = agent.handle(
                 state["user_message"], state["student_id"],
                 student_context=context_block, image=state.get("image"),
+                language=state.get("language"),
             )
             responses.append({"agent": agent_name, "response": result.response})
             role = "primary" if agent_name == state["primary_agent"] else "supporting"
@@ -359,8 +362,9 @@ def knowledge_check_node(state: EduHiveState) -> EduHiveState:
 
     try:
         question = complete(
-            "You write ONE short quiz question to check understanding. "
-            "Reply with only the question - no preamble, answer, or numbering.",
+            language_directive(state.get("language"))
+            + "You write ONE short quiz question to check understanding. "
+              "Reply with only the question - no preamble, answer, or numbering.",
             f"The student just learned about this:\n{state['final_response'][:1200]}\n\n"
             f"Write one short question checking that understanding.",
             max_tokens=400,

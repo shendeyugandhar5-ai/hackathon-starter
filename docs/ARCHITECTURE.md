@@ -67,6 +67,22 @@ occasionally drops spaces between English words on small text
 - the LLM reads merged text fine, and the stage-2 LLM fallback recovers the
 subject when stage-1 confidence drops.
 
+**The interface and the answers are multilingual** - English plus ten Indian
+languages (Hindi, Bengali, Marathi, Telugu, Tamil, Gujarati, Kannada, Malayalam,
+Punjabi, Odia). The UI catalogue lives in `frontend/src/i18n/`; the selected code
+travels on every `/api/chat` request and becomes an instruction in the specialist's
+system prompt (`app/agents/language.py`), so the tutor answers in the student's
+language rather than only the chrome around it. The generated knowledge-check
+question follows the same language.
+
+Two decisions worth stating. First, technical terms, code and formulas stay in
+English in every language: Indian engineering syllabi teach and examine
+"recursion" and "normalization" in English, and translating them makes an answer
+harder to use. Second, the directive is *prepended* to the system prompt, not
+appended - measured on the same question, appending after the persona produced
+47% Devanagari and prepending produced 69%, because a trailing line loses to a
+long English persona plus the English student-context and RAG blocks.
+
 ---
 
 ## 2. Two-stage routing

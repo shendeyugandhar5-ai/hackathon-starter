@@ -1,22 +1,58 @@
-import React, { Component, useState } from "react";
-import { useOutletContext } from "react-router-dom";
-import { Activity, AlertTriangle, Download, RefreshCw } from "lucide-react";
-import TopBar from "../components/layout/TopBar";
-import MetricCard from "../components/brain/MetricCard";
-import BlockerAlert from "../components/brain/BlockerAlert";
-import CurricularFacetCard from "../components/brain/CurricularFacetCard";
-import TelemetryStream from "../components/brain/TelemetryStream";
-import ConceptMeshDAG from "../components/brain/ConceptMeshDAG";
-import LiveMasteryPanel from "../components/brain/LiveMasteryPanel";
-import { useMastery, useRootCause, useTrace } from "../hooks/useStudent";
-import { useStudentId } from "../hooks/useStudentId";
-import { AGENT_STYLES } from "../services/api";
-import { useAuth } from "../context/AuthContext";
+import { useTranslation } from '../i18n';
+import React, { useState, Component } from 'react';
+import { useOutletContext } from 'react-router-dom';
+import { Download, Activity, AlertTriangle, RefreshCw } from 'lucide-react';
+import TopBar from '../components/layout/TopBar';
+import MetricCard from '../components/brain/MetricCard';
+import BlockerAlert from '../components/brain/BlockerAlert';
+import CurricularFacetCard from '../components/brain/CurricularFacetCard';
+import TelemetryStream from '../components/brain/TelemetryStream';
+import ConceptMeshDAG from '../components/brain/ConceptMeshDAG';
+import LiveMasteryPanel from '../components/brain/LiveMasteryPanel';
+import { useMastery, useRootCause, useTrace } from '../hooks/useStudent';
+import { useStudentId } from '../hooks/useStudentId';
+import { AGENT_STYLES } from '../services/api';
+import { studentProfile, prerequisiteBlocker, curricularFacets } from '../data/mockData';
 
-function pretty(value) {
-  return String(value || "")
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (match) => match.toUpperCase());
+// Page-level Error Boundary to ensure the page never renders blank
+class StudentBrainErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('StudentBrain Error Boundary caught error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-[#FAF7F2] p-8 flex items-center justify-center">
+          <div className="bg-white rounded-xl border border-[#EAE5DC] p-6 max-w-lg shadow-sm text-center space-y-4">
+            <div className="w-12 h-12 rounded-full bg-[#FDF0ED] text-[#B93826] flex items-center justify-center mx-auto">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <h2 className="font-serif text-2xl text-[#1C1917]">{t('brain.unableToLoad')}</h2>
+            <p className="text-xs text-[#57534E]">
+              {t('brain.loadErrorHint')}
+            </p>
+            <button
+              onClick={() => this.setState({ hasError: false })}
+              className="px-4 py-2 bg-[#A8421E] text-white rounded-lg text-xs font-semibold hover:bg-[#8E3516] transition-colors cursor-pointer"
+            >
+              {t('brain.retry')}
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
 }
 
 function toFacet(subject, topics) {
@@ -186,10 +222,43 @@ function StudentBrainContent() {
     <div className="min-h-screen bg-[#FAF7F2] pb-12">
       <TopBar onMenuClick={() => setSidebarOpen(true)} />
       <div className="max-w-7xl mx-auto px-4 md:px-8 pt-6 space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <div className="text-[11px] font-mono text-[#8C827A]">
-              STUDENT MODEL #{String(studentId).slice(0, 7)}
+        
+        {/* Workspace Context & Page Title Section */}
+        <div>
+          {/* Breadcrumb Context Tags */}
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
+            <div className="flex items-center gap-2 text-[11px] font-mono text-[#8C827A]">
+              <span>{t('brain.workspaceContext')}</span>
+              <span>/</span>
+              <span className="text-[#A8421E] font-semibold">Student Model #{String(studentId).slice(0, 7)}</span>
+              <span>/</span>
+              <span>{t('brain.bkt')}</span>
+            </div>
+
+            {/* Quick Action Pills */}
+            <div className="flex items-center gap-2">
+              <button 
+                type="button"
+                onClick={() => setDiagnosticActive(!diagnosticActive)}
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium border transition-colors cursor-pointer ${
+                  diagnosticActive 
+                    ? 'bg-[#A8421E] text-white border-[#A8421E]' 
+                    : 'bg-[#F4EFE6] hover:bg-[#EAE4D7] text-[#57534E] border-[#DDD5C5]'
+                }`}
+              >
+                <Activity className="w-3.5 h-3.5" />
+                <span>{diagnosticActive ? 'Active Diagnostic' : 'Diagnostic Mode'}</span>
+              </button>
+
+              <button 
+                type="button"
+                onClick={handleExportState}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F4EFE6] hover:bg-[#EAE4D7] text-[#57534E] border border-[#DDD5C5] text-xs font-mono font-medium transition-colors cursor-pointer"
+                title="Export Knowledge State JSON"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>{t('brain.exportState')}</span>
+              </button>
             </div>
             <h1 className="font-serif text-3xl md:text-4xl text-[#1C1917]">
               {displayName}'s Learning Brain
@@ -199,11 +268,23 @@ function StudentBrainContent() {
               know and where you need prerequisite reinforcement.
             </p>
           </div>
-          <div className="flex items-center gap-2">
+
+          {/* Editorial Title */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+            <div>
+              <h1 className="font-serif text-3xl md:text-4xl font-normal text-[#1C1917] tracking-tight">
+                {t('brain.title')}
+              </h1>
+              <p className="mt-1 text-sm text-[#57534E] max-w-3xl leading-relaxed">
+                EduHive continuously updates its probabilistic model of what you know, what you're learning, and where you need prerequisite reinforcement.
+              </p>
+            </div>
+
             {loading && (
-              <span className="inline-flex items-center gap-1.5 text-xs font-mono text-[#8C827A]">
-                <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Syncing
-              </span>
+              <div className="flex items-center gap-2 text-xs font-mono text-[#8C827A] bg-white px-3 py-1.5 rounded-lg border border-[#EAE5DC] shadow-2xs self-start md:self-auto">
+                <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#A8421E]" />
+                <span>{t('brain.syncing')}</span>
+              </div>
             )}
             <button
               type="button"
@@ -231,18 +312,30 @@ function StudentBrainContent() {
         </div>
         <BlockerAlert data={liveBlocker} />
         <div className="space-y-3">
-          <h2 className="font-serif text-xl md:text-2xl text-[#1C1917]">
-            Curricular Knowledge Facets
-          </h2>
-          {liveFacets.length ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {liveFacets.map((facet) => (
-                <CurricularFacetCard key={facet.id} facet={facet} />
-              ))}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+            <div>
+              <h2 className="font-serif text-xl md:text-2xl font-normal text-[#1C1917] tracking-tight">
+                {t('brain.facets')}
+              </h2>
+              <p className="text-xs text-[#78716C] mt-0.5">
+                {t('brain.subtitle')}
+              </p>
             </div>
-          ) : (
-            <div className="bg-white rounded-xl border border-dashed border-[#DDD5C5] p-8 text-center text-xs font-mono text-[#8C827A]">
-              No mastery has been recorded for this learner yet.
+
+            {/* Facet status legend */}
+            <div className="flex items-center gap-3 text-[11px] font-mono text-[#78716C]">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#2E7D52]"></span>
+                {t('brain.mastered')}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#C07D1C]"></span>
+                {t('brain.learning')}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-[#B93826]"></span>
+                {t('brain.weak')}
+              </span>
             </div>
           )}
         </div>
@@ -274,6 +367,7 @@ function StudentBrainContent() {
 }
 
 export default function StudentBrain() {
+  const { t } = useTranslation();
   return (
     <StudentBrainErrorBoundary>
       <StudentBrainContent />

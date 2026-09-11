@@ -16,6 +16,7 @@ from app.agents.base import AgentName
 from app.agents.dbms_agent import DBMSAgent
 from app.agents.dsa_agent import DSAAgent
 from app.agents.general_agent import GeneralAgent
+from app.agents.language import normalize as normalize_language
 from app.agents.llm_client import extract_question_from_image, parse_data_url
 from app.agents.maths_agent import MathsAgent
 from app.services import conversation_service, ocr
@@ -48,7 +49,8 @@ AGENT_PROFILES: Dict[str, Dict[str, str]] = {
 
 def coordinate(message: str, student_id: str,
                conversation_id: Optional[str] = None,
-               image_data_url: Optional[str] = None) -> Dict[str, Any]:
+               image_data_url: Optional[str] = None,
+               language: Optional[str] = None) -> Dict[str, Any]:
     """Handle one student turn and return the full /api/chat contract."""
     from app.agents.graph import run_graph  # late import keeps startup light
 
@@ -127,6 +129,7 @@ def coordinate(message: str, student_id: str,
         "user_message": agent_message,
         "routing_text": routing_text,
         "image": llm_image,
+        "language": normalize_language(language),
         "recorder": recorder,
         "errors": [],
     }

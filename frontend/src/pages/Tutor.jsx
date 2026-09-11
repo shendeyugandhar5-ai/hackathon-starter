@@ -1,3 +1,4 @@
+import { useTranslation } from '../i18n';
 import React, { useEffect, useState } from 'react';
 import { useOutletContext, Link, useSearchParams } from 'react-router-dom';
 import { Sparkles, Cpu, Plus, AlertTriangle } from 'lucide-react';
@@ -19,6 +20,7 @@ import { useRootCause } from '../hooks/useStudent';
  * something the user has to take on faith.
  */
 export default function Tutor() {
+  const { t } = useTranslation();
   const { setSidebarOpen } = useOutletContext();
   const studentId = useStudentId();
 
@@ -80,7 +82,7 @@ export default function Tutor() {
               <Cpu className="w-3 h-3" />
             </span>
             <span>
-              WORKSPACE • <strong className="text-[#1C1917]">{studentId}</strong>
+              {t('tutor.workspace')} • <strong className="text-[#1C1917]">{studentId}</strong>
             </span>
             {conversationId && (
               <>
@@ -112,21 +114,21 @@ export default function Tutor() {
               onClick={startNewConversation}
               className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FAF7F2] hover:bg-[#F2ECE0] text-[#57534E] font-mono text-[10px] border border-[#E7E2D7] transition-colors cursor-pointer"
             >
-              <Plus className="w-3 h-3" /> New thread
+              <Plus className="w-3 h-3" /> {t('tutor.newThread')}
             </button>
 
             <Link
               to="/app/knowledge-map"
               className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FAF7F2] hover:bg-[#F2ECE0] text-[#57534E] font-mono text-[10px] border border-[#E7E2D7] transition-colors"
             >
-              Collaboration Graph
+              {t('tutor.collaborationGraph')}
             </Link>
 
             <Link
               to="/app/student-brain"
               className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FAF7F2] hover:bg-[#F2ECE0] text-[#57534E] font-mono text-[10px] border border-[#E7E2D7] transition-colors"
             >
-              Diagnostic Mode •
+              {t('tutor.diagnosticMode')} •
             </Link>
           </div>
         </div>
@@ -136,7 +138,7 @@ export default function Tutor() {
           <div className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 p-3">
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-red-600" />
             <div>
-              <p className="font-sans text-xs font-bold text-red-800">Backend not reachable</p>
+              <p className="font-sans text-xs font-bold text-red-800">{t('tutor.backendUnreachable')}</p>
               <p className="mt-0.5 font-sans text-[11px] text-red-700">
                 Start it with{' '}
                 <code className="font-mono">uvicorn app.main:app --reload --port 8000</code> from
@@ -150,7 +152,7 @@ export default function Tutor() {
         {topGap && (
           <div className="rounded-xl border border-[#C07D1C]/30 bg-[#FCF4E6] px-4 py-2.5">
             <p className="font-sans text-[11px] text-[#57534E]">
-              <span className="font-bold text-[#C07D1C]">Root cause detected:</span>{' '}
+              <span className="font-bold text-[#C07D1C]">{t('tutor.rootCause')}</span>{' '}
               <strong>{topGap.prerequisite}</strong> ({Math.round(topGap.score * 100)}%) is gating{' '}
               <strong>{topGap.blocks}</strong> ({Math.round(topGap.blocked_score * 100)}%).
             </p>
@@ -168,10 +170,10 @@ export default function Tutor() {
                 <div className="text-center">
                   <Sparkles className="mx-auto h-7 w-7 text-[#A8421E]" />
                   <h2 className="mt-3 font-sans text-base font-bold text-[#1C1917]">
-                    Ask anything across DSA, DBMS, Maths or AIML
+                    {t('tutor.placeholder')}
                   </h2>
                   <p className="mx-auto mt-1 max-w-md font-sans text-xs text-[#8C827A]">
-                    The coordinator picks the right specialist and shows you why.
+                    {t('tutor.subtitle')}
                   </p>
                   <div className="mx-auto mt-5 flex max-w-lg flex-wrap justify-center gap-2">
                     {suggestedPrompts.map((p) => (

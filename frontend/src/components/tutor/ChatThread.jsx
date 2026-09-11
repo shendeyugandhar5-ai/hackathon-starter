@@ -1,8 +1,10 @@
+import { useTranslation } from '../../i18n';
 import React, { useEffect, useRef } from 'react';
 import { AGENT_STYLES } from '../../services/api';
 
 /** One message bubble. Agent messages carry the badge of whichever agent answered. */
 function MessageBubble({ message }) {
+  const { t } = useTranslation();
   const isStudent = message.role === 'student';
   const style = AGENT_STYLES[message.agent] || AGENT_STYLES.general;
 
@@ -13,7 +15,7 @@ function MessageBubble({ message }) {
           {message.imageUrl && (
             <img
               src={message.imageUrl}
-              alt="Question attached by the student"
+              alt={t('tutor.studentImageAlt')}
               className="max-h-64 w-full object-contain"
             />
           )}
@@ -27,7 +29,7 @@ function MessageBubble({ message }) {
           {message.ocr?.ok && (
             <div className="border-t border-white/10 px-4 py-2.5">
               <p className="font-mono text-[10px] uppercase tracking-wider text-white/40">
-                Read from image &middot; {message.ocr.engine} &middot;{' '}
+                {t('tutor.readFromImage')} &middot; {message.ocr.engine} &middot;{' '}
                 {Math.round((message.ocr.confidence || 0) * 100)}%
               </p>
               <p className="mt-1 whitespace-pre-wrap font-mono text-xs leading-relaxed text-white/70">
@@ -38,8 +40,7 @@ function MessageBubble({ message }) {
           {message.ocr && !message.ocr.ok && (
             <div className="border-t border-white/10 px-4 py-2.5">
               <p className="font-sans text-xs text-amber-300/80">
-                No text could be read from this image &mdash; try a sharper photo
-                or type the question.
+{t('tutor.imageUnreadable')}
               </p>
             </div>
           )}

@@ -1,3 +1,5 @@
+import LanguageSwitcher from '../components/ui/LanguageSwitcher';
+import { useTranslation } from '../i18n';
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
@@ -5,6 +7,7 @@ import EduLogo from '../components/ui/EduLogo';
 import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { signIn, isAuthenticated } = useAuth();
@@ -58,7 +61,7 @@ export default function Login() {
         {/* Big Editorial Quote */}
         <div className="my-auto max-w-lg z-10">
           <h1 className="font-serif text-4xl lg:text-5xl font-normal text-[#1C1917] tracking-tight leading-[1.12]">
-            Welcome back to your hive.
+            {t('auth.welcomeBackSub')}
           </h1>
           <p className="mt-5 text-sm lg:text-base text-[#57534E] leading-relaxed">
             Your tutors remember where you left off. Every question, misconception, and mastery score is synchronized across your specialist AI team.
@@ -79,16 +82,14 @@ export default function Login() {
           <Link to="/">
             <EduLogo variant="light" size="md" />
           </Link>
-          <span className="font-mono text-[10px] px-2.5 py-1 rounded bg-[#EAE4D7] text-[#57534E] border border-[#DDD5C5] tracking-wider uppercase">
-            V2.4 STUDY SALON
-          </span>
+          <LanguageSwitcher variant="compact" />
         </div>
 
         {/* Form Container */}
         <div className="my-auto py-8">
           <div className="mb-6">
             <h2 className="font-serif text-2xl md:text-3xl font-normal text-[#1C1917] tracking-tight">
-              Welcome back
+              {t('auth.welcomeBack')}
             </h2>
             <p className="text-xs md:text-sm text-[#57534E] mt-1">
               Continue your synchronized learning journey.
@@ -107,7 +108,7 @@ export default function Login() {
             {/* Academic Email Input */}
             <div>
               <label className="block text-xs font-semibold text-[#1C1917] mb-1.5 font-sans">
-                Academic Email
+                {t('auth.email')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#8C827A]">
@@ -118,7 +119,7 @@ export default function Login() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="name@university.edu"
+                  placeholder={t('auth.emailPlaceholder')}
                   className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#EAE5DC] rounded-lg text-sm text-[#1C1917] placeholder-[#A8A29E] focus:outline-none focus:ring-2 focus:ring-[#A8421E]/30 focus:border-[#A8421E] transition-all font-mono"
                 />
               </div>
@@ -128,10 +129,10 @@ export default function Login() {
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="text-xs font-semibold text-[#1C1917] font-sans">
-                  Password
+                  {t('auth.password')}
                 </label>
                 <span className="text-xs font-semibold text-[#A8421E] hover:underline cursor-pointer">
-                  Forgot password?
+                  {t('auth.forgotPassword')}
                 </span>
               </div>
               <div className="relative">
@@ -166,7 +167,7 @@ export default function Login() {
                 className="w-4 h-4 rounded border-[#D1CCC5] text-[#A8421E] focus:ring-[#A8421E]"
               />
               <label htmlFor="remember-me" className="ml-2 text-xs text-[#57534E] select-none cursor-pointer">
-                Remember me for 30 days
+                {t('auth.rememberMe')}
               </label>
             </div>
 
@@ -179,11 +180,11 @@ export default function Login() {
               {isSubmitting ? (
                 <>
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                  <span>Verifying Session...</span>
+                  <span>{t('auth.verifying')}</span>
                 </>
               ) : (
                 <>
-                  <span>Sign in to EduHive</span>
+                  <span>{t('auth.signInTitle')}</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
@@ -196,7 +197,7 @@ export default function Login() {
               <div className="w-full border-t border-[#EAE5DC]"></div>
             </div>
             <span className="relative px-3 bg-[#FAF7F2] text-[10px] font-mono tracking-wider text-[#8C827A] uppercase">
-              OR CONTINUE WITH
+              {t('auth.orContinue')}
             </span>
           </div>
 
@@ -212,14 +213,14 @@ export default function Login() {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
             </svg>
-            <span>Continue with Google</span>
+            <span>{t('auth.continueGoogle')}</span>
           </button>
 
           {/* New Account Link */}
           <div className="text-center mt-6 text-xs text-[#57534E]">
-            <span>New to EduHive? </span>
+            <span>{t('auth.newHere')} </span>
             <Link to="/register" className="font-semibold text-[#A8421E] hover:underline">
-              Create an account →
+              {t('auth.createAccount')}
             </Link>
           </div>
         </div>
@@ -227,7 +228,7 @@ export default function Login() {
         {/* Footer Security Note */}
         <div className="pt-6 border-t border-[#EAE5DC] flex items-center justify-center gap-2 text-[11px] font-mono text-[#8C827A]">
           <ShieldCheck className="w-3.5 h-3.5 text-[#2E7D52]" />
-          <span>Protected with end-to-end encrypted student context.</span>
+          <span>{t('auth.encrypted')}</span>
         </div>
       </div>
     </div>

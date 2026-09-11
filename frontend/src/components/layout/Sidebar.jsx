@@ -10,48 +10,26 @@ import {
   ShieldAlert,
   ChevronRight,
   LogOut,
-  UserCheck,
-} from "lucide-react";
-import EduLogo from "../ui/EduLogo";
-import { useAuth } from "../../context/AuthContext";
+  UserCheck
+} from 'lucide-react';
+import EduLogo from '../ui/EduLogo';
+import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from '../../i18n';
+import { studentProfile } from '../../data/mockData';
 
 export default function Sidebar({ isOpen, onClose }) {
   const location = useLocation();
   const navigate = useNavigate();
   const { profile, user, signOut } = useAuth();
+  const { t } = useTranslation();
   const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   const navItems = [
-    {
-      label: "Tutor Orchestration",
-      shortLabel: "Tutor",
-      path: "/app/tutor",
-      icon: Bot,
-    },
-    {
-      label: "Student Brain",
-      shortLabel: "Student Brain",
-      path: "/app/student-brain",
-      icon: BrainCircuit,
-    },
-    {
-      label: "Knowledge Map",
-      shortLabel: "Knowledge Map",
-      path: "/app/knowledge-map",
-      icon: Network,
-    },
-    {
-      label: "Progress & Roadmap",
-      shortLabel: "Progress & Roadmap",
-      path: "/app/progress",
-      icon: TrendingUp,
-    },
-    {
-      label: "Session History",
-      shortLabel: "History",
-      path: "/app/history",
-      icon: History,
-    },
+    { label: t('nav.tutorOrchestration'), shortLabel: t('nav.tutor'), path: '/app/tutor', icon: Bot },
+    { label: t('nav.studentBrain'), shortLabel: t('nav.studentBrain'), path: '/app/student-brain', icon: BrainCircuit },
+    { label: t('nav.knowledgeMap'), shortLabel: t('nav.knowledgeMap'), path: '/app/knowledge-map', icon: Network },
+    { label: t('nav.progress'), shortLabel: t('nav.progress'), path: '/app/progress', icon: TrendingUp },
+    { label: t('nav.history'), shortLabel: t('nav.historyShort'), path: '/app/history', icon: History },
   ];
 
   const handleLogout = async () => {
@@ -133,13 +111,13 @@ export default function Sidebar({ isOpen, onClose }) {
 
             <span className="flex items-center gap-1 text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-[#1F2C23] text-[#4ADE80] border border-[#2E5E3B]">
               <span className="w-1.5 h-1.5 rounded-full bg-[#4ADE80] animate-pulse"></span>
-              5 Ready
+              5 {t('common.ready')}
             </span>
           </div>
 
           <div className="flex items-center gap-1.5 mt-2.5 px-1 text-[11px] font-mono text-[#8E8880]">
             <span className="w-1.5 h-1.5 rounded-full bg-[#4ADE80]"></span>
-            <span>Orchestrator Mesh Active</span>
+            <span>{t('nav.meshActive')}</span>
           </div>
         </div>
 
@@ -148,7 +126,7 @@ export default function Sidebar({ isOpen, onClose }) {
           {/* Main Navigation Section */}
           <div>
             <div className="px-3 pb-2 text-[10px] font-mono tracking-wider text-[#78716C] uppercase font-semibold">
-              COGNITIVE WORKSPACE
+              {t('nav.workspace')}
             </div>
 
             <nav className="space-y-1">
@@ -199,7 +177,7 @@ export default function Sidebar({ isOpen, onClose }) {
             <div className="p-2.5 rounded-xl bg-[#1C1B19] border border-[#2A2724]">
               <div className="flex items-center justify-between pb-2">
                 <span className="text-[11px] font-medium text-[#D1CCC5]">
-                  Specialist Agents
+                  {t('nav.agents')}
                 </span>
 
                 <span className="text-[10px] font-mono text-[#4ADE80] font-medium">
@@ -257,14 +235,11 @@ export default function Sidebar({ isOpen, onClose }) {
               >
                 <div className="flex items-center gap-2">
                   <ShieldAlert className="w-3.5 h-3.5 text-[#E07A5F]" />
-
-                  <span className="font-medium text-xs text-[#E0DCD5]">
-                    Teacher Escalation
-                  </span>
+                  <span className="font-medium text-xs text-[#E0DCD5]">{t('nav.teacherEscalation')}</span>
                 </div>
 
                 <span className="text-[10px] font-mono text-[#4ADE80] font-medium">
-                  Ready
+                  {t('common.ready')}
                 </span>
               </button>
             </div>
@@ -289,8 +264,7 @@ export default function Sidebar({ isOpen, onClose }) {
             >
               <div className="flex items-center gap-2">
                 <Settings className="w-3.5 h-3.5" />
-
-                <span className="text-[11px]">Profile & Preferences</span>
+                <span className="text-[11px]">{t('nav.profile')}</span>
               </div>
 
               <ChevronRight className="w-3.5 h-3.5 text-[#635F5A]" />
@@ -352,8 +326,7 @@ export default function Sidebar({ isOpen, onClose }) {
                 "
               >
                 <UserCheck className="w-3.5 h-3.5 text-[#A8421E]" />
-
-                <span className="font-medium">Student Profile</span>
+                <span className="font-medium">{t('common.studentProfile')}</span>
               </NavLink>
 
               <button
@@ -371,8 +344,7 @@ export default function Sidebar({ isOpen, onClose }) {
                 "
               >
                 <LogOut className="w-3.5 h-3.5" />
-
-                <span className="font-medium">Sign Out</span>
+                <span className="font-medium">{t('common.signOut')}</span>
               </button>
             </div>
           )}

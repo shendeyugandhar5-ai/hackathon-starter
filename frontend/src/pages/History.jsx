@@ -1,9 +1,11 @@
-import React from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
-import { Clock, MessageSquare, ArrowRight } from "lucide-react";
-import TopBar from "../components/layout/TopBar";
-import { useConversations } from "../hooks/useStudent";
-import { useStudentId } from "../hooks/useStudentId";
+import { useTranslation } from '../i18n';
+import React from 'react';
+import { useNavigate, useOutletContext } from 'react-router-dom';
+import { Clock, MessageSquare, ArrowRight } from 'lucide-react';
+import TopBar from '../components/layout/TopBar';
+import LiveTelemetryStream from '../components/brain/LiveTelemetryStream';
+import { useConversations } from '../hooks/useStudent';
+import { useStudentId } from '../hooks/useStudentId';
 
 /** "3 days ago" / "Today, 14:20" style stamps from an ISO timestamp. */
 function formatWhen(iso) {
@@ -28,6 +30,7 @@ function formatWhen(iso) {
  * Clicking one opens it in the Tutor page, where it can be continued.
  */
 export default function History() {
+  const { t } = useTranslation();
   const { setSidebarOpen } = useOutletContext();
   const navigate = useNavigate();
   const studentId = useStudentId();
@@ -42,13 +45,9 @@ export default function History() {
         {/* Page Header */}
         <div>
           <div className="text-[10px] font-mono uppercase tracking-wider text-[#8C827A] font-semibold mb-1">
-            ACADEMIC LOGS &amp; DIAGNOSTIC ARCHIVE
+            {t('history.subtitle')}
           </div>
-
-          <h1 className="font-serif text-3xl font-normal text-[#1C1917]">
-            Session History
-          </h1>
-
+          <h1 className="font-serif text-3xl font-normal text-[#1C1917]">{t('history.title')}</h1>
           <p className="text-xs text-[#57534E] mt-1">
             Every tutoring thread, persisted and resumable — the coordinator
             reloads the last turns as context when you continue one.
@@ -74,7 +73,7 @@ export default function History() {
             {error && (
               <div className="rounded-xl border border-red-200 bg-red-50 p-5">
                 <p className="font-sans text-xs font-bold text-red-800">
-                  Could not load session history
+                  {t('history.loadError')}
                 </p>
 
                 <p className="mt-1 font-sans text-[11px] text-red-700">
@@ -89,12 +88,11 @@ export default function History() {
                 <MessageSquare className="mx-auto h-6 w-6 text-[#8C827A]" />
 
                 <h3 className="mt-2 font-sans text-sm font-bold text-[#1C1917]">
-                  No sessions yet
+                  {t('history.noSessions')}
                 </h3>
 
                 <p className="mt-1 font-sans text-xs text-[#8C827A]">
-                  Start a conversation in the Tutor workspace and it will appear
-                  here.
+                  {t('history.noSessionsHint')}
                 </p>
 
                 <button
@@ -114,8 +112,7 @@ export default function History() {
                       text-white
                     "
                 >
-                  Open Tutor
-                  <ArrowRight className="h-3 w-3" />
+                  {t('history.openTutor')} <ArrowRight className="h-3 w-3" />
                 </button>
               </div>
             )}
@@ -172,8 +169,7 @@ export default function History() {
                 {/* Continue */}
                 <div className="shrink-0 text-right">
                   <span className="inline-flex items-center gap-1 font-sans text-[11px] font-semibold text-[#A8421E]">
-                    Continue
-                    <ArrowRight className="h-3 w-3" />
+                    {t('history.continue')} <ArrowRight className="h-3 w-3" />
                   </span>
                 </div>
               </button>

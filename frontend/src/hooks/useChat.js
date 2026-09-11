@@ -7,9 +7,13 @@
  * Trace panel renders.
  */
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from '../i18n';
 import api from '../services/api';
 
 export function useChat(studentId) {
+  // Sent with every turn so the agents answer in the student's own language,
+  // not just the chrome around them.
+  const { language } = useTranslation();
   const [messages, setMessages] = useState([]);
   const [conversationId, setConversationId] = useState(null);
   const [sending, setSending] = useState(false);
@@ -43,6 +47,7 @@ export function useChat(studentId) {
         message: trimmed,
         conversationId,
         image: image?.dataUrl || null,
+        language,
       });
 
       setSending(false);
@@ -109,7 +114,7 @@ export function useChat(studentId) {
 
       return d;
     },
-    [studentId, conversationId, sending]
+    [studentId, conversationId, sending, language]
   );
 
   /** Load an earlier thread from History and continue it. */

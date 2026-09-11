@@ -1,3 +1,5 @@
+import LanguageSwitcher from '../components/ui/LanguageSwitcher';
+import { useTranslation } from '../i18n';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -24,6 +26,7 @@ import { useAuth } from '../context/AuthContext';
 import { specialistAgents } from '../data/mockData';
 
 export default function Landing() {
+  const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
 
   const steps = [
@@ -58,13 +61,14 @@ export default function Landing() {
           </nav>
 
           <div className="flex items-center gap-3">
+            <LanguageSwitcher variant="compact" />
             {isAuthenticated ? (
               <Link 
                 to="/app/tutor"
                 className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#A8421E] hover:bg-[#8E3516] text-white text-xs font-semibold shadow-xs transition-colors"
               >
                 <LayoutDashboard className="w-3.5 h-3.5" />
-                <span>Go to Workspace</span>
+                <span>{t('landing.goToWorkspace')}</span>
               </Link>
             ) : (
               <>
@@ -72,13 +76,13 @@ export default function Landing() {
                   to="/login"
                   className="text-xs font-semibold text-[#57534E] hover:text-[#1C1917] px-3 py-1.5 rounded-lg transition-colors"
                 >
-                  Sign in
+                  {t('landing.signIn')}
                 </Link>
                 <Link 
                   to="/register"
                   className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#A8421E] hover:bg-[#8E3516] text-white text-xs font-semibold shadow-xs transition-colors"
                 >
-                  <span>Start Free Trial</span>
+                  <span>{t('landing.getStarted')}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </>
@@ -92,13 +96,13 @@ export default function Landing() {
         {/* Brand Tagline */}
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FCE8E1] text-[#A8421E] font-mono text-xs font-semibold tracking-wider uppercase border border-[#F7CFC2] mb-6">
           <span className="w-1.5 h-1.5 rounded-full bg-[#A8421E] animate-pulse"></span>
-          AI TUTORS. BRIGHTER LEARNERS.
+          {t('landing.tagline')}
         </div>
 
         {/* Big Editorial Heading */}
         <h1 className="font-serif text-4xl sm:text-6xl lg:text-7xl font-normal text-[#1C1917] tracking-tight leading-[1.08] max-w-4xl mx-auto">
-          Don't learn from one AI.<br />
-          Learn with a <span className="italic text-[#A8421E] font-medium">hive of experts.</span>
+          {t('landing.headline1')}<br />
+          {t('landing.headline2')} <span className="italic text-[#A8421E] font-medium">hive of experts.</span>
         </h1>
 
         <p className="mt-6 text-base sm:text-lg text-[#57534E] max-w-2xl mx-auto leading-relaxed">
@@ -135,7 +139,7 @@ export default function Landing() {
           </span>
           <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-[#C07D1C]"></span>
-            Zero Siloed Learning
+            {t('landing.zeroSilos')}
           </span>
         </div>
 
@@ -231,7 +235,7 @@ export default function Landing() {
               MULTI-AGENT PEDAGOGY
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl font-normal text-[#1C1917] mt-2">
-              The 8-Step Collaborative Loop
+              {t('landing.loop')}
             </h2>
             <p className="text-sm text-[#57534E] mt-2 leading-relaxed">
               Every interaction cycles through an automated consensus loop to guarantee academic depth without overwhelming working memory.
@@ -262,7 +266,7 @@ export default function Landing() {
             SPECIALIZED AI PANEL
           </span>
           <h2 className="font-serif text-3xl sm:text-4xl font-normal text-[#1C1917] mt-2">
-            Meet the Hive Faculty
+            {t('landing.meetFaculty')}
           </h2>
           <p className="text-sm text-[#57534E] mt-2 leading-relaxed">
             No single model can master every nuance of modern computing. EduHive assigns dedicated specialists that challenge and support you.
@@ -316,7 +320,7 @@ export default function Landing() {
               BAYESIAN KNOWLEDGE TRACING
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl font-normal text-[#1C1917] mt-2">
-              Your tutor learns how you learn
+              {t('landing.adaptive')}
             </h2>
             <p className="text-sm text-[#57534E] mt-2 leading-relaxed">
               Real-time cognitive modeling predicts retention half-life and detects prerequisite gaps before you hit roadblocks.
@@ -348,7 +352,7 @@ export default function Landing() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <EduLogo variant="light" size="lg" />
           <h2 className="font-serif text-3xl sm:text-5xl font-normal text-[#1C1917] mt-4 tracking-tight">
-            Your learning journey deserves more than one AI.
+            {t('landing.subheadline')}
           </h2>
           <p className="text-sm sm:text-base text-[#57534E] mt-3 max-w-xl mx-auto leading-relaxed">
             Join thousands of engineering students mastering complex computer science with personalized multi-agent guidance.
@@ -385,7 +389,7 @@ export default function Landing() {
             <Link to={isAuthenticated ? "/app/student-brain" : "/login"} className="hover:text-white transition-colors">Cognitive Mesh</Link>
             <Link to={isAuthenticated ? "/app/progress" : "/login"} className="hover:text-white transition-colors">Curriculum Roadmap</Link>
             <Link to="/login" className="hover:text-white transition-colors">Salon Login</Link>
-            <Link to="/register" className="hover:text-white transition-colors">Register</Link>
+            <Link to="/register" className="hover:text-white transition-colors">{t('landing.register')}</Link>
           </div>
 
           <div className="text-[10px] font-mono text-[#78716C]">
