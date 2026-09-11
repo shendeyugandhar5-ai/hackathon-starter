@@ -7,11 +7,84 @@ import BlockerAlert from '../components/brain/BlockerAlert';
 import CurricularFacetCard from '../components/brain/CurricularFacetCard';
 import TelemetryStream from '../components/brain/TelemetryStream';
 import ConceptMeshDAG from '../components/brain/ConceptMeshDAG';
+import LiveMasteryPanel from '../components/brain/LiveMasteryPanel';
+import { useMastery, useRootCause } from '../hooks/useStudent';
+import { useStudentId } from '../hooks/useStudentId';
+import { AGENT_STYLES } from '../services/api';
 import { studentProfile, prerequisiteBlocker, curricularFacets } from '../data/mockData';
+
+/** Map one live subject rollup onto the shape CurricularFacetCard expects. */
+function toFacet(subject, topics) {
+  const mine = topics.filter((t) => t.subject === subject.subject);
+  const weakest = mine.reduce(
+    (lowest, t) => (!lowest || t.score < lowest.score ? t : lowest),
+    null
+  );
+  const strongest = mine.reduce(
+    (best, t) => (!best || t.score > best.score ? t : best),
+    null
+  );
+  const mastery = Math.round(subject.average_score * 100);
+  const isWeak = subject.weak_topics.length > 0;
+  const highlight = isWeak ? weakest : strongest;
+
+  return {
+    id: subject.subject,
+    icon: subject.subject,
+    discipline: (AGENT_STYLES[subject.subject] || AGENT_STYLES.general).label,
+    conceptCount: subject.topic_count,
+    mastery,
+    status: mastery >= 75 ? 'MASTERED' : isWeak ? 'WEAK' : 'LEARNING',
+    hasLeftAccent: isWeak,
+    topStrength: {
+      isWeak,
+      title: (highlight?.topic || '—').replace(/_/g, ' '),
+      detail: highlight ? `${Math.round(highlight.score * 100)}% mastery` : '',
+    },
+  };
+}
 
 export default function StudentBrain() {
   const { setSidebarOpen } = useOutletContext();
   const [diagnosticActive, setDiagnosticActive] = useState(false);
+
+  const studentId = useStudentId();
+  const { topics, subjects, overallPercent, weakTopics, masteredTopics, loading, error } =
+    useMastery(studentId);
+  const { topGap } = useRootCause(studentId);
+
+  // Live values where the backend has them; design-only fields stay from the mock
+  const liveProfile = {
+    ...studentProfile,
+    overallMastery: loading ? studentProfile.overallMastery : overallPercent,
+    nodesUnlocked: masteredTopics.length,
+    totalNodes: topics.length || studentProfile.totalNodes,
+  };
+
+  const liveFacets = subjects.length
+    ? subjects.map((s) => toFacet(s, topics))
+    : curricularFacets;
+
+  const liveBlocker = topGap
+    ? {
+        ...prerequisiteBlocker,
+        detected: true,
+        priority: `High (${topGap.weight?.toFixed(2) ?? '0.90'})`,
+        title: `${topGap.blocks.replace(/_/g, ' ')} is blocked by a prerequisite gap`,
+        description:
+          `Your ${topGap.blocks.replace(/_/g, ' ')} mastery is capped at ` +
+          `${Math.round(topGap.blocked_score * 100)}% because it depends on ` +
+          `${topGap.prerequisite.replace(/_/g, ' ')}, currently at ` +
+          `${Math.round(topGap.score * 100)}%. Repairing the prerequisite lifts both.`,
+        sourceNode: {
+          ...prerequisiteBlocker.sourceNode,
+          category: `${(topGap.prerequisite_subject || '').toUpperCase()} Node`,
+          score: Math.round(topGap.score * 100),
+          state: 'WEAK',
+          title: topGap.prerequisite.replace(/_/g, ' '),
+        },
+      }
+    : { ...prerequisiteBlocker, detected: false };
 
   return (
     <div className="min-h-screen bg-[#FAF7F2] pb-12">
@@ -68,14 +141,14 @@ export default function StudentBrain() {
 
         {/* 4 Overview Metric Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <MetricCard type="mastery" data={studentProfile} />
-          <MetricCard type="cognitive" data={studentProfile} />
-          <MetricCard type="retention" data={studentProfile} />
-          <MetricCard type="strategy" data={studentProfile} />
+          <MetricCard type="mastery" data={liveProfile} />
+          <MetricCard type="cognitive" data={liveProfile} />
+          <MetricCard type="retention" data={liveProfile} />
+          <MetricCard type="strategy" data={liveProfile} />
         </div>
 
-        {/* Prerequisite Blocker Alert Banner */}
-        <BlockerAlert data={prerequisiteBlocker} />
+        {/* Prerequisite Blocker Alert Banner — live root-cause detection */}
+        {liveBlocker.detected && <BlockerAlert data={liveBlocker} />}
 
         {/* Curricular Knowledge Facets Section */}
         <div className="space-y-3">
@@ -106,13 +179,22 @@ export default function StudentBrain() {
             </div>
           </div>
 
-          {/* 4 Facet Cards in 2x2 Grid */}
+          {/* Facet cards, driven by live per-subject mastery */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {curricularFacets.map((facet) => (
+            {liveFacets.map((facet) => (
               <CurricularFacetCard key={facet.id} facet={facet} />
             ))}
           </div>
         </div>
+
+        {/* Live topic-level mastery straight from the Progress Engine */}
+        <LiveMasteryPanel
+          subjects={subjects}
+          topics={topics}
+          overallPercent={overallPercent}
+          loading={loading}
+          error={error}
+        />
 
         {/* Bottom Row: Telemetry Stream + Concept Mesh DAG */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
