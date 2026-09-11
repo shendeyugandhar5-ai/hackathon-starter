@@ -18,8 +18,9 @@ app = FastAPI(
 # Configure CORS for local frontend development
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
-    allow_credentials=True,
+    allow_origins=["*"] if settings.CORS_ALLOW_ALL else settings.CORS_ORIGINS,
+    # Credentials cannot be combined with a "*" origin per the CORS spec
+    allow_credentials=not settings.CORS_ALLOW_ALL,
     allow_methods=["*"],
     allow_headers=["*"],
 )

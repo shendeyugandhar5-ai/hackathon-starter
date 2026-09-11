@@ -13,7 +13,7 @@ engine = create_engine(
     pool_pre_ping=True,
     pool_recycle=300,
     connect_args={"connect_timeout": 5},
-    echo=settings.DEBUG and settings.ENVIRONMENT == "development",
+    echo=settings.SQL_ECHO,
 )
 
 # Session factory for handling database sessions
