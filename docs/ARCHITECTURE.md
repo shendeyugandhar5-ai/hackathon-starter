@@ -1,29 +1,14 @@
-# Hackathon Starter - Architecture & Extension Guide
+# LearnOS — System Architecture & Extension Guide
+
+> **Master Architecture Document**: See the complete, unified technical specification in [`docs/LEARNOS_COMPLETE_ARCHITECTURE.md`](file:///c:/Users/shend/OneDrive/Desktop/hackthon/hackathon-starter/docs/LEARNOS_COMPLETE_ARCHITECTURE.md).
 
 ## Overview
 
-This repository provides a clean, decoupled, and modular full-stack starter designed specifically for 24-hour hackathons. It eliminates setup friction so you can focus 100% of your hackathon time on solving the problem statement.
+**LearnOS** is an Agentic Placement-Prep Mentorship & Adaptive Learning System. It employs a **3-Tier AI/ML Hybrid Architecture**:
+1. **Tier 1 (Classical ML)**: TF-IDF + Logistic Regression for $<5\text{ms}$ subject intent routing across DSA, DBMS, Maths, AIML, and General.
+2. **Tier 2 (Deep Learning & Statistics)**: PyTorch DKT-LSTM Knowledge Tracing + Bayesian Knowledge Tracing (BKT) Progress Engine + Continuous Confusion Detection.
+3. **Tier 3 (Multi-Agent GenAI)**: Specialized Subject LLM Agents (DSA, DBMS, Maths, AIML, General leaf node) + Cross-Agent Collaboration + Verifier Guardrail Agent.
 
-```
-┌────────────────────────────────────────────────────────┐
-│               Frontend (React 19 + Vite)              │
-│       Pages  ◄──►  Components  ◄──►  API Service       │
-└───────────────────────────┬────────────────────────────┘
-                            │ HTTP (JSON / REST)
-                            ▼
-┌────────────────────────────────────────────────────────┐
-│               Backend (FastAPI + Pydantic)             │
-│        Routes  ◄──►  Services  ◄──►  Schemas           │
-│                         │                              │
-│                         ▼                              │
-│               SQLAlchemy 2.0 ORM Base                  │
-└───────────────────────────┬────────────────────────────┘
-                            │ SQL Connection Pool
-                            ▼
-┌────────────────────────────────────────────────────────┐
-│             Database (PostgreSQL 16 Engine)            │
-└────────────────────────────────────────────────────────┘
-```
 
 ---
 

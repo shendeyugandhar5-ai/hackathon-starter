@@ -1,0 +1,18 @@
+{
+  "num_skills": 10,
+  "embed_dim": 32,
+  "hidden": 64,
+  "val_accuracy": 0.825,
+  "skills": [
+    "recursion_and_backtracking",
+    "trees_and_graphs",
+    "relational_algebra_and_sql",
+    "dbms_normalization_and_indexing",
+    "probability_and_bayes",
+    "linear_algebra_and_matrices",
+    "gradient_descent_and_optimization",
+    "neural_networks_and_backprop",
+    "sorting_and_searching",
+    "time_complexity_analysis"
+  ]
+}
