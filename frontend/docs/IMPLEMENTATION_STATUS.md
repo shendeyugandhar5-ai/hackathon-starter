@@ -16,83 +16,40 @@
 | **Landing Page (`/`)** | ✅ Auth-Aware | Batch 1 (Image 5) | Editorial hero, interactive multi-agent inquiry preview (Maths + DBMS + AIML synthesis), 8-step collaborative loop, 6 Hive faculty specialist profiles, cognitive model teaser, placement outcomes, CTA banner with auth-aware redirection, and functional smooth-scroll navbar anchors. |
 | **Login Page (`/login`)** | ✅ Connected | Batch 1 (Image 2) | 2-column layout (50/50 split), editorial quote showcase with ambient glow, academic email & password input, password toggle, remember me checkbox, Google OAuth integration, inline error messages, and seamless session redirect to `/app/tutor`. |
 | **Register Page (`/register`)** | ✅ Connected | Batch 1 (Image 3) | 2-column layout (42/58 split), live topology dispatch diagram with radiating agent spokes, 3-step onboarding form, career trajectory selector, dynamic multi-select agent panel, academic consent checkbox, email confirmation state, and profile record creation. |
-| **Tutor Orchestration (`/app/tutor`)** | ✅ Protected | Batch 2 (Image 3) | Pipeline #C084 header, student inquiry card with context depth and intent tags, Coordinator Event #CO-902 dispatch bar, Co-Synthesis module (Maths + AIML), 4-step progressive explanation with Bayes Theorem formula, pedagogical anchor callout, worked example probability table, ELI5 / hint / test buttons, suggested prompts, and rich query input. |
-| **Knowledge Graph & Ontology (`/app/knowledge-map`)** | ✅ Protected | Batch 2 (Image 5) | Subject filters, Interactive DAG with 8 concept nodes and animated blocker warning, 3 bottom analytics cards (Identified Bottlenecks, Velocity to Target +14%/wk, Graph Auto-Repair), detailed Node Diagnostic Inspector with 96.2% cognitive misconception detector, prerequisite chain, 12-min action plan, and sample space Venn diagram. |
-| **Specialist Agents (`/app/agents`)** | ✅ Protected | AI Team | Interactive overview of all 6 specialized AI agents (Coordinator, Maths, AIML, DSA, DBMS, General Strategy) with live confidence telemetry, active topics, and direct Socratic session launch triggers. |
-| **Session History (`/app/history`)** | ✅ Protected | Diagnostic Archive | Audit trail of Socratic tutorials, diagnostic checkpoints, and belief score updates. |
+| **Tutor Orchestration (`/app/tutor`)** | ✅ Fully Dynamic & Protected | Batch 2 (Image 3) | Real multi-agent orchestration connected to `POST /api/chat`, live agent dispatching (`Maths`, `AIML`, `DSA`, `DBMS`, `General`), dynamic intent classification, Co-Synthesis response rendering, follow-up Socratic action triggers, and dynamic assessment submissions (`POST /api/assessments`). |
+| **Knowledge Graph & Ontology (`/app/knowledge-map`)** | ✅ Fully Dynamic & Protected | Batch 2 (Image 5) | Dynamic concept DAG connected to live topic mastery via `knowledgeService.getConceptGraph`, subject filter tabs, interactive node diagnostic inspector, identified bottleneck calculation, and direct Socratic drill launcher. |
+| **Student Brain Page (`/app/student-brain`)** | ✅ Fully Dynamic & Protected | Batch 1 (Image 1) | Real-time Bayesian Knowledge Tracing metrics from `studentService.getMastery`, dynamic curricular facets for DSA/DBMS/Maths/AIML, live telemetry delta stream from `/api/students/{id}/trace`, prerequisite blocker detection, and exportable JSON knowledge state. |
+| **Progress & Roadmap (`/app/progress`)** | ✅ Fully Dynamic & Protected | Batch 1 (Image 4) | Dynamic sprint pace and overall mastery via `progressService.getStudentProgress`, career placement fit benchmark tailored to student's goal (*Data Scientist*, *AI/ML Engineer*, *Software Engineer*), 8-week structured pathway milestones, and printable progress report. |
+| **Specialist Agents (`/app/agents`)** | ✅ Protected & Interactive | AI Team | Interactive overview of all 6 specialized AI agents with live confidence telemetry, active topics, and direct Socratic session launch triggers with URL parameter prefilling (`?agent=maths`, etc.). |
+| **Session History (`/app/history`)** | ✅ Fully Dynamic & Protected | Diagnostic Archive | Dynamic audit trail of past Socratic tutorials, diagnostic checkpoints, and belief score updates loaded via `historyService.getStudentHistory` with interactive session resumption. |
 | **Student Profile (`/app/profile`)** | ✅ Dynamic & Protected | Dynamic Identity | Complete dynamic student identity connected to `public.students` table via Supabase Auth (`auth_user_id`), profile editing (name, goal, focus tutors), read-only academic email, onboarding completion indicator, secure password change, and instant sign out. |
 
 ---
 
-## Phase 1 — Authentication Architecture
+## Dynamic Application Architecture
 
-1. **Supabase Client (`src/lib/supabase.js`)**:
-   - Reads `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` from `frontend/.env`.
-   - Never exposes service-role keys.
-   - Built with resilient session initialization and graceful fallback for unconfigured environments.
+### 1. Centralized API Service Layer (`src/services/`)
+- [`api.js`](file:///c:/Users/soham%20parab/.gemini/antigravity-ide/scratch/kurukshetra/frontend/src/services/api.js): Centralized HTTP wrapper with request latency timing, error status parsing, and generic GET/POST/PUT/DELETE methods.
+- [`chatService.js`](file:///c:/Users/soham%20parab/.gemini/antigravity-ide/scratch/kurukshetra/frontend/src/services/chatService.js): Dispatches student questions to `POST /api/chat`, manages conversation message histories, and includes resilient Socratic fallback generation.
+- [`studentService.js`](file:///c:/Users/soham%20parab/.gemini/antigravity-ide/scratch/kurukshetra/frontend/src/services/studentService.js): Retrieves live student mastery (`/api/students/{id}/mastery`), Agent Trace telemetry (`/api/students/{id}/trace`), recommendations, and submits diagnostic assessments (`/api/assessments`).
+- [`progressService.js`](file:///c:/Users/soham%20parab/.gemini/antigravity-ide/scratch/kurukshetra/frontend/src/services/progressService.js): Computes dynamic sprint milestones, velocity percentiles, and placement fit benchmarks tailored to student goals.
+- [`knowledgeService.js`](file:///c:/Users/soham%20parab/.gemini/antigravity-ide/scratch/kurukshetra/frontend/src/services/knowledgeService.js): Resolves concept DAG nodes, prerequisite chains, and student misconceptions merged with live mastery scores.
+- [`historyService.js`](file:///c:/Users/soham%20parab/.gemini/antigravity-ide/scratch/kurukshetra/frontend/src/services/historyService.js): Maps past student routing events and conversation sessions into structured audit records.
 
-2. **Auth Context (`src/context/AuthContext.jsx`)**:
-   - Manages `user`, `session`, `profile`, `loading`, `authError`.
-   - Methods: `signIn`, `signUp`, `signOut`, `fetchProfile`, `updateStudentProfile`.
-   - Automatically synchronizes with Supabase Auth state (`onAuthStateChange`) and `public.students` table.
+### 2. Multi-Provider Backend LLM Gateway (`backend/app/agents/llm_client.py`)
+- Resilient sequential fallback: **Gemini** → **Groq** → **Cerebras** → **OpenRouter** → **Cloudflare Workers AI** → **Ollama Local** → **Socratic Pedagogical Fallback**.
+- API keys kept strictly on the backend (`backend/.env`), completely separated from frontend bundle.
+- Backend smoke tests passing: **13 passed, 0 failed, 2 skipped**.
 
-3. **Protected Route Guard (`src/components/auth/ProtectedRoute.jsx`)**:
-   - Guards all `/app/*` routes.
-   - Displays `<LoadingScreen />` while authentication state is resolving.
-   - Redirects unauthenticated visitors to `/login` with previous destination preservation.
-
-4. **Dynamic Profile & Logout**:
-   - Dynamic user avatar, full name, initials, and track in [Sidebar.jsx](file:///c:/Users/soham%20parab/.gemini/antigravity-ide/scratch/kurukshetra/frontend/src/components/layout/Sidebar.jsx) and [TopBar.jsx](file:///c:/Users/soham%20parab/.gemini/antigravity-ide/scratch/kurukshetra/frontend/src/components/layout/TopBar.jsx).
-   - Profile popover and TopBar dropdown with quick profile access and sign out action.
-
-5. **Auth-Aware Landing Page**:
-   - Smooth-scrolling navigation anchors (`#product`, `#faculty`, `#student-brain`, `#roadmap`, `#outcomes`).
-   - "Start Learning Today" / "Get Started" CTAs intelligently route to `/app/tutor` for authenticated learners or `/register` for prospective students.
-
----
-
-## PHASE — DYNAMIC USER PROFILE
-
-1. **Profile Route (`/app/profile`)**:
-   - Protected route nested inside `AppShell` with authentication guard.
-   - Intentionally clean, responsive layout adhering strictly to EduHive warm ivory & terracotta design system.
-
-2. **Supabase Profile Loading (`public.students`)**:
-   - Queries `public.students` specifically matching `auth_user_id = auth.users.id`.
-   - Dynamically resolves student `name`, `academic_email`, `goal`, `focus_tutors`, and `onboarding_completed`.
-   - Zero hardcoded demo profiles or placeholder mocks on `/app/profile`.
-
-3. **Dynamic Authenticated Student Data**:
-   - Dynamic initials generated on the fly from student's name (e.g., "Rahul Sharma" → `RS`, "Alex Morgan" → `AM`).
-   - Live synchronization across TopBar avatar badge, Sidebar identity card, and Profile header.
-
-4. **Profile Editing**:
-   - Full Name editing with immediate reactive state and optimistic/synchronized updates.
-   - Discard / Reset functionality and floating save action bar on modifications.
-
-5. **Goal Editing**:
-   - Reuses standard EduHive career trajectories: *Software Engineering*, *Data Science*, *AI/ML*, *Placement Preparation*, and *Other Goal*.
-
-6. **Focus Tutor Editing**:
-   - Multi-select toggle supporting all 5 specialized EduHive agents: *DSA Tutor*, *DBMS Tutor*, *Maths Tutor*, *AIML Tutor*, and *General Strategy*.
-   - Stores selected tutors in `public.students.focus_tutors` `TEXT[]` array.
-
-7. **Onboarding Status**:
-   - Read-only visual indicator derived directly from `students.onboarding_completed`:
-     - `Learning Space: ✓ Setup complete` (Green badge)
-     - `Learning Space: Setup incomplete` (Amber badge)
-
-8. **Secure Change Password**:
-   - Passwords belong exclusively to Supabase Auth (`supabase.auth.updateUser({ password })`).
-   - Zero password fields created in `public.students`.
-   - Inline feedback with password strength validation and zero intrusive `alert()` popups.
-
-9. **Sign Out & Navigation**:
-   - Seamlessly calls `supabase.auth.signOut()` and redirects to `/login`.
-   - Accessible from TopBar dropdown menu, Sidebar popover menu, and Account Security card.
+### 3. Separation of Concerns
+- **UI Components**: Purely declarative, consuming services and React context.
+- **Service Layer**: Handles HTTP requests, Supabase database queries, fallback data formatting, and error normalization.
+- **FastAPI Backend**: Handles coordinator routing, specialist agent dispatch, BKT updates, and LLM gateway completions.
+- **Database & Auth**: Supabase PostgreSQL (`students`, `student_mastery`, `agent_routing_log`, `assessments`, `recommendations`) + Supabase Auth.
 
 ---
 
 ## Build & Verification Results
 - `npm run build`: Production bundle compiled with **0 errors**.
+- Backend smoke test (`test_api.py`): **13 passed, 0 failed, 2 skipped**.
 - All routes verified and operational (`/`, `/login`, `/register`, `/app/tutor`, `/app/student-brain`, `/app/knowledge-map`, `/app/progress`, `/app/history`, `/app/agents`, `/app/profile`).
