@@ -1,186 +1,64 @@
 import React from 'react';
-import { Compass, Sparkles, TrendingUp, AlertTriangle } from 'lucide-react';
+import { Compass, Clock, BrainCircuit, TrendingUp } from 'lucide-react';
 
 export default function MetricCard({ type, data }) {
+  const mastery = Number(data?.overallMastery || 0);
+  const topicCount = Number(data?.totalNodes || 0);
+  const attempts = Number(data?.attempts || 0);
+  const weakCount = Number(data?.weakCount || 0);
+
   if (type === 'mastery') {
-    const percentage = data.overallMastery;
-    const strokeDashoffset = 283 - (283 * percentage) / 100;
-
-    return (
-      <div className="bg-white border border-[#EAE5DC] rounded-xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between">
-        <div className="flex items-center justify-between">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-[#8C827A] font-semibold">
-            GLOBAL STATE
-          </span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#FCF4E6] text-[#C07D1C] font-medium border border-[#F3E2C4]">
-            LEARNING
-          </span>
+    return <Card label="GLOBAL STATE">
+      <div className="flex items-center gap-4 my-3">
+        <div className="relative w-16 h-16 shrink-0">
+          <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+            <circle cx="50" cy="50" r="42" stroke="#EAE5DC" strokeWidth="8" fill="none" />
+            <circle cx="50" cy="50" r="42" stroke="#A8421E" strokeWidth="8" strokeDasharray="264" strokeDashoffset={264 - (264 * mastery) / 100} strokeLinecap="round" fill="none" className="transition-all duration-700" />
+          </svg>
+          <div className="absolute inset-0 flex items-center justify-center text-sm font-bold font-mono">{mastery}%</div>
         </div>
-
-        <div className="flex items-center gap-4 my-3">
-          {/* Radial progress circle */}
-          <div className="relative w-16 h-16 shrink-0 flex items-center justify-center">
-            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-              <circle
-                cx="50"
-                cy="50"
-                r="42"
-                stroke="#EAE5DC"
-                strokeWidth="8"
-                fill="none"
-              />
-              <circle
-                cx="50"
-                cy="50"
-                r="42"
-                stroke="#A8421E"
-                strokeWidth="8"
-                strokeDasharray="264"
-                strokeDashoffset={264 - (264 * percentage) / 100}
-                strokeLinecap="round"
-                fill="none"
-                className="transition-all duration-1000 ease-out"
-              />
-            </svg>
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-sm font-bold font-mono text-[#1C1917]">{percentage}%</span>
-            </div>
-          </div>
-
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-[#1C1917] leading-tight">
-              Overall Mastery
-            </span>
-            <span className="text-[11px] font-mono text-[#8C827A] mt-0.5">
-              BKT confidence weight: {data.bktWeight}
-            </span>
-          </div>
-        </div>
-
-        <div className="text-[11px] text-[#57534E] border-t border-[#F0ECE1] pt-2 flex items-center justify-between font-mono">
-          <span>{data.nodesUnlocked} of {data.totalNodes} nodes unlocked</span>
-          <span className="text-[#2E7D52] font-semibold">69.2%</span>
+        <div>
+          <div className="text-sm font-semibold">Overall Mastery</div>
+          <div className="text-[11px] font-mono text-[#8C827A]">{topicCount ? `${attempts} recorded attempts` : 'No diagnostic data yet'}</div>
         </div>
       </div>
-    );
+      <Footer left={`${topicCount} topic nodes tracked`} right={weakCount ? `${weakCount} weak` : 'No weak topics'} />
+    </Card>;
   }
 
   if (type === 'cognitive') {
-    return (
-      <div className="bg-white border border-[#EAE5DC] rounded-xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between">
-        <div className="flex items-center justify-between">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-[#8C827A] font-semibold">
-            COGNITIVE LOAD
-          </span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#EAF4EE] text-[#2E7D52] font-medium border border-[#CDE5D5]">
-            CLI INDEX {data.cognitiveLoad.cliIndex}
-          </span>
-        </div>
-
-        <div className="my-3">
-          <div className="text-lg font-semibold text-[#1C1917] tracking-tight">
-            {data.cognitiveLoad.zone}
-          </div>
-          {/* Segmented bar indicator */}
-          <div className="flex gap-1.5 mt-2.5">
-            {data.cognitiveLoad.segments.map((seg, idx) => (
-              <div 
-                key={idx} 
-                className={`h-2 flex-1 rounded-full ${
-                  seg === 1 
-                    ? 'bg-[#2E7D52]' 
-                    : seg > 0 
-                      ? 'bg-[#C07D1C]' 
-                      : 'bg-[#EAE5DC]'
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-
-        <div className="text-[11px] text-[#78716C] border-t border-[#F0ECE1] pt-2 leading-tight">
-          {data.cognitiveLoad.description}
+    const load = topicCount ? Math.min(1, weakCount / topicCount) : 0;
+    const label = !topicCount ? 'Awaiting baseline' : load > 0.5 ? 'High support needed' : load > 0.25 ? 'Focused practice' : 'Stable';
+    return <Card label="LEARNING LOAD" badge={topicCount ? `${Math.round(load * 100)}% gap load` : 'NO DATA'}>
+      <div className="my-3">
+        <div className="text-lg font-semibold">{label}</div>
+        <div className="flex gap-1.5 mt-2.5">
+          {[0,1,2,3,4].map((i) => <div key={i} className={`h-2 flex-1 rounded-full ${i < Math.round(load * 5) ? 'bg-[#B93826]' : 'bg-[#EAE5DC]'}`} />)}
         </div>
       </div>
-    );
+      <div className="text-[11px] text-[#78716C] border-t border-[#F0ECE1] pt-2">Calculated from this learner's current weak-topic ratio.</div>
+    </Card>;
   }
 
   if (type === 'retention') {
-    return (
-      <div className="bg-white border border-[#EAE5DC] rounded-xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between">
-        <div className="flex items-center justify-between">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-[#8C827A] font-semibold">
-            RETENTION HALF-LIFE
-          </span>
-          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-[#F4EFE6] text-[#78716C] border border-[#DDD5C5]">
-            Ebbinghaus Curve
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between my-3">
-          <div>
-            <div className="text-xl font-bold font-mono text-[#1C1917]">
-              {data.retention.halfLifeDays} Days
-            </div>
-            <div className="text-[11px] text-[#8C827A] mt-0.5">
-              Mean stability factor
-            </div>
-          </div>
-
-          {/* Mini Ebbinghaus curve sparkline SVG */}
-          <div className="w-20 h-9">
-            <svg viewBox="0 0 100 40" className="w-full h-full overflow-visible">
-              <path
-                d="M 0,5 Q 30,8 60,25 T 100,32"
-                fill="none"
-                stroke="#A8421E"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-              />
-              <circle cx="100" cy="32" r="3" fill="#A8421E" />
-            </svg>
-          </div>
-        </div>
-
-        <div className="text-[11px] font-mono text-[#57534E] border-t border-[#F0ECE1] pt-2 flex items-center justify-between">
-          <span>Micro-retrieval</span>
-          <span className="font-semibold text-[#A8421E]">in {data.retention.microRetrievalHours} hrs</span>
-        </div>
+    const retention = topicCount ? Math.min(99, Math.max(1, Math.round(55 + mastery * 0.44))) : 0;
+    return <Card label="RETENTION SIGNAL" badge={topicCount ? 'Estimated' : 'NO DATA'}>
+      <div className="flex items-center justify-between my-3">
+        <div><div className="text-xl font-bold font-mono">{retention}%</div><div className="text-[11px] text-[#8C827A]">derived from current mastery</div></div>
+        <TrendingUp className="w-6 h-6 text-[#A8421E]" />
       </div>
-    );
+      <Footer left="Evidence" right={topicCount ? `${attempts} attempts` : 'Awaiting activity'} />
+    </Card>;
   }
 
-  if (type === 'strategy') {
-    return (
-      <div className="bg-white border border-[#EAE5DC] rounded-xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between">
-        <div className="flex items-center justify-between">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-[#8C827A] font-semibold">
-            ACTIVE TEACHING STRATEGY
-          </span>
-          <Compass className="w-4 h-4 text-[#A8421E]" />
-        </div>
-
-        <div className="my-2.5">
-          <div className="text-sm font-semibold text-[#1C1917] leading-snug">
-            {data.teachingStrategy.primary}
-          </div>
-          <div className="flex flex-wrap gap-1.5 mt-2.5">
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#F8F5EE] text-[#57534E] border border-[#E7E2D7]">
-              {data.teachingStrategy.scaffoldingLevel}
-            </span>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#F8F5EE] text-[#57534E] border border-[#E7E2D7]">
-              {data.teachingStrategy.codingLevel}
-            </span>
-          </div>
-        </div>
-
-        <div className="text-[11px] text-[#78716C] border-t border-[#F0ECE1] pt-2 font-mono flex items-center justify-between">
-          <span>Active Tutor:</span>
-          <span className="text-[#A8421E] font-medium">Maths + AIML Mesh</span>
-        </div>
-      </div>
-    );
-  }
-
-  return null;
+  return <Card label="ACTIVE TEACHING STRATEGY">
+    <div className="my-2.5"><div className="text-sm font-semibold">{weakCount ? 'Target weakest prerequisite first' : 'Diagnostic-first onboarding'}</div>
+      <div className="flex flex-wrap gap-1.5 mt-2.5"><span className="pill">Adaptive</span><span className="pill">Socratic</span></div>
+    </div>
+    <div className="text-[11px] text-[#78716C] border-t border-[#F0ECE1] pt-2 flex items-center gap-1"><Compass className="w-3 h-3 text-[#A8421E]" /> Based on current learner state</div>
+  </Card>;
 }
+
+function Card({ label, badge, children }) { return <div className="bg-white border border-[#EAE5DC] rounded-xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between min-h-[190px]"><div className="flex items-center justify-between"><span className="text-[10px] font-mono uppercase tracking-wider text-[#8C827A] font-semibold">{label}</span>{badge && <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#F4EFE6] text-[#57534E] border border-[#DDD5C5]">{badge}</span>}</div>{children}</div>; }
+function Footer({ left, right }) { return <div className="text-[11px] text-[#57534E] border-t border-[#F0ECE1] pt-2 flex items-center justify-between font-mono"><span>{left}</span><span className="text-[#2E7D52] font-semibold">{right}</span></div>; }
+function Pill({ children }) { return <span className="pill text-[10px] font-mono px-2 py-0.5 rounded bg-[#F8F5EE] text-[#57534E] border border-[#E7E2D7]">{children}</span>; }

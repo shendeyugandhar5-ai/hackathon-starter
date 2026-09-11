@@ -1,11 +1,11 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase, isSupabaseConfigured } from '../lib/supabase';
-import { studentProfile } from '../data/mockData';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { supabase, isSupabaseConfigured } from "../lib/supabase";
+import { studentProfile } from "../data/mockData";
 
 const AuthContext = createContext(null);
 
-const LOCAL_STORAGE_SESSION_KEY = 'eduhive_auth_session';
-const LOCAL_STORAGE_USERS_KEY = 'eduhive_registered_users';
+const LOCAL_STORAGE_SESSION_KEY = "eduhive_auth_session";
+const LOCAL_STORAGE_USERS_KEY = "eduhive_registered_users";
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -19,23 +19,32 @@ export function AuthProvider({ children }) {
     if (!userData && !studentData) return null;
 
     const meta = userData?.user_metadata || {};
-    const fullName = studentData?.name || meta.full_name || userData?.email?.split('@')[0] || '';
-    
+    const fullName =
+      studentData?.name ||
+      meta.full_name ||
+      userData?.email?.split("@")[0] ||
+      "";
+
     // Generate initials: "Rahul Sharma" -> "RS", "Alex Morgan" -> "AM"
     const nameParts = fullName.trim().split(/\s+/).filter(Boolean);
-    let initials = 'EH';
+    let initials = "EH";
     if (nameParts.length >= 2) {
-      initials = (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase();
+      initials = (
+        nameParts[0][0] + nameParts[nameParts.length - 1][0]
+      ).toUpperCase();
     } else if (nameParts.length === 1 && nameParts[0].length > 0) {
       initials = nameParts[0].slice(0, 2).toUpperCase();
     } else if (userData?.email) {
       initials = userData.email.slice(0, 2).toUpperCase();
     }
 
-    const goal = studentData?.goal || meta.goal || 'Placement Preparation';
-    const focusTutors = studentData?.focus_tutors || meta.active_agents || ['dsa', 'dbms', 'maths', 'aiml'];
-    const academicEmail = studentData?.academic_email || userData?.email || '';
-    const onboardingCompleted = studentData ? Boolean(studentData.onboarding_completed) : Boolean(meta.onboarding_completed);
+    const goal = studentData?.goal || meta.goal || "Placement Preparation";
+    const focusTutors = studentData?.focus_tutors ||
+      meta.active_agents || ["dsa", "dbms", "maths", "aiml"];
+    const academicEmail = studentData?.academic_email || userData?.email || "";
+    const onboardingCompleted = studentData
+      ? Boolean(studentData.onboarding_completed)
+      : Boolean(meta.onboarding_completed);
 
     return {
       id: studentData?.id || userData?.id,
@@ -50,11 +59,14 @@ export function AuthProvider({ children }) {
       active_agents: focusTutors,
       onboarding_completed: onboardingCompleted,
       updated_at: studentData?.updated_at || null,
-      created_at: studentData?.created_at || userData?.created_at || new Date().toISOString(),
+      created_at:
+        studentData?.created_at ||
+        userData?.created_at ||
+        new Date().toISOString(),
       initials: initials,
-      track: goal ? `${goal} Track` : 'Placement Preparation Track',
-      mastery: studentProfile.overallMastery,
-      hasStudentRow: Boolean(studentData)
+      track: goal ? `${goal} Track` : "Placement Preparation Track",
+      mastery: 0,
+      hasStudentRow: Boolean(studentData),
     };
   };
 
@@ -68,13 +80,13 @@ export function AuthProvider({ children }) {
     if (isSupabaseConfigured && supabase) {
       try {
         const { data, error } = await supabase
-          .from('students')
-          .select('*')
-          .eq('auth_user_id', currentUser.id)
+          .from("students")
+          .select("*")
+          .eq("auth_user_id", currentUser.id)
           .maybeSingle();
 
         if (error) {
-          console.warn('Error querying public.students table:', error);
+          console.warn("Error querying public.students table:", error);
         }
 
         if (data) {
@@ -88,7 +100,10 @@ export function AuthProvider({ children }) {
         setProfile(uninitializedProfile);
         return uninitializedProfile;
       } catch (err) {
-        console.warn('Profile fetch warning (falling back to user metadata):', err);
+        console.warn(
+          "Profile fetch warning (falling back to user metadata):",
+          err,
+        );
         const fallbackProfile = buildStudentProfile(currentUser, null);
         setProfile(fallbackProfile);
         return fallbackProfile;
@@ -97,8 +112,13 @@ export function AuthProvider({ children }) {
       // Local fallback mode
       const rawUsers = localStorage.getItem(LOCAL_STORAGE_USERS_KEY);
       const registeredUsers = rawUsers ? JSON.parse(rawUsers) : [];
-      const matched = registeredUsers.find((u) => u.id === currentUser.id || u.email === currentUser.email);
-      const profileObj = buildStudentProfile(currentUser, matched?.student_profile || null);
+      const matched = registeredUsers.find(
+        (u) => u.id === currentUser.id || u.email === currentUser.email,
+      );
+      const profileObj = buildStudentProfile(
+        currentUser,
+        matched?.student_profile || null,
+      );
       setProfile(profileObj);
       return profileObj;
     }
@@ -107,7 +127,7 @@ export function AuthProvider({ children }) {
   // Update student profile in public.students table
   const updateStudentProfile = async ({ name, goal, focus_tutors }) => {
     if (!user) {
-      throw new Error('No authenticated user session found.');
+      throw new Error("No authenticated user session found.");
     }
 
     if (isSupabaseConfigured && supabase) {
@@ -115,23 +135,23 @@ export function AuthProvider({ children }) {
         name: name.trim(),
         goal: goal.trim(),
         focus_tutors: Array.isArray(focus_tutors) ? focus_tutors : [],
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
 
       // Check if student row already exists
       const { data: existingRow } = await supabase
-        .from('students')
-        .select('id')
-        .eq('auth_user_id', user.id)
+        .from("students")
+        .select("id")
+        .eq("auth_user_id", user.id)
         .maybeSingle();
 
       let savedData = null;
 
       if (existingRow) {
         const { data, error } = await supabase
-          .from('students')
+          .from("students")
           .update(payload)
-          .eq('auth_user_id', user.id)
+          .eq("auth_user_id", user.id)
           .select()
           .single();
 
@@ -143,11 +163,11 @@ export function AuthProvider({ children }) {
           auth_user_id: user.id,
           academic_email: user.email,
           onboarding_completed: true,
-          ...payload
+          ...payload,
         };
 
         const { data, error } = await supabase
-          .from('students')
+          .from("students")
           .insert(newRow)
           .select()
           .single();
@@ -163,22 +183,27 @@ export function AuthProvider({ children }) {
       // Local fallback
       const rawUsers = localStorage.getItem(LOCAL_STORAGE_USERS_KEY);
       const registeredUsers = rawUsers ? JSON.parse(rawUsers) : [];
-      const userIndex = registeredUsers.findIndex((u) => u.id === user.id || u.email === user.email);
+      const userIndex = registeredUsers.findIndex(
+        (u) => u.id === user.id || u.email === user.email,
+      );
 
       const studentData = {
-        id: 'student-' + user.id,
+        id: "student-" + user.id,
         auth_user_id: user.id,
         name: name.trim(),
         academic_email: user.email,
         goal: goal.trim(),
         focus_tutors: Array.isArray(focus_tutors) ? focus_tutors : [],
         onboarding_completed: true,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
 
       if (userIndex !== -1) {
         registeredUsers[userIndex].student_profile = studentData;
-        localStorage.setItem(LOCAL_STORAGE_USERS_KEY, JSON.stringify(registeredUsers));
+        localStorage.setItem(
+          LOCAL_STORAGE_USERS_KEY,
+          JSON.stringify(registeredUsers),
+        );
       }
 
       const updatedProfile = buildStudentProfile(user, studentData);
@@ -194,7 +219,9 @@ export function AuthProvider({ children }) {
     async function initAuth() {
       try {
         if (isSupabaseConfigured && supabase) {
-          const { data: { session: initialSession } } = await supabase.auth.getSession();
+          const {
+            data: { session: initialSession },
+          } = await supabase.auth.getSession();
           if (mounted) {
             setSession(initialSession);
             setUser(initialSession?.user || null);
@@ -204,7 +231,9 @@ export function AuthProvider({ children }) {
           }
 
           // Listen to auth changes
-          const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+          const {
+            data: { subscription },
+          } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
             if (mounted) {
               setSession(newSession);
               setUser(newSession?.user || null);
@@ -229,7 +258,9 @@ export function AuthProvider({ children }) {
               if (parsed?.user) {
                 setUser(parsed.user);
                 setSession(parsed);
-                setProfile(buildStudentProfile(parsed.user, parsed.user.student_profile));
+                setProfile(
+                  buildStudentProfile(parsed.user, parsed.user.student_profile),
+                );
               }
             } catch (e) {
               localStorage.removeItem(LOCAL_STORAGE_SESSION_KEY);
@@ -237,7 +268,7 @@ export function AuthProvider({ children }) {
           }
         }
       } catch (err) {
-        console.error('Auth initialization error:', err);
+        console.error("Auth initialization error:", err);
       } finally {
         if (mounted) {
           setLoading(false);
@@ -275,47 +306,69 @@ export function AuthProvider({ children }) {
       // Local fallback mode
       const rawUsers = localStorage.getItem(LOCAL_STORAGE_USERS_KEY);
       const registeredUsers = rawUsers ? JSON.parse(rawUsers) : [];
-      
+
       // Default demo account or registered user
       let matchedUser = registeredUsers.find(
-        (u) => u.email.toLowerCase() === email.trim().toLowerCase() && u.password === password
+        (u) =>
+          u.email.toLowerCase() === email.trim().toLowerCase() &&
+          u.password === password,
       );
 
       // Support default student login seamlessly
-      if (!matchedUser && (email.toLowerCase().includes('rahul') || email.toLowerCase().includes('university.edu') || password === 'password123')) {
+      if (
+        !matchedUser &&
+        (email.toLowerCase().includes("rahul") ||
+          email.toLowerCase().includes("university.edu") ||
+          password === "password123")
+      ) {
         matchedUser = {
-          id: 'mock-user-0889',
+          id: "mock-user-0889",
           email: email.trim(),
           user_metadata: {
-            full_name: 'Rahul Sharma',
-            goal: 'Placement Preparation',
-            active_agents: ['DSA Tutor', 'DBMS Tutor', 'Maths Tutor', 'AIML Tutor']
+            full_name: "Rahul Sharma",
+            goal: "Placement Preparation",
+            active_agents: [
+              "DSA Tutor",
+              "DBMS Tutor",
+              "Maths Tutor",
+              "AIML Tutor",
+            ],
           },
           student_profile: {
-            id: 'mock-student-0889',
-            auth_user_id: 'mock-user-0889',
-            name: 'Rahul Sharma',
+            id: "mock-student-0889",
+            auth_user_id: "mock-user-0889",
+            name: "Rahul Sharma",
             academic_email: email.trim(),
-            goal: 'Placement Preparation',
-            focus_tutors: ['DSA Tutor', 'DBMS Tutor', 'Maths Tutor', 'AIML Tutor'],
+            goal: "Placement Preparation",
+            focus_tutors: [
+              "DSA Tutor",
+              "DBMS Tutor",
+              "Maths Tutor",
+              "AIML Tutor",
+            ],
             onboarding_completed: true,
-            updated_at: new Date().toISOString()
-          }
+            updated_at: new Date().toISOString(),
+          },
         };
       }
 
       if (!matchedUser) {
-        const error = new Error('Invalid email or password. Please verify your academic credentials.');
+        const error = new Error(
+          "Invalid email or password. Please verify your academic credentials.",
+        );
         setAuthError(error.message);
         throw error;
       }
 
       const localSession = {
-        access_token: 'mock-jwt-token-' + Date.now(),
-        user: matchedUser
+        access_token: "mock-jwt-token-" + Date.now(),
+        user: matchedUser,
       };
 
-      localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, JSON.stringify(localSession));
+      localStorage.setItem(
+        LOCAL_STORAGE_SESSION_KEY,
+        JSON.stringify(localSession),
+      );
       setUser(matchedUser);
       setSession(localSession);
       setProfile(buildStudentProfile(matchedUser, matchedUser.student_profile));
@@ -329,8 +382,13 @@ export function AuthProvider({ children }) {
 
     const userMetadata = {
       full_name: fullName,
-      goal: goal || 'Placement Preparation',
-      active_agents: activeAgents || ['DSA Tutor', 'DBMS Tutor', 'Maths Tutor', 'AIML Tutor']
+      goal: goal || "Placement Preparation",
+      active_agents: activeAgents || [
+        "DSA Tutor",
+        "DBMS Tutor",
+        "Maths Tutor",
+        "AIML Tutor",
+      ],
     };
 
     if (isSupabaseConfigured && supabase) {
@@ -338,8 +396,8 @@ export function AuthProvider({ children }) {
         email: email.trim(),
         password,
         options: {
-          data: userMetadata
-        }
+          data: userMetadata,
+        },
       });
 
       if (error) {
@@ -350,17 +408,22 @@ export function AuthProvider({ children }) {
       // If user signed up and session is established, insert row into public.students
       if (data.user) {
         try {
-          await supabase.from('students').insert({
+          await supabase.from("students").insert({
             auth_user_id: data.user.id,
             name: fullName.trim(),
             academic_email: email.trim(),
-            goal: goal || 'Placement Preparation',
-            focus_tutors: activeAgents || ['DSA Tutor', 'DBMS Tutor', 'Maths Tutor', 'AIML Tutor'],
+            goal: goal || "Placement Preparation",
+            focus_tutors: activeAgents || [
+              "DSA Tutor",
+              "DBMS Tutor",
+              "Maths Tutor",
+              "AIML Tutor",
+            ],
             onboarding_completed: true,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           });
         } catch (dbErr) {
-          console.warn('Initial student record creation note:', dbErr);
+          console.warn("Initial student record creation note:", dbErr);
         }
       }
 
@@ -375,7 +438,7 @@ export function AuthProvider({ children }) {
       return {
         user: data.user,
         session: data.session,
-        needsEmailConfirmation
+        needsEmailConfirmation,
       };
     } else {
       // Local fallback mode
@@ -383,25 +446,32 @@ export function AuthProvider({ children }) {
       const registeredUsers = rawUsers ? JSON.parse(rawUsers) : [];
 
       const existing = registeredUsers.find(
-        (u) => u.email.toLowerCase() === email.trim().toLowerCase()
+        (u) => u.email.toLowerCase() === email.trim().toLowerCase(),
       );
 
       if (existing) {
-        const error = new Error('An account with this academic email already exists.');
+        const error = new Error(
+          "An account with this academic email already exists.",
+        );
         setAuthError(error.message);
         throw error;
       }
 
-      const userId = 'user-' + Math.random().toString(36).substring(2, 9);
+      const userId = "user-" + Math.random().toString(36).substring(2, 9);
       const studentData = {
-        id: 'student-' + userId,
+        id: "student-" + userId,
         auth_user_id: userId,
         name: fullName.trim(),
         academic_email: email.trim(),
-        goal: goal || 'Placement Preparation',
-        focus_tutors: activeAgents || ['DSA Tutor', 'DBMS Tutor', 'Maths Tutor', 'AIML Tutor'],
+        goal: goal || "Placement Preparation",
+        focus_tutors: activeAgents || [
+          "DSA Tutor",
+          "DBMS Tutor",
+          "Maths Tutor",
+          "AIML Tutor",
+        ],
         onboarding_completed: true,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       };
 
       const newUser = {
@@ -410,18 +480,24 @@ export function AuthProvider({ children }) {
         password, // for local validation only
         user_metadata: userMetadata,
         student_profile: studentData,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       };
 
       registeredUsers.push(newUser);
-      localStorage.setItem(LOCAL_STORAGE_USERS_KEY, JSON.stringify(registeredUsers));
+      localStorage.setItem(
+        LOCAL_STORAGE_USERS_KEY,
+        JSON.stringify(registeredUsers),
+      );
 
       const localSession = {
-        access_token: 'mock-jwt-token-' + Date.now(),
-        user: newUser
+        access_token: "mock-jwt-token-" + Date.now(),
+        user: newUser,
       };
 
-      localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, JSON.stringify(localSession));
+      localStorage.setItem(
+        LOCAL_STORAGE_SESSION_KEY,
+        JSON.stringify(localSession),
+      );
       setUser(newUser);
       setSession(localSession);
       setProfile(buildStudentProfile(newUser, studentData));
@@ -429,7 +505,7 @@ export function AuthProvider({ children }) {
       return {
         user: newUser,
         session: localSession,
-        needsEmailConfirmation: false
+        needsEmailConfirmation: false,
       };
     }
   };
@@ -461,7 +537,7 @@ export function AuthProvider({ children }) {
     signUp,
     signOut,
     fetchProfile,
-    updateStudentProfile
+    updateStudentProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -470,7 +546,7 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 }

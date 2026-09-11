@@ -1,37 +1,109 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Menu, Bell, User, LogOut, Sparkles, ChevronDown } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
-import { studentProfile } from '../../data/mockData';
+import React, { useState, useRef, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  Menu,
+  Bell,
+  User,
+  LogOut,
+  Sparkles,
+  ChevronDown,
+} from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
 
-export default function TopBar({ onMenuClick, rightActions, breadcrumbCustom }) {
+export default function TopBar({
+  onMenuClick,
+  rightActions,
+  breadcrumbCustom,
+}) {
   const navigate = useNavigate();
   const { profile, user, signOut } = useAuth();
+
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef(null);
 
-  const displayName = profile?.name || profile?.full_name || user?.user_metadata?.full_name || studentProfile.name;
-  const displayEmail = profile?.academic_email || profile?.email || user?.email || 'student@university.edu';
-  const displayInitials = profile?.initials || 'EH';
-  const displayGoal = profile?.goal || studentProfile.goal || 'Placement Preparation';
-  const displayTrack = profile?.track || `${displayGoal} Track`;
-  const displaySubTrack = studentProfile.subTrack;
+  const displayName =
+    profile?.name ||
+    profile?.full_name ||
+    user?.user_metadata?.full_name ||
+    "Learner";
+
+  const displayEmail =
+    profile?.academic_email ||
+    profile?.email ||
+    user?.email ||
+    "student@university.edu";
+
+  const displayInitials = profile?.initials || "EH";
+
+  const displayGoal = profile?.goal || "Learning";
+
+  // Convert stored track/goal names into clean display names
+  const formatTrackName = (track) => {
+    if (!track) return "Learning";
+
+    const normalized = track
+      .trim()
+      .toLowerCase()
+      .replace(/\s*track\s*$/i, "");
+
+    const trackMap = {
+      "ds, aiml": "DS + AI/ML",
+      "ds aiml": "DS + AI/ML",
+      "ds+aiml": "DS + AI/ML",
+
+      dsa: "DSA",
+      dbms: "DBMS",
+      aiml: "AI/ML",
+
+      mathematics: "Mathematics",
+      math: "Mathematics",
+    };
+
+    if (trackMap[normalized]) {
+      return trackMap[normalized];
+    }
+
+    // Generic fallback for other track names
+    return normalized
+      .split(/\s+/)
+      .map(
+        (word) =>
+          word.charAt(0).toUpperCase() + word.slice(1)
+      )
+      .join(" ");
+  };
+
+  const displayTrack = formatTrackName(
+    profile?.track || displayGoal
+  );
+
+  const displaySubTrack =
+    profile?.subTrack || "Personalized Learning";
 
   // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
         setShowDropdown(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () =>
+      document.removeEventListener(
+        "mousedown",
+        handleClickOutside
+      );
   }, []);
 
   const handleSignOut = async () => {
     setShowDropdown(false);
     await signOut();
-    navigate('/login', { replace: true });
+    navigate("/login", { replace: true });
   };
 
   return (
@@ -51,12 +123,23 @@ export default function TopBar({ onMenuClick, rightActions, breadcrumbCustom }) 
           breadcrumbCustom
         ) : (
           <div className="flex items-center gap-2 text-xs">
+            {/* Track */}
             <span className="flex items-center gap-1.5 font-medium text-[#1C1917]">
-              <span className="w-2 h-2 rounded-full bg-[#A8421E]"></span>
-              {displayTrack}
+              <span className="relative flex items-center justify-center w-2 h-2">
+                <span className="absolute w-2 h-2 rounded-full bg-[#A8421E]/20" />
+                <span className="relative w-1.5 h-1.5 rounded-full bg-[#A8421E]" />
+              </span>
+
+              <span className="font-mono text-[11px] font-semibold tracking-[0.01em]">
+                {displayTrack}
+              </span>
             </span>
+
+            {/* Separator */}
             <span className="text-[#8C827A]">/</span>
-            <span className="font-mono text-[11px] px-2 py-0.5 rounded-full bg-[#EAE4D7] text-[#57534E] border border-[#DDD5C5]">
+
+            {/* Learning mode */}
+            <span className="font-mono text-[11px] px-2.5 py-1 rounded-full bg-[#EAE4D7] text-[#57534E] border border-[#DDD5C5]">
               {displaySubTrack}
             </span>
           </div>
@@ -68,26 +151,33 @@ export default function TopBar({ onMenuClick, rightActions, breadcrumbCustom }) 
         {/* Sync & Mesh Telemetry */}
         <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-[#EAE5DA]/80 border border-[#DDD5C5] text-[11px] font-mono text-[#57534E]">
           <span className="w-1.5 h-1.5 rounded-full bg-[#2E7D52] animate-pulse"></span>
-          <span>Mesh: {studentProfile.syncRate} Sync • {studentProfile.latency}</span>
+          <span>Mesh: Live • backend connected</span>
         </div>
 
         {rightActions ? (
           rightActions
         ) : (
-          <div className="flex items-center gap-2" ref={dropdownRef}>
-            <button 
+          <div
+            className="flex items-center gap-2"
+            ref={dropdownRef}
+          >
+            {/* Notifications */}
+            <button
               title="Notifications"
               className="p-1.5 rounded-full hover:bg-[#EAE5DC] text-[#57534E] transition-colors relative cursor-pointer"
             >
               <Bell className="w-4 h-4" />
+
               <span className="absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-[#A8421E]"></span>
             </button>
 
             {/* User Avatar & Dropdown Menu */}
             <div className="relative">
-              <button 
+              <button
                 type="button"
-                onClick={() => setShowDropdown(!showDropdown)}
+                onClick={() =>
+                  setShowDropdown(!showDropdown)
+                }
                 title={displayName}
                 className="w-7 h-7 rounded-full bg-[#A8421E] text-white flex items-center justify-center text-[10px] font-mono font-semibold ring-2 ring-[#EAE5DC] hover:ring-[#A8421E]/30 transition-all cursor-pointer"
               >
@@ -100,6 +190,7 @@ export default function TopBar({ onMenuClick, rightActions, breadcrumbCustom }) 
                     <div className="font-semibold text-[#1C1917] truncate">
                       {displayName}
                     </div>
+
                     <div className="text-[11px] font-mono text-[#8C827A] truncate mt-0.5">
                       {displayEmail}
                     </div>
@@ -108,7 +199,9 @@ export default function TopBar({ onMenuClick, rightActions, breadcrumbCustom }) 
                   <div className="py-1">
                     <Link
                       to="/app/profile"
-                      onClick={() => setShowDropdown(false)}
+                      onClick={() =>
+                        setShowDropdown(false)
+                      }
                       className="flex items-center gap-2.5 px-3.5 py-2 text-[#57534E] hover:bg-[#FAF7F2] hover:text-[#1C1917] transition-colors"
                     >
                       <User className="w-4 h-4 text-[#A8421E]" />

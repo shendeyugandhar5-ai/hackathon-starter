@@ -11,6 +11,7 @@ const iconMap = {
 export default function CurricularFacetCard({ facet }) {
   const Icon = iconMap[facet.icon] || Code2;
   const isWeak = facet.status === 'WEAK';
+  const isMastered = facet.status === 'MASTERED';
 
   return (
     <div className={`bg-white rounded-xl p-5 border shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between relative overflow-hidden transition-all duration-150 hover:border-[#D4CCBE] ${
@@ -21,7 +22,7 @@ export default function CurricularFacetCard({ facet }) {
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2.5">
             <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-              isWeak ? 'bg-[#FDF0ED] text-[#B93826]' : 'bg-[#F8F5EE] text-[#A8421E]'
+              isWeak ? 'bg-[#FDF0ED] text-[#B93826]' : isMastered ? 'bg-[#EAF4EE] text-[#2E7D52]' : 'bg-[#F8F5EE] text-[#A8421E]'
             }`}>
               <Icon className="w-4 h-4" />
             </div>
@@ -40,9 +41,11 @@ export default function CurricularFacetCard({ facet }) {
               {facet.mastery}%
             </div>
             <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-semibold uppercase ${
-              isWeak 
-                ? 'bg-[#FDF0ED] text-[#B93826]' 
-                : 'bg-[#FCF4E6] text-[#C07D1C]'
+              isWeak
+                ? 'bg-[#FDF0ED] text-[#B93826]'
+                : isMastered
+                  ? 'bg-[#EAF4EE] text-[#2E7D52]'
+                  : 'bg-[#FCF4E6] text-[#C07D1C]'
             }`}>
               {facet.status}
             </span>
@@ -53,7 +56,7 @@ export default function CurricularFacetCard({ facet }) {
         <div className="w-full bg-[#EAE5DC] h-1.5 rounded-full mt-3.5 overflow-hidden">
           <div 
             className={`h-full rounded-full transition-all duration-700 ${
-              isWeak ? 'bg-[#B93826]' : 'bg-[#C07D1C]'
+              isWeak ? 'bg-[#B93826]' : isMastered ? 'bg-[#2E7D52]' : 'bg-[#C07D1C]'
             }`}
             style={{ width: `${facet.mastery}%` }}
           />

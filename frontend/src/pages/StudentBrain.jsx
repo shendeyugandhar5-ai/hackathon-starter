@@ -11,7 +11,7 @@ import LiveMasteryPanel from '../components/brain/LiveMasteryPanel';
 import { useMastery, useRootCause, useTrace } from '../hooks/useStudent';
 import { useStudentId } from '../hooks/useStudentId';
 import { AGENT_STYLES } from '../services/api';
-import { studentProfile, prerequisiteBlocker, curricularFacets } from '../data/mockData';
+import { useAuth } from '../context/AuthContext';
 
 /** Map one live subject rollup onto the shape CurricularFacetCard expects. */
 function toFacet(subject, topics) {
@@ -38,59 +38,59 @@ function toFacet(subject, topics) {
     hasLeftAccent: isWeak,
     topStrength: {
       isWeak,
-      title: (highlight?.topic || '—').replace(/_/g, ' '),
-      detail: highlight ? `${Math.round(highlight.score * 100)}% mastery` : '',
+      title: highlight ? pretty(highlight.topic) : 'No topic yet',
+      detail: highlight ? `${Math.round(highlight.score * 100)}% mastery` : 'Awaiting assessment',
+      badge: highlight ? `${Math.round(highlight.score * 100)}% ${isWeak ? 'Weak' : 'Mastery'}` : 'NEW',
+    },
+    activeFocus: {
+      isGap: isWeak,
+      title: weakest ? pretty(weakest.topic) : strongest ? pretty(strongest.topic) : 'Diagnostic baseline',
+      detail: weakest ? 'Priority remediation' : strongest ? 'Continue strengthening' : 'No activity yet',
     },
   };
 }
 
 export default function StudentBrain() {
   const { setSidebarOpen } = useOutletContext();
+  const { profile, user } = useAuth();
   const [diagnosticActive, setDiagnosticActive] = useState(false);
 
   const studentId = useStudentId();
+  const displayName = profile?.name || user?.user_metadata?.full_name || 'Learner';
   const { topics, subjects, overallPercent, weakTopics, masteredTopics, loading, error } =
     useMastery(studentId);
   const { topGap } = useRootCause(studentId);
   const { entries: liveTelemetry } = useTrace(studentId, 10);
 
-  // Live values where the backend has them; design-only fields stay from the mock
+  const attempts = topics.reduce((sum, topic) => sum + Number(topic.attempts || 0), 0);
   const liveProfile = {
-    ...studentProfile,
-    overallMastery: loading ? studentProfile.overallMastery : overallPercent,
-    nodesUnlocked: masteredTopics.length || studentProfile.nodesUnlocked,
-    totalNodes: topics.length || studentProfile.totalNodes,
+    overallMastery: overallPercent,
+    nodesUnlocked: masteredTopics.length,
+    totalNodes: topics.length,
+    attempts,
+    weakCount: weakTopics.length,
   };
 
-  const liveFacets = subjects.length
-    ? subjects.map((s) => toFacet(s, topics))
-    : curricularFacets;
+  const liveFacets = subjects.map((subject) => toFacet(subject, topics));
 
   const liveBlocker = topGap
     ? {
-        ...prerequisiteBlocker,
         detected: true,
-        priority: `High (${topGap.weight?.toFixed(2) ?? '0.90'})`,
-        title: `${topGap.blocks.replace(/_/g, ' ')} is blocked by a prerequisite gap`,
-        description:
-          `Your ${topGap.blocks.replace(/_/g, ' ')} mastery is capped at ` +
-          `${Math.round(topGap.blocked_score * 100)}% because it depends on ` +
-          `${topGap.prerequisite.replace(/_/g, ' ')}, currently at ` +
-          `${Math.round(topGap.score * 100)}%. Repairing the prerequisite lifts both.`,
-        sourceNode: {
-          ...prerequisiteBlocker.sourceNode,
-          category: `${(topGap.prerequisite_subject || '').toUpperCase()} Node`,
-          score: Math.round(topGap.score * 100),
-          state: 'WEAK',
-          title: topGap.prerequisite.replace(/_/g, ' '),
-        },
+        agent: 'COORDINATOR AGENT DIAGNOSTIC',
+        priority: `High (${Number(topGap.weight || 0).toFixed(2)})`,
+        title: `${pretty(topGap.blocks)} is blocked by a prerequisite gap`,
+        description: `${pretty(topGap.prerequisite)} is at ${Math.round(topGap.score * 100)}% and gates ${pretty(topGap.blocks)} at ${Math.round(topGap.blocked_score * 100)}%.`,
+        estResolutionTime: 'Based on next assessment',
+        sourceNode: { id: 'PREREQ', category: `${String(topGap.prerequisite_subject || '').toUpperCase()} Node`, score: Math.round(topGap.score * 100), state: 'WEAK', title: pretty(topGap.prerequisite), subtitle: 'Current prerequisite' },
+        targetNode: { id: 'TARGET', category: `${String(topGap.blocks_subject || '').toUpperCase()} Node`, score: Math.round(topGap.blocked_score * 100), state: 'LEARNING', title: pretty(topGap.blocks), subtitle: 'Blocked dependent concept' },
       }
-    : prerequisiteBlocker;
+    : null;
 
   const handleExportState = () => {
     const jsonStr = JSON.stringify(
       {
         student_id: studentId,
+        student_name: displayName,
         timestamp: new Date().toISOString(),
         overall_mastery: overallPercent,
         topics,
@@ -157,7 +157,7 @@ export default function StudentBrain() {
 
           {/* Editorial Title */}
           <h1 className="font-serif text-3xl md:text-4xl font-normal text-[#1C1917] tracking-tight">
-            Your Learning Brain
+            {displayName}'s Learning Brain
           </h1>
           <p className="mt-1 text-sm text-[#57534E] max-w-3xl leading-relaxed">
             EduHive continuously updates its probabilistic model of what you know, what you're learning, and where you need prerequisite reinforcement.
@@ -205,11 +205,11 @@ export default function StudentBrain() {
           </div>
 
           {/* Facet cards, driven by live per-subject mastery */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {liveFacets.map((facet) => (
-              <CurricularFacetCard key={facet.id} facet={facet} />
-            ))}
-          </div>
+          {liveFacets.length ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{liveFacets.map((facet) => <CurricularFacetCard key={facet.id} facet={facet} />)}</div>
+          ) : (
+            <div className="bg-white rounded-xl border border-dashed border-[#DDD5C5] p-8 text-center text-xs font-mono text-[#8C827A]">No mastery has been recorded for this learner yet. Complete a diagnostic or assessment to build the brain model.</div>
+          )}
         </div>
 
         {/* Live topic-level mastery straight from the Progress Engine */}
@@ -230,7 +230,7 @@ export default function StudentBrain() {
 
           {/* Concept Mesh DAG (7 cols) */}
           <div className="lg:col-span-7">
-            <ConceptMeshDAG />
+            <ConceptMeshDAG nodes={topics.map((topic) => ({ id: `${topic.subject}-${topic.topic}`, name: pretty(topic.topic), score: Math.round(Number(topic.score || 0) * 100), state: topic.state }))} />
           </div>
         </div>
 
@@ -238,3 +238,5 @@ export default function StudentBrain() {
     </div>
   );
 }
+
+function pretty(value) { return String(value || '').replace(/_/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase()); }
