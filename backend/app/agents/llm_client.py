@@ -169,7 +169,27 @@ def _complete_openai_compatible(system_prompt: str, message: str, model: Optiona
         timeout=settings.LLM_TIMEOUT_SECONDS,
     )
     response.raise_for_status()
-    return response.json()["choices"][0]["message"]["content"]
+
+    payload = response.json()
+    choice = payload["choices"][0]
+    content = (choice["message"].get("content") or "").strip()
+
+    if not content:
+        # Reasoning models (e.g. Groq's gpt-oss family) spend the token
+        # budget thinking before they write; too small a max_tokens returns
+        # an empty message with finish_reason 'length'. Say so plainly
+        # instead of returning an empty answer.
+        finish = choice.get("finish_reason")
+        logger.warning("Empty completion from %s (finish_reason=%s, max_tokens=%s)",
+                       model or settings.OPENAI_MODEL, finish, max_tokens)
+        if finish == "length":
+            raise RuntimeError(
+                f"Model returned no content within {max_tokens} tokens "
+                f"(finish_reason=length). Reasoning models need a larger budget."
+            )
+        raise RuntimeError(f"Model returned an empty response (finish_reason={finish}).")
+
+    return content
 
 
 # Text `complete()` returns when it could not actually reach the model.
