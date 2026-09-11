@@ -76,6 +76,13 @@ export function useChat(studentId) {
         contextUsed: d.context_used || null,
         recommendation: d.recommendation || null,
         latencyMs: res.latencyMs,
+        // Real execution record from the LangGraph orchestration
+        events: d.trace_events || [],
+        teachingStrategy: d.teaching_strategy || null,
+        supportingAgents: d.supporting_agents || [],
+        retrievedContext: d.retrieved_context || [],
+        verification: d.verification || null,
+        knowledgeCheck: d.knowledge_check || null,
       };
       setLastTrace(trace);
 

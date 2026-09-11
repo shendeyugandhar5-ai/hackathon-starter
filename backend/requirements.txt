@@ -8,8 +8,12 @@ psycopg2-binary>=2.9.9,<3.0.0
 # Agent layer (backend/app/agents) - Person A
 google-generativeai>=0.8.0,<1.0.0
 
-# Machine Learning & Trained Models - Person C
+# Stateful multi-agent orchestration graph (app/agents/graph.py).
+# Optional at runtime: graph.py falls back to sequential execution if absent.
+langgraph>=1.2.0,<2.0.0
+
+# Loads the trained router artifacts (ml/router/*.joblib) and powers
+# TF-IDF retrieval for the RAG knowledge layer (app/knowledge/retriever.py)
 scikit-learn>=1.4.0,<2.0.0
 joblib>=1.3.0,<2.0.0
-torch>=2.2.0
-
+pandas>=2.0.0,<3.0.0

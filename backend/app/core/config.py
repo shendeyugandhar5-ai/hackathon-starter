@@ -20,7 +20,10 @@ class Settings(BaseSettings):
     # CORS Origins (default covers standard local frontend dev ports:
     # Vite 5173, CRA/Next 3000, Vue 8080, Angular 4200, Vite preview 4173)
     CORS_ORIGINS: Union[List[str], str] = [
+        # Vite picks the next free port when 5173 is occupied, so cover the range
         "http://localhost:5173", "http://127.0.0.1:5173",
+        "http://localhost:5174", "http://127.0.0.1:5174",
+        "http://localhost:5175", "http://127.0.0.1:5175",
         "http://localhost:3000", "http://127.0.0.1:3000",
         "http://localhost:8080", "http://127.0.0.1:8080",
         "http://localhost:4200", "http://127.0.0.1:4200",

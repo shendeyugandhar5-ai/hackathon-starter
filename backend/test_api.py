@@ -154,6 +154,59 @@ def run(client):
            f"topic={body.get('topic')} ({body.get('reason')})"
            if r.status_code == 200 else f"HTTP {r.status_code}")
 
+    print("\n== LangGraph orchestration + RAG ==")
+    try:
+        from app.agents.graph import graph_available
+        record("LangGraph graph compiles", graph_available(),
+               "orchestration graph ready" if graph_available()
+               else "falling back to sequential execution")
+    except Exception as e:
+        record("LangGraph graph compiles", False, str(e)[:70])
+
+    try:
+        from app.knowledge.retriever import corpus_stats, retrieve
+        stats = corpus_stats()
+        record("RAG corpus indexed", stats["available"],
+               f"{stats['chunks']} chunks across {len(stats['by_subject'])} subjects "
+               f"({stats['backend']})")
+        # Subject filtering must actually exclude other subjects
+        leaked = [c for c in retrieve("Bayes theorem", ["dsa"], k=3) if c["subject"] != "dsa"]
+        record("RAG subject filtering", not leaked,
+               "maths content correctly excluded from a dsa-filtered query")
+    except Exception as e:
+        record("RAG corpus indexed", False, str(e)[:70])
+
+    # Multi-agent collaboration on a genuinely cross-subject question
+    r = client.post("/api/chat", json={
+        "student_id": STUDENT,
+        "message": "Explain Naive Bayes using conditional probability."})
+    body = r.json()
+    supporting = body.get("supporting_agents", [])
+    record("Multi-agent collaboration", len(supporting) > 0,
+           f"primary={body.get('agent')}, supporting={supporting}"
+           if supporting else "no supporting agent selected")
+
+    record("Grounded via RAG", len(body.get("retrieved_context", [])) > 0,
+           ", ".join(f"{c['subject']}/{c['topic']}"
+                     for c in body.get("retrieved_context", [])[:3]))
+
+    events = body.get("trace_events", [])
+    steps = {e["step"] for e in events}
+    required = {"query_received", "ml_router", "coordinator_decision",
+                "specialist_response"}
+    record("Agent Trace events are real", required <= steps,
+           f"{len(events)} events; missing={required - steps or 'none'}")
+
+    record("Adaptive teaching strategy", bool(body.get("teaching_strategy")),
+           f"strategy={body.get('teaching_strategy')}")
+
+    # A single-subject question must NOT drag in extra agents
+    r2 = client.post("/api/chat", json={
+        "student_id": STUDENT, "message": "Explain recursion with a simple example."})
+    b2 = r2.json()
+    record("Single-subject stays single-agent", not b2.get("supporting_agents"),
+           f"agent={b2.get('agent')}, supporting={b2.get('supporting_agents') or 'none'}")
+
     print("\n== Trained models ==")
     try:
         from app.agents import router as R

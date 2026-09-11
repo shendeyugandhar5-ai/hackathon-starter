@@ -5,6 +5,7 @@ import TopBar from '../components/layout/TopBar';
 import ChatThread from '../components/tutor/ChatThread';
 import AgentTracePanel from '../components/tutor/AgentTracePanel';
 import Composer from '../components/tutor/Composer';
+import KnowledgeCheckCard from '../components/tutor/KnowledgeCheckCard';
 import { useChat, useBackendHealth } from '../hooks/useChat';
 import { useStudentId } from '../hooks/useStudentId';
 import { useRootCause } from '../hooks/useStudent';
@@ -33,7 +34,7 @@ export default function Tutor() {
   } = useChat(studentId);
 
   const { online, database } = useBackendHealth(30000);
-  const { topGap } = useRootCause(studentId);
+  const { topGap, refresh: refreshRootCause } = useRootCause(studentId);
 
   // Resume a thread when opened from History (/app/tutor?conversation=<id>)
   // or prefill agent if /app/tutor?agent=maths
@@ -186,6 +187,17 @@ export default function Tutor() {
                 </div>
               }
             />
+
+            {/* Knowledge check, when the coordinator generated one */}
+            {lastTrace?.knowledgeCheck && (
+              <div className="border-t border-[#EAE5DC] p-3">
+                <KnowledgeCheckCard
+                  check={lastTrace.knowledgeCheck}
+                  studentId={studentId}
+                  onGraded={() => refreshRootCause()}
+                />
+              </div>
+            )}
 
             {/* Composer: type, speak, or attach an image */}
             <Composer onSend={send} sending={sending} error={error} />

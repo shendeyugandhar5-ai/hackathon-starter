@@ -37,6 +37,39 @@ class ContextUsed(BaseModel):
     recent_messages: int = 0
 
 
+class TraceEventOut(BaseModel):
+    """One observable step of the orchestration graph."""
+    step: str
+    label: str
+    detail: Optional[str] = None
+    status: str = "ok"            # ok | skipped | failed
+    agent: Optional[str] = None
+    confidence: Optional[float] = None
+    duration_ms: Optional[float] = None
+    data: dict = {}
+
+
+class RetrievedChunk(BaseModel):
+    """A knowledge chunk the RAG layer grounded the answer on."""
+    subject: str
+    topic: str
+    source: str
+    score: float
+
+
+class VerificationOut(BaseModel):
+    passed: bool
+    confidence: Optional[float] = None
+    issues: List[str] = []
+    status: str = "ok"            # ok | skipped | unparsed
+
+
+class KnowledgeCheckOut(BaseModel):
+    question: str
+    subject: Optional[str] = None
+    topic: Optional[str] = None
+
+
 class ChatResponse(BaseModel):
     conversation_id: Optional[str] = None
     agent: AgentName
@@ -49,3 +82,12 @@ class ChatResponse(BaseModel):
     # Every agent that contributed; length > 1 means cross-agent collaboration
     contributing_agents: List[AgentName] = []
     context_used: Optional[ContextUsed] = None
+
+    # --- explainability (added backward-compatibly; all optional) ---------
+    teaching_strategy: Optional[str] = None
+    supporting_agents: List[AgentName] = []
+    retrieved_context: List[RetrievedChunk] = []
+    verification: Optional[VerificationOut] = None
+    knowledge_check: Optional[KnowledgeCheckOut] = None
+    # Ordered execution record driving the Agent Trace panel
+    trace_events: List[TraceEventOut] = []

@@ -17,6 +17,9 @@ class HealthResponse(BaseModel):
     environment: Optional[str] = None
     database: str  # "connected" | "disconnected"
     database_details: Optional[DatabaseHealth] = None
+    # Readiness of optional subsystems: ml_router, langgraph, rag,
+    # llm_configured, progress_engine. Never contains secrets.
+    subsystems: dict = {}
 
 
 class RootResponse(BaseModel):
