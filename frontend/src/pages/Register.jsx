@@ -141,29 +141,29 @@ export default function Register() {
 
                 {/* Central Learner Node */}
                 <circle cx="170" cy="90" r="30" fill="#FDF4F0" stroke="#A8421E" strokeWidth="2" />
-                <text x="170" y="86" textAnchor="middle" className="text-[9px] font-bold fill-[#1C1917]">{fullName.split(' ')[0]}'s Node</text>
-                <text x="170" y="98" textAnchor="middle" className="text-[7.5px] font-mono fill-[#A8421E]">Focus: Synthesis</text>
+                <text x="170" y="86" textAnchor="middle" fill="#1C1917" className="text-[9px] font-bold">{fullName.split(' ')[0]}'s Node</text>
+                <text x="170" y="98" textAnchor="middle" fill="#A8421E" className="text-[7.5px] font-mono">Focus: Synthesis</text>
 
                 {/* Satellite Agent Nodes */}
                 <g>
                   <circle cx="80" cy="40" r="14" fill="#FCF4E6" stroke="#C07D1C" strokeWidth="1.5" />
-                  <text x="80" y="43" textAnchor="middle" className="text-[7px] font-mono font-bold fill="#C07D1C]">@DSA</text>
+                  <text x="80" y="43" textAnchor="middle" fill="#C07D1C" className="text-[7px] font-mono font-bold">@DSA</text>
                 </g>
                 <g>
                   <circle cx="260" cy="40" r="14" fill="#EEF6F8" stroke="#3B7A8C" strokeWidth="1.5" />
-                  <text x="260" y="43" textAnchor="middle" className="text-[7px] font-mono font-bold fill="#3B7A8C]">@DBMS</text>
+                  <text x="260" y="43" textAnchor="middle" fill="#3B7A8C" className="text-[7px] font-mono font-bold">@DBMS</text>
                 </g>
                 <g>
                   <circle cx="70" cy="140" r="14" fill="#FDF0ED" stroke="#B93826" strokeWidth="1.5" />
-                  <text x="70" y="143" textAnchor="middle" className="text-[7px] font-mono font-bold fill="#B93826]">@Maths</text>
+                  <text x="70" y="143" textAnchor="middle" fill="#B93826" className="text-[7px] font-mono font-bold">@Maths</text>
                 </g>
                 <g>
                   <circle cx="270" cy="140" r="14" fill="#FDF2EE" stroke="#DF7356" strokeWidth="1.5" />
-                  <text x="270" y="143" textAnchor="middle" className="text-[7px] font-mono font-bold fill="#DF7356]">@AIML</text>
+                  <text x="270" y="143" textAnchor="middle" fill="#DF7356" className="text-[7px] font-mono font-bold">@AIML</text>
                 </g>
                 <g>
                   <circle cx="50" cy="90" r="12" fill="#FAF7F2" stroke="#8C827A" strokeWidth="1.5" />
-                  <text x="50" y="93" textAnchor="middle" className="text-[6.5px] font-mono fill="#57534E]">@Gen</text>
+                  <text x="50" y="93" textAnchor="middle" fill="#57534E" className="text-[6.5px] font-mono">@Gen</text>
                 </g>
               </svg>
             </div>
