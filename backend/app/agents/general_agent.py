@@ -28,5 +28,6 @@ class GeneralAgent(BaseAgent):
         # General never receives a mid-turn handoff, so `context` is ignored
         # by design - the coordinator guarantees it is never passed here.
         return SpecialistResponse(
-            response=complete(self.build_prompt(student_context), message, image=image)
+            response=complete(self.build_prompt(student_context), message,
+                              max_tokens=700, image=image)
         )

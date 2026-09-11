@@ -57,17 +57,34 @@ class Settings(BaseSettings):
     POSTGRES_PORT: int = 5432
     POSTGRES_DB: str = "postgres"
 
-    # LLM / Agent Layer Configuration (idea.md sections 3.1, 7)
+    # LLM / Agent Layer Configuration
+    #
+    # Provider selection: "auto" picks whichever key is present, preferring
+    # Gemini. Set explicitly to "gemini" or "openai_compatible" to force one.
+    LLM_PROVIDER: str = "auto"
+
     GEMINI_API_KEY: str = ""
-    GROQ_API_KEY: str = ""
-    CEREBRAS_API_KEY: str = ""
-    OPENROUTER_API_KEY: str = ""
-    CLOUDFLARE_API_TOKEN: str = ""
-    CLOUDFLARE_ACCOUNT_ID: str = ""
-    OLLAMA_BASE_URL: str = "http://localhost:11434"
-    LLM_MODEL: str = "gemini-2.0-flash"
+    # Use an alias rather than a pinned version: Google retires dated Gemini
+    # model ids (gemini-2.0-flash and gemini-2.5-flash both 404 now), and a
+    # retired id fails as a 404 at call time, not at startup.
+    LLM_MODEL: str = "gemini-flash-latest"
+
+    # Any OpenAI-compatible endpoint: Groq, OpenRouter, Cerebras, Together,
+    # local Ollama/LM Studio. Only the key and base URL differ.
+    #   Groq        https://api.groq.com/openai/v1        key starts "gsk_"
+    #   OpenRouter  https://openrouter.ai/api/v1          key starts "sk-or-"
+    #   Ollama      http://localhost:11434/v1             key can be "ollama"
+    OPENAI_API_KEY: str = ""
+    OPENAI_BASE_URL: str = "https://api.groq.com/openai/v1"
+    OPENAI_MODEL: str = "llama-3.3-70b-versatile"
     # Tier-1 router confidence below which the coordinator falls back to the LLM classifier
     ROUTER_CONFIDENCE_THRESHOLD: float = 0.6
+
+    # Hard ceiling on a single LLM call. Without this the Gemini SDK retries
+    # rate-limit errors with exponential backoff and a turn can hang for 60-90s,
+    # which is unusable interactively. Exceeding it degrades to the normal
+    # error path rather than blocking the request.
+    LLM_TIMEOUT_SECONDS: float = 20.0
     
     @field_validator("DATABASE_URL", mode="before")
     @classmethod

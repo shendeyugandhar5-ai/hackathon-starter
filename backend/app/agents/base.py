@@ -103,4 +103,9 @@ class BaseAgent:
                 f"Add only what your subject contributes. Do not repeat their points."
             )
 
-        return SpecialistResponse(response=complete(prompt, message, image=image))
+        # 700 tokens is comfortably above the ~180-word target set in the
+        # prompts, while keeping a turn responsive - generation time scales
+        # with tokens produced, and this is the dominant cost of a turn.
+        return SpecialistResponse(
+            response=complete(prompt, message, max_tokens=700, image=image)
+        )

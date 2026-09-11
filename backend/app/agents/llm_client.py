@@ -13,7 +13,7 @@ import base64
 import binascii
 import logging
 import re
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 from app.core.config import settings
 
@@ -27,13 +27,37 @@ _client = None
 _client_load_attempted = False
 
 
-def _get_gemini():
-    global _gemini_client, _gemini_load_attempted
-    if _gemini_load_attempted:
-        return _gemini_client
-    _gemini_load_attempted = True
+def active_provider() -> str:
+    """Which provider will actually serve a call: 'gemini', 'openai_compatible', or 'none'.
 
-    if not settings.GEMINI_API_KEY:
+    'auto' prefers Gemini when its key is present, then falls back to any
+    OpenAI-compatible endpoint (Groq, OpenRouter, Cerebras, local Ollama).
+    Having a second path matters in practice: a bad key with one provider
+    should not block the whole product.
+    """
+    choice = (settings.LLM_PROVIDER or "auto").strip().lower()
+
+    if choice == "gemini":
+        return "gemini" if settings.GEMINI_API_KEY else "none"
+    if choice in ("openai_compatible", "openai", "groq", "openrouter"):
+        return "openai_compatible" if settings.OPENAI_API_KEY else "none"
+
+    # auto
+    if settings.GEMINI_API_KEY:
+        return "gemini"
+    if settings.OPENAI_API_KEY:
+        return "openai_compatible"
+    return "none"
+
+
+def _get_client():
+    """Gemini SDK handle. Returns None for every other provider."""
+    global _client, _client_load_attempted
+    if _client_load_attempted:
+        return _client
+    _client_load_attempted = True
+
+    if active_provider() != "gemini":
         return None
     try:
         import google.generativeai as genai
@@ -103,12 +127,98 @@ def is_available() -> bool:
     invalid key still fails at call time, which is why callers should also
     check `is_real_answer()` on the returned text.
     """
-    return _get_client() is not None
+    provider = active_provider()
+    if provider == "gemini":
+        return _get_client() is not None
+    return provider == "openai_compatible"
+
+
+def _complete_openai_compatible(system_prompt: str, message: str, model: Optional[str],
+                                max_tokens: int, image: Optional[Dict[str, str]]) -> str:
+    """Chat completion against any OpenAI-compatible endpoint.
+
+    Uses plain httpx (already a transitive dependency) rather than the
+    openai SDK, so this adds no new package.
+    """
+    import httpx
+
+    content: Any = message
+    if image:
+        # OpenAI-style multimodal content parts
+        b64 = base64.b64encode(image["data"]).decode()
+        content = [
+            {"type": "text", "text": message or "Answer the question in this image."},
+            {"type": "image_url",
+             "image_url": {"url": f"data:{image['mime_type']};base64,{b64}"}},
+        ]
+
+    response = httpx.post(
+        f"{settings.OPENAI_BASE_URL.rstrip('/')}/chat/completions",
+        headers={
+            "Authorization": f"Bearer {settings.OPENAI_API_KEY}",
+            "Content-Type": "application/json",
+        },
+        json={
+            "model": model or settings.OPENAI_MODEL,
+            "max_tokens": max_tokens,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": content},
+            ],
+        },
+        timeout=settings.LLM_TIMEOUT_SECONDS,
+    )
+    response.raise_for_status()
+    return response.json()["choices"][0]["message"]["content"]
 
 
 # Text `complete()` returns when it could not actually reach the model.
 CANNED_PREFIX = "[canned response"
 ERROR_REPLY = "Sorry, I couldn't reach the LLM just now - please try again."
+AUTH_ERROR_REPLY = (
+    "The LLM API key is not valid, so I can't generate an answer yet. "
+    "A Gemini key starts with 'AIza' (get one at "
+    "https://aistudio.google.com/apikey); a Groq key starts with 'gsk_' "
+    "(get one at https://console.groq.com/keys and set OPENAI_API_KEY). "
+    "Update .env and restart the backend."
+)
+
+
+QUOTA_ERROR_REPLY = (
+    "The LLM provider's free-tier quota is exhausted, so I can't generate an "
+    "answer right now. Gemini's free daily limit resets at midnight Pacific. "
+    "To keep working today, get a free Groq key at "
+    "https://console.groq.com/keys and set OPENAI_API_KEY plus "
+    "LLM_PROVIDER=openai_compatible in .env, then restart the backend."
+)
+
+
+def _is_quota_error(exc: Exception) -> bool:
+    """Rate limit / quota exhaustion - distinct from a bad credential.
+
+    Worth its own message: the fix is waiting or switching provider, not
+    re-checking the key. Also the reason a turn can appear to hang - the
+    Gemini SDK retries 429s with exponential backoff.
+    """
+    text = f"{type(exc).__name__} {exc}".lower()
+    return any(marker in text for marker in (
+        "resourceexhausted", "429", "quota", "rate limit", "rate_limit",
+    ))
+
+
+def _is_auth_error(exc: Exception) -> bool:
+    """Distinguish a bad/missing credential from a transient network fault.
+
+    Worth separating: an auth failure never resolves by retrying, and during
+    a demo the difference between "key is wrong" and "network blipped" is
+    the difference between a 30-second fix and a wild goose chase.
+    """
+    text = f"{type(exc).__name__} {exc}".lower()
+    return any(marker in text for marker in (
+        "unauthenticated", "permission_denied", "api key not valid",
+        "invalid authentication", "access_token_type_unsupported",
+        "401", "403",
+    ))
 
 
 def is_real_answer(text: str) -> bool:
@@ -121,7 +231,12 @@ def is_real_answer(text: str) -> bool:
     if not text or not text.strip():
         return False
     stripped = text.strip()
-    return not (stripped.startswith(CANNED_PREFIX) or stripped.startswith(ERROR_REPLY[:28]))
+    return not (
+        stripped.startswith(CANNED_PREFIX)
+        or stripped.startswith(ERROR_REPLY[:28])
+        or stripped.startswith(AUTH_ERROR_REPLY[:32])
+        or stripped.startswith(QUOTA_ERROR_REPLY[:32])
+    )
 
 
 def parse_data_url(data_url: str) -> Optional[Dict[str, str]]:
@@ -162,15 +277,25 @@ def complete(system_prompt: str, message: str, model: Optional[str] = None,
 
     Falls back to a canned placeholder when no API key is configured.
     """
-    client = _get_client()
-    if client is None:
+    provider = active_provider()
+
+    if provider == "none":
         return (
-            "[canned response - set GEMINI_API_KEY to get real answers]\n"
+            "[canned response - set GEMINI_API_KEY or OPENAI_API_KEY to get real answers]\n"
             f"You asked: {message}"
             + ("\n[an image was attached]" if image else "")
         )
 
     try:
+        if provider == "openai_compatible":
+            return _complete_openai_compatible(
+                system_prompt, message, model, max_tokens, image
+            )
+
+        client = _get_client()
+        if client is None:
+            return ERROR_REPLY
+
         gemini_model = client.GenerativeModel(
             model_name=model or settings.LLM_MODEL,
             system_instruction=system_prompt,
@@ -183,9 +308,20 @@ def complete(system_prompt: str, message: str, model: Optional[str] = None,
         response = gemini_model.generate_content(
             parts or [message],
             generation_config={"max_output_tokens": max_tokens},
+            # Bounds the SDK's internal retry/backoff on rate limits
+            request_options={"timeout": settings.LLM_TIMEOUT_SECONDS},
         )
         return response.text
-    except Exception:
+    except Exception as exc:
+        if _is_quota_error(exc):
+            logger.warning("LLM quota exhausted (%s) - consider switching provider",
+                           type(exc).__name__)
+            return QUOTA_ERROR_REPLY
+        if _is_auth_error(exc):
+            # Log once at warning level, not a full traceback per call - an
+            # invalid key would otherwise flood the log on every agent call.
+            logger.warning("LLM auth failed: check GEMINI_API_KEY (%s)", type(exc).__name__)
+            return AUTH_ERROR_REPLY
         logger.exception("LLM call failed; returning a safe fallback response")
         return ERROR_REPLY
 
