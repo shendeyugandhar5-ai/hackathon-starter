@@ -20,12 +20,19 @@ class Settings(BaseSettings):
     # CORS Origins (default covers standard local frontend dev ports:
     # Vite 5173, CRA/Next 3000, Vue 8080, Angular 4200, Vite preview 4173)
     CORS_ORIGINS: Union[List[str], str] = [
-        "http://localhost:5173", "http://127.0.0.1:5173",
-        "http://localhost:3000", "http://127.0.0.1:3000",
-        "http://localhost:8080", "http://127.0.0.1:8080",
-        "http://localhost:4200", "http://127.0.0.1:4200",
-        "http://localhost:4173", "http://127.0.0.1:4173",
-    ]
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
+    "http://localhost:4200",
+    "http://127.0.0.1:4200",
+    "http://localhost:4173",
+    "http://127.0.0.1:4173",
+]
 
     # Dev escape hatch: set CORS_ALLOW_ALL=True in .env when your UI runs on a
     # port not listed above. Never leave this on for a public deployment.
