@@ -40,9 +40,10 @@ class StudentContext:
     recent_mistakes: List[Dict[str, Any]] = field(default_factory=list)
     recent_messages: List[Dict[str, Any]] = field(default_factory=list)
     prerequisite_gaps: List[Dict[str, Any]] = field(default_factory=list)
+    graph_context: Optional[Dict[str, Any]] = None
 
     def is_empty(self) -> bool:
-        return not (self.mastery or self.recent_messages)
+        return not (self.mastery or self.recent_messages or self.graph_context)
 
     def to_prompt_block(self) -> str:
         """Render as a compact block to append to an agent's system prompt.
@@ -76,6 +77,10 @@ class StudentContext:
                 for g in self.prerequisite_gaps[:3]
             )
             lines.append(f"- Prerequisite gaps: {gaps}")
+
+        if self.graph_context and self.graph_context.get("learning_path"):
+            path_str = " -> ".join(self.graph_context["learning_path"][:4])
+            lines.append(f"- Learning Journey Path: {path_str}")
 
         if self.recent_mistakes:
             mistakes = ", ".join(
@@ -142,6 +147,13 @@ def build_context(student_id: str, conversation_id: Optional[str] = None) -> Stu
         ctx.recent_messages = list(reversed(rows))
 
     ctx.prerequisite_gaps = find_prerequisite_gaps(student_id)
+    try:
+        from app.services.learning_graph_service import get_learner_graph_context
+        ctx.graph_context = get_learner_graph_context(student_id)
+    except Exception as err:
+        logger.debug(f"Learning graph context load note: {err}")
+        ctx.graph_context = None
+
     return ctx
 
 

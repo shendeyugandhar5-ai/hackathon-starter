@@ -107,6 +107,12 @@ export const api = {
   /** Cross-subject prerequisite gaps — which weak topic is blocking what. */
   getRootCause: (studentId) => get(`/api/students/${studentId}/root-cause`),
 
+  /** Personalized Obsidian-inspired learning journey graph */
+  getLearningGraph: (studentId) => get(`/api/students/${studentId}/learning-graph`),
+
+  /** High-signal graph context for AI agents */
+  getLearningGraphContext: (studentId) => get(`/api/students/${studentId}/learning-graph/context`),
+
   // ------------------------------------------------------- conversations --
   getConversations: (studentId, limit = 20) =>
     get(`/api/students/${studentId}/conversations?limit=${limit}`),

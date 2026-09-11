@@ -16,6 +16,8 @@ from app.schemas.student import (
     ConversationRow,
     KnowledgeCheckRequest,
     KnowledgeCheckResponse,
+    LearnerGraphContext,
+    LearningGraphResponse,
     MasteryResponse,
     MasteryRow,
     RecommendationsResponse,
@@ -25,7 +27,7 @@ from app.schemas.student import (
     SubjectSummary,
     TraceResponse,
 )
-from app.services import conversation_service, student_service
+from app.services import conversation_service, student_service, learning_graph_service
 from app.services.context_service import build_context, find_prerequisite_gaps
 from app.services.recommendation_engine import derive_recommendations, persist_recommendations
 
@@ -202,3 +204,17 @@ def submit_assessment(payload: AssessmentSubmit):
     persist_recommendations(payload.student_id,
                             derive_recommendations(build_context(payload.student_id)))
     return AssessmentResult(**result)
+
+
+# ------------------------------------------------------- learning graph ---
+@router.get("/students/{student_id}/learning-graph", response_model=LearningGraphResponse,
+            summary="Personalized, persistent student learning journey graph")
+def get_learning_graph(student_id: str):
+    return learning_graph_service.build_learning_graph(student_id)
+
+
+@router.get("/students/{student_id}/learning-graph/context", response_model=LearnerGraphContext,
+            summary="High-signal graph summary for Coordinator and AI agents")
+def get_learning_graph_context(student_id: str):
+    return learning_graph_service.get_learner_graph_context(student_id)
+
