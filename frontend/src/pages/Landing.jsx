@@ -16,12 +16,16 @@ import {
   Play,
   Compass,
   Zap,
-  Lock
+  Lock,
+  LayoutDashboard
 } from 'lucide-react';
 import EduLogo from '../components/ui/EduLogo';
+import { useAuth } from '../context/AuthContext';
 import { specialistAgents } from '../data/mockData';
 
 export default function Landing() {
+  const { isAuthenticated } = useAuth();
+
   const steps = [
     { num: '01', title: 'Ingest', desc: 'Parses complex multi-disciplinary questions & intent.' },
     { num: '02', title: 'Assemble', desc: 'Dynamically routes to the optimal specialist AI panel.' },
@@ -33,8 +37,11 @@ export default function Landing() {
     { num: '08', title: 'Recommend', desc: 'Adjusts weekly curriculum sprint to resolve blocker nodes.' }
   ];
 
+  const primaryCtaTarget = isAuthenticated ? '/app/tutor' : '/register';
+  const secondaryCtaTarget = isAuthenticated ? '/app/student-brain' : '/login';
+
   return (
-    <div className="min-h-screen bg-[#FAF7F2] text-[#1C1917] selection:bg-[#FCE8E1] selection:text-[#A8421E]">
+    <div className="min-h-screen bg-[#FAF7F2] text-[#1C1917] selection:bg-[#FCE8E1] selection:text-[#A8421E] scroll-smooth">
       {/* Top Navigation Bar */}
       <header className="sticky top-0 z-50 bg-[#FAF7F2]/90 backdrop-blur-md border-b border-[#E7E2D7]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
@@ -45,25 +52,37 @@ export default function Landing() {
           <nav className="hidden md:flex items-center gap-7 text-xs font-medium text-[#57534E]">
             <a href="#product" className="hover:text-[#A8421E] transition-colors">Product</a>
             <a href="#faculty" className="hover:text-[#A8421E] transition-colors">Faculty Agents</a>
-            <Link to="/app/student-brain" className="hover:text-[#A8421E] transition-colors">Student Brain</Link>
-            <Link to="/app/progress" className="hover:text-[#A8421E] transition-colors">Roadmap</Link>
+            <a href="#student-brain" className="hover:text-[#A8421E] transition-colors">Student Brain</a>
+            <a href="#roadmap" className="hover:text-[#A8421E] transition-colors">Roadmap</a>
             <a href="#outcomes" className="hover:text-[#A8421E] transition-colors">Outcomes</a>
           </nav>
 
           <div className="flex items-center gap-3">
-            <Link 
-              to="/login"
-              className="text-xs font-semibold text-[#57534E] hover:text-[#1C1917] px-3 py-1.5 rounded-lg transition-colors"
-            >
-              Sign in
-            </Link>
-            <Link 
-              to="/register"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#A8421E] hover:bg-[#8E3516] text-white text-xs font-semibold shadow-xs transition-colors"
-            >
-              <span>Start Free Trial</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+            {isAuthenticated ? (
+              <Link 
+                to="/app/tutor"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#A8421E] hover:bg-[#8E3516] text-white text-xs font-semibold shadow-xs transition-colors"
+              >
+                <LayoutDashboard className="w-3.5 h-3.5" />
+                <span>Go to Workspace</span>
+              </Link>
+            ) : (
+              <>
+                <Link 
+                  to="/login"
+                  className="text-xs font-semibold text-[#57534E] hover:text-[#1C1917] px-3 py-1.5 rounded-lg transition-colors"
+                >
+                  Sign in
+                </Link>
+                <Link 
+                  to="/register"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#A8421E] hover:bg-[#8E3516] text-white text-xs font-semibold shadow-xs transition-colors"
+                >
+                  <span>Start Free Trial</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
@@ -89,18 +108,18 @@ export default function Landing() {
         {/* CTA Button Row */}
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5">
           <Link
-            to="/register"
+            to={primaryCtaTarget}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-[#A8421E] hover:bg-[#8E3516] text-white text-sm font-semibold shadow-sm transition-all"
           >
-            <span>Start Learning Today</span>
+            <span>{isAuthenticated ? 'Open Learning Workspace' : 'Start Learning Today'}</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
-            to="/app/student-brain"
+            to={secondaryCtaTarget}
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-white hover:bg-[#FAF7F2] text-[#1C1917] border border-[#E7E2D7] text-sm font-medium transition-all shadow-2xs"
           >
             <Play className="w-3.5 h-3.5 fill-current text-[#A8421E]" />
-            <span>Explore Live Demo</span>
+            <span>{isAuthenticated ? 'View Student Brain' : 'Explore Live Demo'}</span>
           </Link>
         </div>
 
@@ -120,8 +139,8 @@ export default function Landing() {
           </span>
         </div>
 
-        {/* Hero Interactive Preview Mockup */}
-        <div id="product" className="mt-14 max-w-5xl mx-auto bg-white rounded-2xl border border-[#EAE5DC] shadow-[0_8px_30px_rgba(0,0,0,0.06)] overflow-hidden text-left">
+        {/* Hero Interactive Preview Mockup (Product Section) */}
+        <div id="product" className="mt-14 max-w-5xl mx-auto bg-white rounded-2xl border border-[#EAE5DC] shadow-[0_8px_30px_rgba(0,0,0,0.06)] overflow-hidden text-left scroll-mt-24">
           {/* Top simulated bar */}
           <div className="bg-[#FAF8F5] px-4 py-3 border-b border-[#EAE5DC] flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -194,7 +213,7 @@ export default function Landing() {
                 </div>
               </div>
               <Link
-                to="/app/student-brain"
+                to={primaryCtaTarget}
                 className="text-xs font-mono text-[#A8421E] font-semibold hover:underline hidden sm:inline"
               >
                 Inspect Cognitive Graph →
@@ -204,8 +223,8 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* 8-Step Collaborative Loop Section */}
-      <section className="py-20 bg-[#F5EFEB] border-y border-[#E7E2D7]">
+      {/* 8-Step Collaborative Loop Section (Roadmap / Collaborative Loop) */}
+      <section id="roadmap" className="py-20 bg-[#F5EFEB] border-y border-[#E7E2D7] scroll-mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto">
             <span className="text-[11px] font-mono uppercase tracking-wider text-[#A8421E] font-bold">
@@ -237,7 +256,7 @@ export default function Landing() {
       </section>
 
       {/* Meet the Faculty Agents Section */}
-      <section id="faculty" className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="faculty" className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-16">
         <div className="text-center max-w-3xl mx-auto">
           <span className="text-[11px] font-mono uppercase tracking-wider text-[#A8421E] font-bold">
             SPECIALIZED AI PANEL
@@ -280,15 +299,52 @@ export default function Landing() {
 
               <div className="mt-5 pt-3 border-t border-[#F0ECE1] flex items-center justify-between text-[11px] font-mono text-[#A8421E]">
                 <span>Active in Telemetry Mesh</span>
-                <span>Ready ➔</span>
+                <Link to={isAuthenticated ? `/app/tutor?agent=${agent.id}` : '/register'} className="hover:underline">
+                  Ready ➔
+                </Link>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Final CTA Section */}
-      <section className="py-20 bg-[#F5EFEB] border-t border-[#E7E2D7] text-center">
+      {/* Student Brain / Cognitive Section */}
+      <section id="student-brain" className="py-20 bg-white border-t border-[#E7E2D7] scroll-mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-3xl mx-auto">
+            <span className="text-[11px] font-mono uppercase tracking-wider text-[#A8421E] font-bold">
+              BAYESIAN KNOWLEDGE TRACING
+            </span>
+            <h2 className="font-serif text-3xl sm:text-4xl font-normal text-[#1C1917] mt-2">
+              Your tutor learns how you learn
+            </h2>
+            <p className="text-sm text-[#57534E] mt-2 leading-relaxed">
+              Real-time cognitive modeling predicts retention half-life and detects prerequisite gaps before you hit roadblocks.
+            </p>
+          </div>
+
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <div className="p-6 rounded-xl bg-[#FAF8F5] border border-[#EAE5DC] space-y-2 text-center">
+              <div className="text-3xl font-bold font-mono text-[#1C1917]">68%</div>
+              <div className="text-xs font-semibold text-[#1C1917]">Probabilistic BKT Mastery</div>
+              <p className="text-xs text-[#57534E]">Tracks calibrated belief confidence across 26 discrete engineering competency nodes.</p>
+            </div>
+            <div className="p-6 rounded-xl bg-[#FAF8F5] border border-[#EAE5DC] space-y-2 text-center">
+              <div className="text-3xl font-bold font-mono text-[#2E7D52]">0.64</div>
+              <div className="text-xs font-semibold text-[#1C1917]">Cognitive Load Index (Optimal)</div>
+              <p className="text-xs text-[#57534E]">Allocates working memory efficiently, dynamically balancing scaffolding and derivations.</p>
+            </div>
+            <div className="p-6 rounded-xl bg-[#FAF8F5] border border-[#EAE5DC] space-y-2 text-center">
+              <div className="text-3xl font-bold font-mono text-[#A8421E]">8.4 Days</div>
+              <div className="text-xs font-semibold text-[#1C1917]">Ebbinghaus Retention Half-Life</div>
+              <p className="text-xs text-[#57534E]">Automates micro-retrievals at optimal forgetting intervals to guarantee durable recall.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Outcomes & Final CTA Section */}
+      <section id="outcomes" className="py-20 bg-[#F5EFEB] border-t border-[#E7E2D7] text-center scroll-mt-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <EduLogo variant="light" size="lg" />
           <h2 className="font-serif text-3xl sm:text-5xl font-normal text-[#1C1917] mt-4 tracking-tight">
@@ -300,18 +356,20 @@ export default function Landing() {
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <Link
-              to="/register"
+              to={primaryCtaTarget}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-[#A8421E] hover:bg-[#8E3516] text-white text-sm font-semibold shadow-sm transition-all"
             >
-              <span>Create Your Learning Hive</span>
+              <span>{isAuthenticated ? 'Open Learning Workspace' : 'Create Your Learning Hive'}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
-            <Link
-              to="/login"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white hover:bg-[#FAF7F2] text-[#1C1917] border border-[#E7E2D7] text-sm font-medium transition-all"
-            >
-              <span>Sign In to Existing Salon</span>
-            </Link>
+            {!isAuthenticated && (
+              <Link
+                to="/login"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white hover:bg-[#FAF7F2] text-[#1C1917] border border-[#E7E2D7] text-sm font-medium transition-all"
+              >
+                <span>Sign In to Existing Salon</span>
+              </Link>
+            )}
           </div>
         </div>
       </section>
@@ -324,8 +382,8 @@ export default function Landing() {
           </div>
 
           <div className="flex flex-wrap items-center gap-6 font-mono text-[11px] text-[#8E8880]">
-            <Link to="/app/student-brain" className="hover:text-white transition-colors">Cognitive Mesh</Link>
-            <Link to="/app/progress" className="hover:text-white transition-colors">Curriculum Roadmap</Link>
+            <Link to={isAuthenticated ? "/app/student-brain" : "/login"} className="hover:text-white transition-colors">Cognitive Mesh</Link>
+            <Link to={isAuthenticated ? "/app/progress" : "/login"} className="hover:text-white transition-colors">Curriculum Roadmap</Link>
             <Link to="/login" className="hover:text-white transition-colors">Salon Login</Link>
             <Link to="/register" className="hover:text-white transition-colors">Register</Link>
           </div>
