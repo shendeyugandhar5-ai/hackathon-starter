@@ -17,13 +17,19 @@ class Settings(BaseSettings):
     HOST: str = "0.0.0.0"
     PORT: int = 8000
     
-    # CORS Origins (default covers standard local frontend dev ports)
+    # CORS Origins (default covers standard local frontend dev ports:
+    # Vite 5173, CRA/Next 3000, Vue 8080, Angular 4200, Vite preview 4173)
     CORS_ORIGINS: Union[List[str], str] = [
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:3000",
-        "http://127.0.0.1:3000",
+        "http://localhost:5173", "http://127.0.0.1:5173",
+        "http://localhost:3000", "http://127.0.0.1:3000",
+        "http://localhost:8080", "http://127.0.0.1:8080",
+        "http://localhost:4200", "http://127.0.0.1:4200",
+        "http://localhost:4173", "http://127.0.0.1:4173",
     ]
+
+    # Dev escape hatch: set CORS_ALLOW_ALL=True in .env when your UI runs on a
+    # port not listed above. Never leave this on for a public deployment.
+    CORS_ALLOW_ALL: bool = False
     
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
@@ -37,12 +43,22 @@ class Settings(BaseSettings):
     # Primary Database Configuration (Supports Supabase or Local Docker PostgreSQL)
     DATABASE_URL: str = ""
     
+    # Echo every SQL statement to stdout. Useful when debugging a query,
+    # very noisy otherwise - so it's opt-in rather than tied to DEBUG.
+    SQL_ECHO: bool = False
+
     # Optional Local Fallback Credentials (used only if DATABASE_URL is unset)
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "postgres"
     POSTGRES_HOST: str = "localhost"
     POSTGRES_PORT: int = 5432
     POSTGRES_DB: str = "postgres"
+
+    # LLM / Agent Layer Configuration (idea.md sections 3.1, 7)
+    GEMINI_API_KEY: str = ""
+    LLM_MODEL: str = "gemini-2.0-flash"
+    # Tier-1 router confidence below which the coordinator falls back to the LLM classifier
+    ROUTER_CONFIDENCE_THRESHOLD: float = 0.6
     
     @field_validator("DATABASE_URL", mode="before")
     @classmethod

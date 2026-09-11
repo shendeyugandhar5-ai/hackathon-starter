@@ -5,3 +5,10 @@ pydantic-settings>=2.2.0,<3.0.0
 python-dotenv>=1.0.0,<2.0.0
 sqlalchemy>=2.0.25,<3.0.0
 psycopg2-binary>=2.9.9,<3.0.0
+
+# Agent layer (backend/app/agents) - Person A
+google-generativeai>=0.8.0,<1.0.0
+
+# Lets the backend load Person C's trained router artifacts (ml/router/*.joblib) directly
+scikit-learn>=1.4.0,<2.0.0
+joblib>=1.3.0,<2.0.0
