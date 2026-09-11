@@ -25,11 +25,14 @@ async function request(endpoint, options = {}) {
     const data = await response.json().catch(() => null);
 
     if (!response.ok) {
-      throw new Error(
+      const errMsg =
         (data && data.detail) ||
         (data && data.message) ||
-        `HTTP Error ${response.status}: ${response.statusText}`
-      );
+        `HTTP Error ${response.status}: ${response.statusText}`;
+      const err = new Error(errMsg);
+      err.status = response.status;
+      err.data = data;
+      throw err;
     }
 
     return {
@@ -44,7 +47,7 @@ async function request(endpoint, options = {}) {
       ok: false,
       status: error.status || 0,
       latencyMs,
-      error: error.message || 'Failed to connect to backend',
+      error: error.message || 'Failed to connect to backend service',
       data: null,
     };
   }
@@ -67,32 +70,34 @@ export const api = {
   getHealth: () => request('/api/health'),
 
   /**
-   * Generic GET request helper for future endpoints
+   * Generic GET request helper
    */
-  get: (endpoint) => request(endpoint, { method: 'GET' }),
+  get: (endpoint, options = {}) => request(endpoint, { method: 'GET', ...options }),
 
   /**
-   * Generic POST request helper for future endpoints
+   * Generic POST request helper
    */
-  post: (endpoint, body) =>
+  post: (endpoint, body, options = {}) =>
     request(endpoint, {
       method: 'POST',
       body: JSON.stringify(body),
+      ...options,
     }),
 
   /**
-   * Generic PUT request helper for future endpoints
+   * Generic PUT request helper
    */
-  put: (endpoint, body) =>
+  put: (endpoint, body, options = {}) =>
     request(endpoint, {
       method: 'PUT',
       body: JSON.stringify(body),
+      ...options,
     }),
 
   /**
-   * Generic DELETE request helper for future endpoints
+   * Generic DELETE request helper
    */
-  delete: (endpoint) => request(endpoint, { method: 'DELETE' }),
+  delete: (endpoint, options = {}) => request(endpoint, { method: 'DELETE', ...options }),
 };
 
 export default api;

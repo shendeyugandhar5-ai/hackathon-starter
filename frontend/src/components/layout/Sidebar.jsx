@@ -147,14 +147,19 @@ export default function Sidebar({ isOpen, onClose }) {
           </div>
 
           {/* Settings & Help */}
+          {/* Settings & Help */}
           <div className="px-1 space-y-1">
-            <button className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs text-[#8E8880] hover:text-[#D1CCC5] hover:bg-[#201E1C] transition-colors">
+            <NavLink
+              to="/app/profile"
+              onClick={() => onClose && onClose()}
+              className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs text-[#8E8880] hover:text-[#D1CCC5] hover:bg-[#201E1C] transition-colors"
+            >
               <div className="flex items-center gap-2">
                 <Settings className="w-3.5 h-3.5" />
-                <span className="text-[11px]">Workspace Settings</span>
+                <span className="text-[11px]">Profile & Preferences</span>
               </div>
-              <HelpCircle className="w-3.5 h-3.5 text-[#635F5A]" />
-            </button>
+              <ChevronRight className="w-3.5 h-3.5 text-[#635F5A]" />
+            </NavLink>
           </div>
         </div>
 
@@ -163,10 +168,28 @@ export default function Sidebar({ isOpen, onClose }) {
           
           {/* Popover / Actions Menu */}
           {showProfileMenu && (
-            <div className="absolute bottom-16 left-3 right-3 bg-[#201E1C] rounded-xl border border-[#2E2B27] p-2 shadow-xl z-20 space-y-1 text-xs">
-              <div className="px-2.5 py-1.5 border-b border-[#2C2926] text-[11px] font-mono text-[#8E8880] truncate">
-                {user?.email || 'authenticated.student@eduhive.io'}
+            <div className="absolute bottom-16 left-3 right-3 bg-[#201E1C] rounded-xl border border-[#2E2B27] p-2 shadow-xl z-20 space-y-1 text-xs animate-fade-in">
+              <div className="px-2.5 py-1.5 border-b border-[#2C2926]">
+                <div className="font-semibold text-[#EDE9E3] truncate">
+                  {displayName}
+                </div>
+                <div className="text-[10px] font-mono text-[#8E8880] truncate mt-0.5">
+                  {profile?.academic_email || profile?.email || user?.email || 'student@university.edu'}
+                </div>
               </div>
+              
+              <NavLink
+                to="/app/profile"
+                onClick={() => {
+                  setShowProfileMenu(false);
+                  if (onClose) onClose();
+                }}
+                className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-[#C5BFB5] hover:text-white hover:bg-[#2B2825] transition-colors cursor-pointer text-left"
+              >
+                <UserCheck className="w-3.5 h-3.5 text-[#A8421E]" />
+                <span className="font-medium">Student Profile</span>
+              </NavLink>
+
               <button
                 onClick={handleLogout}
                 className="w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-[#E07A5F] hover:bg-[#2B2825] transition-colors cursor-pointer text-left"

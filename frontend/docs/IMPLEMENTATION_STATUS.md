@@ -20,6 +20,7 @@
 | **Knowledge Graph & Ontology (`/app/knowledge-map`)** | ✅ Protected | Batch 2 (Image 5) | Subject filters, Interactive DAG with 8 concept nodes and animated blocker warning, 3 bottom analytics cards (Identified Bottlenecks, Velocity to Target +14%/wk, Graph Auto-Repair), detailed Node Diagnostic Inspector with 96.2% cognitive misconception detector, prerequisite chain, 12-min action plan, and sample space Venn diagram. |
 | **Specialist Agents (`/app/agents`)** | ✅ Protected | AI Team | Interactive overview of all 6 specialized AI agents (Coordinator, Maths, AIML, DSA, DBMS, General Strategy) with live confidence telemetry, active topics, and direct Socratic session launch triggers. |
 | **Session History (`/app/history`)** | ✅ Protected | Diagnostic Archive | Audit trail of Socratic tutorials, diagnostic checkpoints, and belief score updates. |
+| **Student Profile (`/app/profile`)** | ✅ Dynamic & Protected | Dynamic Identity | Complete dynamic student identity connected to `public.students` table via Supabase Auth (`auth_user_id`), profile editing (name, goal, focus tutors), read-only academic email, onboarding completion indicator, secure password change, and instant sign out. |
 
 ---
 
@@ -32,8 +33,8 @@
 
 2. **Auth Context (`src/context/AuthContext.jsx`)**:
    - Manages `user`, `session`, `profile`, `loading`, `authError`.
-   - Methods: `signIn`, `signUp`, `signOut`, `fetchProfile`.
-   - Automatically synchronizes with Supabase Auth state (`onAuthStateChange`) and `profiles` table.
+   - Methods: `signIn`, `signUp`, `signOut`, `fetchProfile`, `updateStudentProfile`.
+   - Automatically synchronizes with Supabase Auth state (`onAuthStateChange`) and `public.students` table.
 
 3. **Protected Route Guard (`src/components/auth/ProtectedRoute.jsx`)**:
    - Guards all `/app/*` routes.
@@ -42,7 +43,7 @@
 
 4. **Dynamic Profile & Logout**:
    - Dynamic user avatar, full name, initials, and track in [Sidebar.jsx](file:///c:/Users/soham%20parab/.gemini/antigravity-ide/scratch/kurukshetra/frontend/src/components/layout/Sidebar.jsx) and [TopBar.jsx](file:///c:/Users/soham%20parab/.gemini/antigravity-ide/scratch/kurukshetra/frontend/src/components/layout/TopBar.jsx).
-   - Profile popover with quick sign out action.
+   - Profile popover and TopBar dropdown with quick profile access and sign out action.
 
 5. **Auth-Aware Landing Page**:
    - Smooth-scrolling navigation anchors (`#product`, `#faculty`, `#student-brain`, `#roadmap`, `#outcomes`).
@@ -50,6 +51,48 @@
 
 ---
 
+## PHASE — DYNAMIC USER PROFILE
+
+1. **Profile Route (`/app/profile`)**:
+   - Protected route nested inside `AppShell` with authentication guard.
+   - Intentionally clean, responsive layout adhering strictly to EduHive warm ivory & terracotta design system.
+
+2. **Supabase Profile Loading (`public.students`)**:
+   - Queries `public.students` specifically matching `auth_user_id = auth.users.id`.
+   - Dynamically resolves student `name`, `academic_email`, `goal`, `focus_tutors`, and `onboarding_completed`.
+   - Zero hardcoded demo profiles or placeholder mocks on `/app/profile`.
+
+3. **Dynamic Authenticated Student Data**:
+   - Dynamic initials generated on the fly from student's name (e.g., "Rahul Sharma" → `RS`, "Alex Morgan" → `AM`).
+   - Live synchronization across TopBar avatar badge, Sidebar identity card, and Profile header.
+
+4. **Profile Editing**:
+   - Full Name editing with immediate reactive state and optimistic/synchronized updates.
+   - Discard / Reset functionality and floating save action bar on modifications.
+
+5. **Goal Editing**:
+   - Reuses standard EduHive career trajectories: *Software Engineering*, *Data Science*, *AI/ML*, *Placement Preparation*, and *Other Goal*.
+
+6. **Focus Tutor Editing**:
+   - Multi-select toggle supporting all 5 specialized EduHive agents: *DSA Tutor*, *DBMS Tutor*, *Maths Tutor*, *AIML Tutor*, and *General Strategy*.
+   - Stores selected tutors in `public.students.focus_tutors` `TEXT[]` array.
+
+7. **Onboarding Status**:
+   - Read-only visual indicator derived directly from `students.onboarding_completed`:
+     - `Learning Space: ✓ Setup complete` (Green badge)
+     - `Learning Space: Setup incomplete` (Amber badge)
+
+8. **Secure Change Password**:
+   - Passwords belong exclusively to Supabase Auth (`supabase.auth.updateUser({ password })`).
+   - Zero password fields created in `public.students`.
+   - Inline feedback with password strength validation and zero intrusive `alert()` popups.
+
+9. **Sign Out & Navigation**:
+   - Seamlessly calls `supabase.auth.signOut()` and redirects to `/login`.
+   - Accessible from TopBar dropdown menu, Sidebar popover menu, and Account Security card.
+
+---
+
 ## Build & Verification Results
 - `npm run build`: Production bundle compiled with **0 errors**.
-- All routes verified and operational (`/`, `/login`, `/register`, `/app/tutor`, `/app/student-brain`, `/app/knowledge-map`, `/app/progress`, `/app/history`, `/app/agents`).
+- All routes verified and operational (`/`, `/login`, `/register`, `/app/tutor`, `/app/student-brain`, `/app/knowledge-map`, `/app/progress`, `/app/history`, `/app/agents`, `/app/profile`).

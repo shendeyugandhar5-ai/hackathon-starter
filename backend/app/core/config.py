@@ -56,6 +56,12 @@ class Settings(BaseSettings):
 
     # LLM / Agent Layer Configuration (idea.md sections 3.1, 7)
     GEMINI_API_KEY: str = ""
+    GROQ_API_KEY: str = ""
+    CEREBRAS_API_KEY: str = ""
+    OPENROUTER_API_KEY: str = ""
+    CLOUDFLARE_API_TOKEN: str = ""
+    CLOUDFLARE_ACCOUNT_ID: str = ""
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
     LLM_MODEL: str = "gemini-2.0-flash"
     # Tier-1 router confidence below which the coordinator falls back to the LLM classifier
     ROUTER_CONFIDENCE_THRESHOLD: float = 0.6
