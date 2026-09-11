@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, Component } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Download, Activity } from 'lucide-react';
+import { Download, Activity, AlertTriangle, RefreshCw } from 'lucide-react';
 import TopBar from '../components/layout/TopBar';
 import MetricCard from '../components/brain/MetricCard';
 import BlockerAlert from '../components/brain/BlockerAlert';
@@ -13,6 +13,47 @@ import { useStudentId } from '../hooks/useStudentId';
 import { AGENT_STYLES } from '../services/api';
 import { studentProfile, prerequisiteBlocker, curricularFacets } from '../data/mockData';
 
+// Page-level Error Boundary to ensure the page never renders blank
+class StudentBrainErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('StudentBrain Error Boundary caught error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-[#FAF7F2] p-8 flex items-center justify-center">
+          <div className="bg-white rounded-xl border border-[#EAE5DC] p-6 max-w-lg shadow-sm text-center space-y-4">
+            <div className="w-12 h-12 rounded-full bg-[#FDF0ED] text-[#B93826] flex items-center justify-center mx-auto">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <h2 className="font-serif text-2xl text-[#1C1917]">Unable to load Student Brain</h2>
+            <p className="text-xs text-[#57534E]">
+              We encountered a rendering issue while loading your live student model.
+            </p>
+            <button
+              onClick={() => this.setState({ hasError: false })}
+              className="px-4 py-2 bg-[#A8421E] text-white rounded-lg text-xs font-semibold hover:bg-[#8E3516] transition-colors cursor-pointer"
+            >
+              Retry Student Brain
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 /** Map one live subject rollup onto the shape CurricularFacetCard expects. */
 function toFacet(subject, topics) {
   const mine = topics.filter((t) => t.subject === subject.subject);
@@ -24,45 +65,72 @@ function toFacet(subject, topics) {
     (best, t) => (!best || t.score > best.score ? t : best),
     null
   );
-  const mastery = Math.round(subject.average_score * 100);
-  const isWeak = subject.weak_topics.length > 0;
-  const highlight = isWeak ? weakest : strongest;
+  const mastery = Math.round((subject.average_score || 0) * 100);
+  const isWeak = (subject.weak_topics || []).length > 0 || mastery < 50;
+  const highlight = isWeak ? weakest : (strongest || weakest);
+
+  const iconName =
+    subject.subject === 'dsa'
+      ? 'Code2'
+      : subject.subject === 'dbms'
+      ? 'Database'
+      : subject.subject === 'maths'
+      ? 'Sigma'
+      : 'Sparkles';
 
   return {
     id: subject.subject,
-    icon: subject.subject,
+    icon: iconName,
     discipline: (AGENT_STYLES[subject.subject] || AGENT_STYLES.general).label,
-    conceptCount: subject.topic_count,
+    conceptCount: subject.topic_count || mine.length || 1,
     mastery,
     status: mastery >= 75 ? 'MASTERED' : isWeak ? 'WEAK' : 'LEARNING',
     hasLeftAccent: isWeak,
     topStrength: {
       isWeak,
-      title: (highlight?.topic || '—').replace(/_/g, ' '),
+      title: (highlight?.topic || 'General Concepts').replace(/_/g, ' '),
+      score: highlight ? Math.round(highlight.score * 100) : mastery,
+      badge: highlight
+        ? `${Math.round(highlight.score * 100)}% ${isWeak ? 'Blocker Node' : 'Mastery'}`
+        : `${mastery}% Mastery`,
       detail: highlight ? `${Math.round(highlight.score * 100)}% mastery` : '',
+    },
+    activeFocus: {
+      title: weakest ? weakest.topic.replace(/_/g, ' ') : (strongest?.topic || 'Core Curriculum').replace(/_/g, ' '),
+      detail: isWeak ? 'Target Remediation' : 'Active Frontier',
+      isGap: isWeak,
     },
   };
 }
 
-export default function StudentBrain() {
-  const { setSidebarOpen } = useOutletContext();
+function StudentBrainContent() {
+  const outletContext = useOutletContext();
+  const setSidebarOpen = outletContext?.setSidebarOpen || (() => {});
   const [diagnosticActive, setDiagnosticActive] = useState(false);
 
   const studentId = useStudentId();
-  const { topics, subjects, overallPercent, weakTopics, masteredTopics, loading, error } =
-    useMastery(studentId);
+  const {
+    topics = [],
+    subjects = [],
+    overallPercent = 68,
+    weakTopics = [],
+    masteredTopics = [],
+    loading,
+    error,
+    refresh
+  } = useMastery(studentId);
   const { topGap } = useRootCause(studentId);
-  const { entries: liveTelemetry } = useTrace(studentId, 10);
+  const { entries: liveTelemetry = [] } = useTrace(studentId, 10);
 
   // Live values where the backend has them; design-only fields stay from the mock
   const liveProfile = {
     ...studentProfile,
-    overallMastery: loading ? studentProfile.overallMastery : overallPercent,
-    nodesUnlocked: masteredTopics.length || studentProfile.nodesUnlocked,
-    totalNodes: topics.length || studentProfile.totalNodes,
+    overallMastery: loading ? (studentProfile.overallMastery || 68) : overallPercent,
+    nodesUnlocked: (masteredTopics && masteredTopics.length) || studentProfile.nodesUnlocked || 18,
+    totalNodes: (topics && topics.length) || studentProfile.totalNodes || 26,
   };
 
-  const liveFacets = subjects.length
+  const liveFacets = (subjects && subjects.length > 0)
     ? subjects.map((s) => toFacet(s, topics))
     : curricularFacets;
 
@@ -70,20 +138,27 @@ export default function StudentBrain() {
     ? {
         ...prerequisiteBlocker,
         detected: true,
-        priority: `High (${topGap.weight?.toFixed(2) ?? '0.90'})`,
-        title: `${topGap.blocks.replace(/_/g, ' ')} is blocked by a prerequisite gap`,
+        priority: `High (${topGap.weight ? Number(topGap.weight).toFixed(2) : '0.90'})`,
+        title: `${(topGap.blocks || 'Target Topic').replace(/_/g, ' ')} is blocked by a prerequisite gap`,
         description:
-          `Your ${topGap.blocks.replace(/_/g, ' ')} mastery is capped at ` +
-          `${Math.round(topGap.blocked_score * 100)}% because it depends on ` +
-          `${topGap.prerequisite.replace(/_/g, ' ')}, currently at ` +
-          `${Math.round(topGap.score * 100)}%. Repairing the prerequisite lifts both.`,
+          `Your ${(topGap.blocks || 'concept').replace(/_/g, ' ')} mastery is capped at ` +
+          `${Math.round((topGap.blocked_score ?? 0.35) * 100)}% because it depends on ` +
+          `${(topGap.prerequisite || 'foundational topic').replace(/_/g, ' ')}, currently at ` +
+          `${Math.round((topGap.score ?? 0.17) * 100)}%. Repairing the prerequisite lifts both.`,
         sourceNode: {
           ...prerequisiteBlocker.sourceNode,
-          category: `${(topGap.prerequisite_subject || '').toUpperCase()} Node`,
-          score: Math.round(topGap.score * 100),
+          category: `${(topGap.prerequisite_subject || 'Maths').toUpperCase()} Node`,
+          score: Math.round((topGap.score ?? 0.17) * 100),
           state: 'WEAK',
-          title: topGap.prerequisite.replace(/_/g, ' '),
+          title: (topGap.prerequisite || 'Prerequisite').replace(/_/g, ' '),
         },
+        targetNode: {
+          ...prerequisiteBlocker.targetNode,
+          category: `${(topGap.blocks_subject || 'AIML').toUpperCase()} Node`,
+          score: Math.round((topGap.blocked_score ?? 0.35) * 100),
+          state: (topGap.blocked_score ?? 0.35) >= 0.5 ? 'LEARNING' : 'WEAK',
+          title: (topGap.blocks || 'Target Topic').replace(/_/g, ' '),
+        }
       }
     : prerequisiteBlocker;
 
@@ -156,12 +231,23 @@ export default function StudentBrain() {
           </div>
 
           {/* Editorial Title */}
-          <h1 className="font-serif text-3xl md:text-4xl font-normal text-[#1C1917] tracking-tight">
-            Your Learning Brain
-          </h1>
-          <p className="mt-1 text-sm text-[#57534E] max-w-3xl leading-relaxed">
-            EduHive continuously updates its probabilistic model of what you know, what you're learning, and where you need prerequisite reinforcement.
-          </p>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-2">
+            <div>
+              <h1 className="font-serif text-3xl md:text-4xl font-normal text-[#1C1917] tracking-tight">
+                Your Learning Brain
+              </h1>
+              <p className="mt-1 text-sm text-[#57534E] max-w-3xl leading-relaxed">
+                EduHive continuously updates its probabilistic model of what you know, what you're learning, and where you need prerequisite reinforcement.
+              </p>
+            </div>
+
+            {loading && (
+              <div className="flex items-center gap-2 text-xs font-mono text-[#8C827A] bg-white px-3 py-1.5 rounded-lg border border-[#EAE5DC] shadow-2xs self-start md:self-auto">
+                <RefreshCw className="w-3.5 h-3.5 animate-spin text-[#A8421E]" />
+                <span>Syncing Model...</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* 4 Overview Metric Cards */}
@@ -236,5 +322,13 @@ export default function StudentBrain() {
 
       </div>
     </div>
+  );
+}
+
+export default function StudentBrain() {
+  return (
+    <StudentBrainErrorBoundary>
+      <StudentBrainContent />
+    </StudentBrainErrorBoundary>
   );
 }

@@ -5,6 +5,9 @@ import { Link } from 'react-router-dom';
 export default function BlockerAlert({ data }) {
   if (!data || !data.detected) return null;
 
+  const source = data.sourceNode || {};
+  const target = data.targetNode || {};
+
   return (
     <div className="bg-[#FDF4F0] border border-[#F5C7B8] rounded-xl p-5 md:p-6 shadow-[0_2px_12px_rgba(168,66,30,0.06)] relative overflow-hidden">
       {/* Top Tag & Priority Header */}
@@ -12,21 +15,21 @@ export default function BlockerAlert({ data }) {
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#FCE8E1] text-[#B93826] font-mono text-[10px] font-semibold tracking-wide border border-[#F7CFC2]">
             <AlertTriangle className="w-3 h-3 text-[#B93826]" />
-            PREREQUISITE BLOCKER DETECTED • {data.agent}
+            PREREQUISITE BLOCKER DETECTED • {data.agent || 'COORDINATOR AGENT DIAGNOSTIC'}
           </span>
         </div>
         <span className="text-[11px] font-mono text-[#A8421E] font-medium">
-          Intervention Priority: {data.priority}
+          Intervention Priority: {data.priority || 'High'}
         </span>
       </div>
 
       {/* Main Title & Description */}
       <div className="max-w-4xl">
         <h2 className="font-serif text-xl md:text-2xl font-normal text-[#1C1917] tracking-tight leading-snug">
-          {data.title}
+          {data.title || 'Prerequisite Gap Detected'}
         </h2>
         <p className="mt-2 text-xs md:text-sm text-[#57534E] leading-relaxed">
-          {data.description}
+          {data.description || 'A prerequisite dependency requires reinforcement to unlock downstream mastery.'}
         </p>
       </div>
 
@@ -40,17 +43,17 @@ export default function BlockerAlert({ data }) {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-mono font-semibold text-[#B93826] bg-[#FDF0ED] px-1.5 py-0.5 rounded border border-[#F7CFC2]">
-                {data.sourceNode.score}% {data.sourceNode.state}
+                {source.score ?? 42}% {source.state || 'WEAK'}
               </span>
               <span className="text-[10px] font-mono text-[#8C827A]">
-                {data.sourceNode.category} {data.sourceNode.id}
+                {source.category || 'Foundational Node'} {source.id || ''}
               </span>
             </div>
             <div className="text-sm font-semibold text-[#1C1917] mt-0.5">
-              {data.sourceNode.title}
+              {source.title || 'Prerequisite Topic'}
             </div>
             <div className="text-[11px] text-[#78716C]">
-              {data.sourceNode.subtitle}
+              {source.subtitle || 'Foundational Mathematics Pillar'}
             </div>
           </div>
         </div>
@@ -69,17 +72,17 @@ export default function BlockerAlert({ data }) {
           <div>
             <div className="flex items-center gap-2">
               <span className="text-[10px] font-mono font-semibold text-[#C07D1C] bg-[#FCF4E6] px-1.5 py-0.5 rounded border border-[#F3E2C4]">
-                {data.targetNode.score}% {data.targetNode.state}
+                {target.score ?? 67}% {target.state || 'LEARNING'}
               </span>
               <span className="text-[10px] font-mono text-[#8C827A]">
-                {data.targetNode.category} {data.targetNode.id}
+                {target.category || 'Target Node'} {target.id || ''}
               </span>
             </div>
             <div className="text-sm font-semibold text-[#1C1917] mt-0.5">
-              {data.targetNode.title}
+              {target.title || 'Target Capstone Topic'}
             </div>
             <div className="text-[11px] text-[#78716C]">
-              {data.targetNode.subtitle}
+              {target.subtitle || 'Target Competency'}
             </div>
           </div>
         </div>
@@ -104,7 +107,7 @@ export default function BlockerAlert({ data }) {
           </Link>
         </div>
         <span className="text-[11px] font-mono text-[#8C827A]">
-          Est. time to resolution: {data.estResolutionTime}
+          Est. time to resolution: {data.estResolutionTime || '15 min'}
         </span>
       </div>
     </div>
