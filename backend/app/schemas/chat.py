@@ -26,6 +26,13 @@ class Recommendation(BaseModel):
     priority: Literal["low", "medium", "high"]
 
 
+class ContextUsed(BaseModel):
+    """What shared student context shaped this answer - drives the trace panel."""
+    weak_topics: List[str] = []
+    prerequisite_gaps: List[dict] = []
+    recent_messages: int = 0
+
+
 class ChatResponse(BaseModel):
     conversation_id: Optional[str] = None
     agent: AgentName
@@ -34,3 +41,7 @@ class ChatResponse(BaseModel):
     response: str
     mastery_updates: List[MasteryUpdate] = []
     recommendation: Optional[Recommendation] = None
+
+    # Every agent that contributed; length > 1 means cross-agent collaboration
+    contributing_agents: List[AgentName] = []
+    context_used: Optional[ContextUsed] = None
