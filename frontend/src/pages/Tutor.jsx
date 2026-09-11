@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useOutletContext, Link, useSearchParams } from 'react-router-dom';
-import { Send, Sparkles, Cpu, Plus, AlertTriangle } from 'lucide-react';
+import { Send, Sparkles, Cpu, Plus, AlertTriangle, ArrowRight, Bot } from 'lucide-react';
 import TopBar from '../components/layout/TopBar';
 import ChatThread from '../components/tutor/ChatThread';
 import AgentTracePanel from '../components/tutor/AgentTracePanel';
@@ -21,22 +21,39 @@ export default function Tutor() {
   const studentId = useStudentId();
 
   const {
-    messages, sending, error, lastTrace, send,
-    startNewConversation, loadConversation, conversationId,
+    messages,
+    sending,
+    error,
+    lastTrace,
+    send,
+    startNewConversation,
+    loadConversation,
+    conversationId,
   } = useChat(studentId);
+
   const { online, database } = useBackendHealth(30000);
   const { topGap } = useRootCause(studentId);
 
   const [inputQuery, setInputQuery] = useState('');
 
   // Resume a thread when opened from History (/app/tutor?conversation=<id>)
+  // or prefill agent if /app/tutor?agent=maths
   const [searchParams, setSearchParams] = useSearchParams();
   const resumeId = searchParams.get('conversation');
+  const agentParam = searchParams.get('agent');
+
   useEffect(() => {
-    if (!resumeId) return;
-    loadConversation(resumeId);
-    setSearchParams({}, { replace: true });
+    if (resumeId) {
+      loadConversation(resumeId);
+      setSearchParams({}, { replace: true });
+    }
   }, [resumeId, loadConversation, setSearchParams]);
+
+  useEffect(() => {
+    if (agentParam) {
+      setInputQuery(`@${agentParam} `);
+    }
+  }, [agentParam]);
 
   // Prompts that exercise each routing path — handy during a demo
   const suggestedPrompts = [
@@ -65,7 +82,6 @@ export default function Tutor() {
       <TopBar onMenuClick={() => setSidebarOpen(true)} />
 
       <div className="max-w-6xl mx-auto w-full px-4 md:px-8 pt-6 space-y-5 flex-1 flex flex-col">
-
         {/* Workspace context bar */}
         <div className="flex flex-wrap items-center justify-between gap-3 pb-1 border-b border-[#EAE5DC]">
           <div className="flex items-center gap-2 text-[11px] font-mono text-[#8C827A]">
@@ -98,12 +114,12 @@ export default function Tutor() {
                   online ? 'bg-[#1C6B5A] animate-pulse' : 'bg-red-500'
                 }`}
               />
-              {online === null ? 'Connecting' : online ? `Online · db ${database}` : 'Backend offline'}
+              {online === null ? 'Connecting' : online ? `Online · db ${database || 'ready'}` : 'Backend offline'}
             </span>
 
             <button
               onClick={startNewConversation}
-              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FAF7F2] hover:bg-[#F2ECE0] text-[#57534E] font-mono text-[10px] border border-[#E7E2D7] transition-colors"
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FAF7F2] hover:bg-[#F2ECE0] text-[#57534E] font-mono text-[10px] border border-[#E7E2D7] transition-colors cursor-pointer"
             >
               <Plus className="w-3 h-3" /> New thread
             </button>
@@ -113,6 +129,13 @@ export default function Tutor() {
               className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FAF7F2] hover:bg-[#F2ECE0] text-[#57534E] font-mono text-[10px] border border-[#E7E2D7] transition-colors"
             >
               Collaboration Graph
+            </Link>
+
+            <Link
+              to="/app/student-brain"
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FAF7F2] hover:bg-[#F2ECE0] text-[#57534E] font-mono text-[10px] border border-[#E7E2D7] transition-colors"
+            >
+              Diagnostic Mode •
             </Link>
           </div>
         </div>
@@ -145,7 +168,6 @@ export default function Tutor() {
 
         {/* Chat + trace */}
         <div className="grid flex-1 grid-cols-1 gap-5 lg:grid-cols-[1fr_320px]">
-
           {/* Conversation */}
           <div className="flex min-h-[460px] flex-col rounded-xl border border-[#EAE5DC] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
             <ChatThread
@@ -165,7 +187,7 @@ export default function Tutor() {
                       <button
                         key={p}
                         onClick={() => handlePrompt(p)}
-                        className="rounded-full border border-[#E7E2D7] bg-[#FAF7F2] px-3 py-1.5 font-sans text-[11px] text-[#57534E] transition-colors hover:bg-[#F2ECE0]"
+                        className="rounded-full border border-[#E7E2D7] bg-[#FAF7F2] px-3 py-1.5 font-sans text-[11px] text-[#57534E] transition-colors hover:bg-[#F2ECE0] cursor-pointer"
                       >
                         {p}
                       </button>
@@ -185,19 +207,32 @@ export default function Tutor() {
                   value={inputQuery}
                   onChange={(e) => setInputQuery(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) handleSubmit(e);
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSubmit(e);
+                    }
                   }}
-                  rows={1}
-                  placeholder="Ask your tutor…  (Enter to send, Shift+Enter for a new line)"
+                  rows={2}
+                  placeholder="Ask your tutor…  (Enter to send, Shift+Enter for newline, or tag @maths, @aiml, @dsa, @dbms)"
                   className="max-h-32 flex-1 resize-none rounded-lg border border-[#EAE5DC] bg-[#FAF7F2] px-3 py-2 font-sans text-sm text-[#1C1917] outline-none transition-colors placeholder:text-[#A8A29E] focus:border-[#A8421E]"
                 />
                 <button
                   type="submit"
                   disabled={sending || !inputQuery.trim()}
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#A8421E] text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#A8421E] hover:bg-[#8E3516] text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer shadow-xs"
                 >
                   <Send className="h-4 w-4" />
                 </button>
+              </div>
+
+              <div className="mt-2 flex items-center justify-between text-xs font-mono text-[#78716C]">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] uppercase text-[#8C827A]">Quick Agent:</span>
+                  <button type="button" onClick={() => setInputQuery(q => q + '@maths ')} className="hover:text-[#1C1917] px-1 py-0.5 rounded bg-[#FAF7F2] border border-[#EAE5DC] text-[10px]">@maths</button>
+                  <button type="button" onClick={() => setInputQuery(q => q + '@aiml ')} className="hover:text-[#1C1917] px-1 py-0.5 rounded bg-[#FAF7F2] border border-[#EAE5DC] text-[10px]">@aiml</button>
+                  <button type="button" onClick={() => setInputQuery(q => q + '@dsa ')} className="hover:text-[#1C1917] px-1 py-0.5 rounded bg-[#FAF7F2] border border-[#EAE5DC] text-[10px]">@dsa</button>
+                  <button type="button" onClick={() => setInputQuery(q => q + '@dbms ')} className="hover:text-[#1C1917] px-1 py-0.5 rounded bg-[#FAF7F2] border border-[#EAE5DC] text-[10px]">@dbms</button>
+                </div>
               </div>
             </form>
           </div>

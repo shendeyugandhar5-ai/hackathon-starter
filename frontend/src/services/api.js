@@ -1,6 +1,6 @@
 /**
  * API Service Layer
- * Centralized HTTP client for the LearnOS FastAPI backend.
+ * Centralized HTTP client for the LearnOS / EduHive FastAPI backend.
  *
  * Every method returns { ok, status, latencyMs, data, error } — never throws,
  * so components can render an error state instead of crashing the tree.
@@ -23,11 +23,14 @@ async function request(endpoint, options = {}) {
 
     if (!response.ok) {
       const detail = data && data.detail;
-      throw new Error(
+      const errMsg =
         (typeof detail === 'string' && detail) ||
         (data && data.message) ||
-        `HTTP ${response.status}: ${response.statusText}`
-      );
+        `HTTP ${response.status}: ${response.statusText}`;
+      const err = new Error(errMsg);
+      err.status = response.status;
+      err.data = data;
+      throw err;
     }
 
     return { ok: true, status: response.status, latencyMs, data };
@@ -42,9 +45,20 @@ async function request(endpoint, options = {}) {
   }
 }
 
-const get = (endpoint) => request(endpoint, { method: 'GET' });
-const post = (endpoint, body) =>
-  request(endpoint, { method: 'POST', body: JSON.stringify(body) });
+const get = (endpoint, options = {}) => request(endpoint, { method: 'GET', ...options });
+const post = (endpoint, body, options = {}) =>
+  request(endpoint, {
+    method: 'POST',
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+    ...options,
+  });
+const put = (endpoint, body, options = {}) =>
+  request(endpoint, {
+    method: 'PUT',
+    body: body !== undefined ? JSON.stringify(body) : undefined,
+    ...options,
+  });
+const del = (endpoint, options = {}) => request(endpoint, { method: 'DELETE', ...options });
 
 export const api = {
   baseUrl: API_BASE_URL,
@@ -112,8 +126,8 @@ export const api = {
   // ------------------------------------------------------------- generic --
   get,
   post,
-  put: (endpoint, body) => request(endpoint, { method: 'PUT', body: JSON.stringify(body) }),
-  delete: (endpoint) => request(endpoint, { method: 'DELETE' }),
+  put,
+  delete: del,
 };
 
 /** Valid misconception types, mirroring the backend taxonomy. */

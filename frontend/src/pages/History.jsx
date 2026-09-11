@@ -84,7 +84,7 @@ export default function History() {
               <button
                 key={c.id}
                 onClick={() => navigate(`/app/tutor?conversation=${c.id}`)}
-                className="flex w-full flex-col justify-between gap-4 rounded-xl border border-[#EAE5DC] bg-white p-5 text-left shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition-colors hover:border-[#D4CCBE] sm:flex-row sm:items-center"
+                className="flex w-full flex-col justify-between gap-4 rounded-xl border border-[#EAE5DC] bg-white p-5 text-left shadow-[0_1px_3px_rgba(0,0,0,0.02)] transition-colors hover:border-[#D4CCBE] sm:flex-row sm:items-center cursor-pointer"
               >
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">

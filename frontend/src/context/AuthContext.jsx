@@ -14,69 +14,176 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
 
-  // Helper to construct profile object from user and metadata/table
-  const buildProfile = (userData, profileData = {}) => {
+  // Helper to construct profile object from student record and auth user
+  const buildStudentProfile = (userData, studentData = null) => {
+    if (!userData && !studentData) return null;
+
     const meta = userData?.user_metadata || {};
-    const fullName = profileData?.full_name || meta.full_name || userData?.email?.split('@')[0] || studentProfile.name;
-    const nameParts = fullName.trim().split(' ');
-    const initials = nameParts.length > 1 
-      ? (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase()
-      : fullName.slice(0, 2).toUpperCase();
+    const fullName = studentData?.name || meta.full_name || userData?.email?.split('@')[0] || '';
+    
+    // Generate initials: "Rahul Sharma" -> "RS", "Alex Morgan" -> "AM"
+    const nameParts = fullName.trim().split(/\s+/).filter(Boolean);
+    let initials = 'EH';
+    if (nameParts.length >= 2) {
+      initials = (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase();
+    } else if (nameParts.length === 1 && nameParts[0].length > 0) {
+      initials = nameParts[0].slice(0, 2).toUpperCase();
+    } else if (userData?.email) {
+      initials = userData.email.slice(0, 2).toUpperCase();
+    }
+
+    const goal = studentData?.goal || meta.goal || 'Placement Preparation';
+    const focusTutors = studentData?.focus_tutors || meta.active_agents || ['dsa', 'dbms', 'maths', 'aiml'];
+    const academicEmail = studentData?.academic_email || userData?.email || '';
+    const onboardingCompleted = studentData ? Boolean(studentData.onboarding_completed) : Boolean(meta.onboarding_completed);
 
     return {
-      id: userData?.id,
-      email: userData?.email,
+      id: studentData?.id || userData?.id,
+      auth_user_id: userData?.id,
+      student_id: studentData?.id,
+      name: fullName,
       full_name: fullName,
+      academic_email: academicEmail,
+      email: academicEmail,
+      goal: goal,
+      focus_tutors: focusTutors,
+      active_agents: focusTutors,
+      onboarding_completed: onboardingCompleted,
+      updated_at: studentData?.updated_at || null,
+      created_at: studentData?.created_at || userData?.created_at || new Date().toISOString(),
       initials: initials,
-      goal: profileData?.goal || meta.goal || 'Placement Preparation',
-      track: profileData?.track || meta.track || 'Data Science Track',
-      cohort: profileData?.cohort || 'Data Science & ML Engineering Cohort',
-      active_agents: profileData?.active_agents || meta.active_agents || ['dsa', 'dbms', 'maths', 'aiml'],
-      mastery: profileData?.mastery ?? studentProfile.overallMastery,
-      created_at: profileData?.created_at || userData?.created_at || new Date().toISOString()
+      track: goal ? `${goal} Track` : 'Placement Preparation Track',
+      mastery: studentProfile.overallMastery,
+      hasStudentRow: Boolean(studentData)
     };
   };
 
-  // Fetch or create profile from Supabase Database
+  // Fetch student profile from public.students using auth_user_id
   const fetchProfile = async (currentUser) => {
     if (!currentUser) {
       setProfile(null);
-      return;
+      return null;
     }
 
     if (isSupabaseConfigured && supabase) {
       try {
         const { data, error } = await supabase
-          .from('profiles')
+          .from('students')
           .select('*')
-          .eq('id', currentUser.id)
+          .eq('auth_user_id', currentUser.id)
           .maybeSingle();
 
-        if (data) {
-          setProfile(buildProfile(currentUser, data));
-          return;
+        if (error) {
+          console.warn('Error querying public.students table:', error);
         }
 
-        // If no profile record yet, create one
-        const initialProfile = {
-          id: currentUser.id,
-          full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0],
-          email: currentUser.email,
-          goal: currentUser.user_metadata?.goal || 'Placement Preparation',
-          track: 'Data Science Track',
-          active_agents: currentUser.user_metadata?.active_agents || ['dsa', 'dbms', 'maths', 'aiml'],
-          created_at: new Date().toISOString()
-        };
+        if (data) {
+          const profileObj = buildStudentProfile(currentUser, data);
+          setProfile(profileObj);
+          return profileObj;
+        }
 
-        await supabase.from('profiles').upsert(initialProfile);
-        setProfile(buildProfile(currentUser, initialProfile));
+        // If no student row exists yet, check user_metadata or mark uninitialized
+        const uninitializedProfile = buildStudentProfile(currentUser, null);
+        setProfile(uninitializedProfile);
+        return uninitializedProfile;
       } catch (err) {
         console.warn('Profile fetch warning (falling back to user metadata):', err);
-        setProfile(buildProfile(currentUser));
+        const fallbackProfile = buildStudentProfile(currentUser, null);
+        setProfile(fallbackProfile);
+        return fallbackProfile;
       }
     } else {
       // Local fallback mode
-      setProfile(buildProfile(currentUser, currentUser.profile));
+      const rawUsers = localStorage.getItem(LOCAL_STORAGE_USERS_KEY);
+      const registeredUsers = rawUsers ? JSON.parse(rawUsers) : [];
+      const matched = registeredUsers.find((u) => u.id === currentUser.id || u.email === currentUser.email);
+      const profileObj = buildStudentProfile(currentUser, matched?.student_profile || null);
+      setProfile(profileObj);
+      return profileObj;
+    }
+  };
+
+  // Update student profile in public.students table
+  const updateStudentProfile = async ({ name, goal, focus_tutors }) => {
+    if (!user) {
+      throw new Error('No authenticated user session found.');
+    }
+
+    if (isSupabaseConfigured && supabase) {
+      const payload = {
+        name: name.trim(),
+        goal: goal.trim(),
+        focus_tutors: Array.isArray(focus_tutors) ? focus_tutors : [],
+        updated_at: new Date().toISOString()
+      };
+
+      // Check if student row already exists
+      const { data: existingRow } = await supabase
+        .from('students')
+        .select('id')
+        .eq('auth_user_id', user.id)
+        .maybeSingle();
+
+      let savedData = null;
+
+      if (existingRow) {
+        const { data, error } = await supabase
+          .from('students')
+          .update(payload)
+          .eq('auth_user_id', user.id)
+          .select()
+          .single();
+
+        if (error) throw error;
+        savedData = data;
+      } else {
+        // Create the student row if missing
+        const newRow = {
+          auth_user_id: user.id,
+          academic_email: user.email,
+          onboarding_completed: true,
+          ...payload
+        };
+
+        const { data, error } = await supabase
+          .from('students')
+          .insert(newRow)
+          .select()
+          .single();
+
+        if (error) throw error;
+        savedData = data;
+      }
+
+      const updatedProfile = buildStudentProfile(user, savedData);
+      setProfile(updatedProfile);
+      return updatedProfile;
+    } else {
+      // Local fallback
+      const rawUsers = localStorage.getItem(LOCAL_STORAGE_USERS_KEY);
+      const registeredUsers = rawUsers ? JSON.parse(rawUsers) : [];
+      const userIndex = registeredUsers.findIndex((u) => u.id === user.id || u.email === user.email);
+
+      const studentData = {
+        id: 'student-' + user.id,
+        auth_user_id: user.id,
+        name: name.trim(),
+        academic_email: user.email,
+        goal: goal.trim(),
+        focus_tutors: Array.isArray(focus_tutors) ? focus_tutors : [],
+        onboarding_completed: true,
+        updated_at: new Date().toISOString()
+      };
+
+      if (userIndex !== -1) {
+        registeredUsers[userIndex].student_profile = studentData;
+        localStorage.setItem(LOCAL_STORAGE_USERS_KEY, JSON.stringify(registeredUsers));
+      }
+
+      const updatedProfile = buildStudentProfile(user, studentData);
+      setProfile(updatedProfile);
+      return updatedProfile;
     }
   };
 
@@ -122,7 +229,7 @@ export function AuthProvider({ children }) {
               if (parsed?.user) {
                 setUser(parsed.user);
                 setSession(parsed);
-                setProfile(buildProfile(parsed.user, parsed.user.profile));
+                setProfile(buildStudentProfile(parsed.user, parsed.user.student_profile));
               }
             } catch (e) {
               localStorage.removeItem(LOCAL_STORAGE_SESSION_KEY);
@@ -180,10 +287,19 @@ export function AuthProvider({ children }) {
           id: 'mock-user-0889',
           email: email.trim(),
           user_metadata: {
-            full_name: studentProfile.name,
+            full_name: 'Rahul Sharma',
             goal: 'Placement Preparation',
-            track: 'Data Science Track',
-            active_agents: ['dsa', 'dbms', 'maths', 'aiml']
+            active_agents: ['DSA Tutor', 'DBMS Tutor', 'Maths Tutor', 'AIML Tutor']
+          },
+          student_profile: {
+            id: 'mock-student-0889',
+            auth_user_id: 'mock-user-0889',
+            name: 'Rahul Sharma',
+            academic_email: email.trim(),
+            goal: 'Placement Preparation',
+            focus_tutors: ['DSA Tutor', 'DBMS Tutor', 'Maths Tutor', 'AIML Tutor'],
+            onboarding_completed: true,
+            updated_at: new Date().toISOString()
           }
         };
       }
@@ -202,7 +318,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, JSON.stringify(localSession));
       setUser(matchedUser);
       setSession(localSession);
-      setProfile(buildProfile(matchedUser));
+      setProfile(buildStudentProfile(matchedUser, matchedUser.student_profile));
       return { user: matchedUser, session: localSession };
     }
   };
@@ -214,8 +330,7 @@ export function AuthProvider({ children }) {
     const userMetadata = {
       full_name: fullName,
       goal: goal || 'Placement Preparation',
-      track: 'Data Science Track',
-      active_agents: activeAgents || ['dsa', 'dbms', 'maths', 'aiml']
+      active_agents: activeAgents || ['DSA Tutor', 'DBMS Tutor', 'Maths Tutor', 'AIML Tutor']
     };
 
     if (isSupabaseConfigured && supabase) {
@@ -232,7 +347,23 @@ export function AuthProvider({ children }) {
         throw error;
       }
 
-      // Check if email confirmation is required
+      // If user signed up and session is established, insert row into public.students
+      if (data.user) {
+        try {
+          await supabase.from('students').insert({
+            auth_user_id: data.user.id,
+            name: fullName.trim(),
+            academic_email: email.trim(),
+            goal: goal || 'Placement Preparation',
+            focus_tutors: activeAgents || ['DSA Tutor', 'DBMS Tutor', 'Maths Tutor', 'AIML Tutor'],
+            onboarding_completed: true,
+            updated_at: new Date().toISOString()
+          });
+        } catch (dbErr) {
+          console.warn('Initial student record creation note:', dbErr);
+        }
+      }
+
       const needsEmailConfirmation = data.user && !data.session;
 
       if (data.user && data.session) {
@@ -261,11 +392,24 @@ export function AuthProvider({ children }) {
         throw error;
       }
 
+      const userId = 'user-' + Math.random().toString(36).substring(2, 9);
+      const studentData = {
+        id: 'student-' + userId,
+        auth_user_id: userId,
+        name: fullName.trim(),
+        academic_email: email.trim(),
+        goal: goal || 'Placement Preparation',
+        focus_tutors: activeAgents || ['DSA Tutor', 'DBMS Tutor', 'Maths Tutor', 'AIML Tutor'],
+        onboarding_completed: true,
+        updated_at: new Date().toISOString()
+      };
+
       const newUser = {
-        id: 'user-' + Math.random().toString(36).substring(2, 9),
+        id: userId,
         email: email.trim(),
         password, // for local validation only
         user_metadata: userMetadata,
+        student_profile: studentData,
         created_at: new Date().toISOString()
       };
 
@@ -280,7 +424,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, JSON.stringify(localSession));
       setUser(newUser);
       setSession(localSession);
-      setProfile(buildProfile(newUser));
+      setProfile(buildStudentProfile(newUser, studentData));
 
       return {
         user: newUser,
@@ -316,7 +460,8 @@ export function AuthProvider({ children }) {
     signIn,
     signUp,
     signOut,
-    fetchProfile
+    fetchProfile,
+    updateStudentProfile
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

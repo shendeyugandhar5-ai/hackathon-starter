@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
-import { Sparkles, Download, Layers, Activity, RefreshCw } from 'lucide-react';
+import { Download, Activity } from 'lucide-react';
 import TopBar from '../components/layout/TopBar';
 import MetricCard from '../components/brain/MetricCard';
 import BlockerAlert from '../components/brain/BlockerAlert';
@@ -8,7 +8,7 @@ import CurricularFacetCard from '../components/brain/CurricularFacetCard';
 import TelemetryStream from '../components/brain/TelemetryStream';
 import ConceptMeshDAG from '../components/brain/ConceptMeshDAG';
 import LiveMasteryPanel from '../components/brain/LiveMasteryPanel';
-import { useMastery, useRootCause } from '../hooks/useStudent';
+import { useMastery, useRootCause, useTrace } from '../hooks/useStudent';
 import { useStudentId } from '../hooks/useStudentId';
 import { AGENT_STYLES } from '../services/api';
 import { studentProfile, prerequisiteBlocker, curricularFacets } from '../data/mockData';
@@ -52,12 +52,13 @@ export default function StudentBrain() {
   const { topics, subjects, overallPercent, weakTopics, masteredTopics, loading, error } =
     useMastery(studentId);
   const { topGap } = useRootCause(studentId);
+  const { entries: liveTelemetry } = useTrace(studentId, 10);
 
   // Live values where the backend has them; design-only fields stay from the mock
   const liveProfile = {
     ...studentProfile,
     overallMastery: loading ? studentProfile.overallMastery : overallPercent,
-    nodesUnlocked: masteredTopics.length,
+    nodesUnlocked: masteredTopics.length || studentProfile.nodesUnlocked,
     totalNodes: topics.length || studentProfile.totalNodes,
   };
 
@@ -84,7 +85,28 @@ export default function StudentBrain() {
           title: topGap.prerequisite.replace(/_/g, ' '),
         },
       }
-    : { ...prerequisiteBlocker, detected: false };
+    : prerequisiteBlocker;
+
+  const handleExportState = () => {
+    const jsonStr = JSON.stringify(
+      {
+        student_id: studentId,
+        timestamp: new Date().toISOString(),
+        overall_mastery: overallPercent,
+        topics,
+        subjects,
+        root_cause: topGap,
+      },
+      null,
+      2
+    );
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `eduhive-brain-state-${String(studentId).slice(0, 8)}.json`;
+    a.click();
+  };
 
   return (
     <div className="min-h-screen bg-[#FAF7F2] pb-12">
@@ -101,7 +123,7 @@ export default function StudentBrain() {
             <div className="flex items-center gap-2 text-[11px] font-mono text-[#8C827A]">
               <span>WORKSPACE CONTEXT</span>
               <span>/</span>
-              <span className="text-[#A8421E] font-semibold">Student Model #0889</span>
+              <span className="text-[#A8421E] font-semibold">Student Model #{String(studentId).slice(0, 7)}</span>
               <span>/</span>
               <span>Bayesian Knowledge Tracing</span>
             </div>
@@ -109,19 +131,22 @@ export default function StudentBrain() {
             {/* Quick Action Pills */}
             <div className="flex items-center gap-2">
               <button 
+                type="button"
                 onClick={() => setDiagnosticActive(!diagnosticActive)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium border transition-colors ${
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium border transition-colors cursor-pointer ${
                   diagnosticActive 
                     ? 'bg-[#A8421E] text-white border-[#A8421E]' 
                     : 'bg-[#F4EFE6] hover:bg-[#EAE4D7] text-[#57534E] border-[#DDD5C5]'
                 }`}
               >
                 <Activity className="w-3.5 h-3.5" />
-                <span>Diagnostic Mode</span>
+                <span>{diagnosticActive ? 'Active Diagnostic' : 'Diagnostic Mode'}</span>
               </button>
 
               <button 
-                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F4EFE6] hover:bg-[#EAE4D7] text-[#57534E] border border-[#DDD5C5] text-xs font-mono font-medium transition-colors"
+                type="button"
+                onClick={handleExportState}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F4EFE6] hover:bg-[#EAE4D7] text-[#57534E] border border-[#DDD5C5] text-xs font-mono font-medium transition-colors cursor-pointer"
                 title="Export Knowledge State JSON"
               >
                 <Download className="w-3.5 h-3.5" />
@@ -147,8 +172,8 @@ export default function StudentBrain() {
           <MetricCard type="strategy" data={liveProfile} />
         </div>
 
-        {/* Prerequisite Blocker Alert Banner — live root-cause detection */}
-        {liveBlocker.detected && <BlockerAlert data={liveBlocker} />}
+        {/* Prerequisite Blocker Alert Banner */}
+        <BlockerAlert data={liveBlocker} />
 
         {/* Curricular Knowledge Facets Section */}
         <div className="space-y-3">
@@ -200,7 +225,7 @@ export default function StudentBrain() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
           {/* Telemetry Stream (5 cols) */}
           <div className="lg:col-span-5">
-            <TelemetryStream />
+            <TelemetryStream events={liveTelemetry} />
           </div>
 
           {/* Concept Mesh DAG (7 cols) */}
