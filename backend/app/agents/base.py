@@ -88,6 +88,7 @@ class BaseAgent:
         student_id: str,
         context: Optional[SpecialistResponse] = None,
         student_context: Optional[str] = None,
+        image: Optional[dict] = None,
     ) -> SpecialistResponse:
         # Imported here to keep the module import-light for tests
         from app.agents.llm_client import complete
@@ -102,4 +103,11 @@ class BaseAgent:
                 f"Add only what your subject contributes. Do not repeat their points."
             )
 
-        return SpecialistResponse(response=complete(prompt, message))
+        # 700 tokens is comfortably above the ~180-word target set in the
+        # prompts, while keeping a turn responsive - generation time scales
+        # with tokens produced, and this is the dominant cost of a turn.
+        return SpecialistResponse(
+            # 700 truncated answers mid-sentence on reasoning models -
+            # thinking tokens count against the same budget.
+            response=complete(prompt, message, max_tokens=1600, image=image)
+        )

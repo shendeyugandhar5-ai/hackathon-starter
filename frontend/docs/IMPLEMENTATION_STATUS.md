@@ -1,53 +1,84 @@
-# EduHive Frontend Implementation Status
+# EduHive — Implementation Status
 
-**Last Updated:** Phase 1 — Authentication & Dynamic Application State Complete
-
----
-
-## Current Status Overview
-
-| Component / Page | Status | Reference Screenshot | Key Features & Notes |
-| :--- | :--- | :--- | :--- |
-| **Design System & Tokens** | ✅ Complete | Batches 1 & 2 | Warm ivory palette (`#FAF7F2`), terracotta brand (`#A8421E`), editorial serif typography (`Newsreader`), monospace telemetry tokens (`JetBrains Mono`), official 3D hexagonal book emblem. |
-| **AppShell / Sidebar / TopBar** | ✅ Dynamic | Batch 2 (Image 4) | Dark slate sidebar (`#161514`), `COGNITIVE WORKSPACE` navigation, `Specialist Agents 4 Online` box (`MATH`, `AIML`, `DSA`, `DBMS`), `Teacher Escalation: Ready`, dynamic user profile card with AuthContext, logout menu, dynamic TopBar initials & track. |
-| **Authentication System** | ✅ Complete | Phase 1 Goal | Supabase client in `src/lib/supabase.js`, `AuthContext` provider, session persistence (`onAuthStateChange`), profile fetch & creation, ProtectedRoute component, clean inline error alerts, and minimal EduHive LoadingScreen. |
-| **Student Brain Page (`/app/student-brain`)** | ✅ Fully Dynamic & Protected | Batch 1 (Image 1) | Real-time Bayesian Knowledge Tracing metrics from `studentService.getMastery`, dynamic curricular facets for DSA/DBMS/Maths/AIML, live telemetry delta stream from `/api/students/{id}/trace`, prerequisite blocker detection, and exportable JSON knowledge state. |
-| **Progress & Roadmap (`/app/progress`)** | ✅ Fully Dynamic & Protected | Batch 1 (Image 4) | Dynamic sprint pace and overall mastery via `progressService.getStudentProgress`, career placement fit benchmark tailored to student's goal (*Data Scientist*, *AI/ML Engineer*, *Software Engineer*), 8-week structured pathway milestones, and printable progress report. |
-| **Landing Page (`/`)** | ✅ Auth-Aware | Batch 1 (Image 5) | Editorial hero, interactive multi-agent inquiry preview (Maths + DBMS + AIML synthesis), 8-step collaborative loop, 6 Hive faculty specialist profiles, cognitive model teaser, placement outcomes, CTA banner with auth-aware redirection, and functional smooth-scroll navbar anchors. |
-| **Login Page (`/login`)** | ✅ Connected | Batch 1 (Image 2) | 2-column layout (50/50 split), editorial quote showcase with ambient glow, academic email & password input, password toggle, remember me checkbox, Google OAuth integration, inline error messages, and seamless session redirect to `/app/tutor`. |
-| **Register Page (`/register`)** | ✅ Connected | Batch 1 (Image 3) | 2-column layout (42/58 split), live topology dispatch diagram with radiating agent spokes, 3-step onboarding form, career trajectory selector, dynamic multi-select agent panel, academic consent checkbox, email confirmation state, and profile record creation. |
-| **Tutor Orchestration (`/app/tutor`)** | ✅ Fully Dynamic & Protected | Batch 2 (Image 3) | Real multi-agent orchestration connected to `POST /api/chat`, live agent dispatching (`Maths`, `AIML`, `DSA`, `DBMS`, `General`), dynamic intent classification, Co-Synthesis response rendering, follow-up Socratic action triggers, and dynamic assessment submissions (`POST /api/assessments`). |
-| **Knowledge Graph & Ontology (`/app/knowledge-map`)** | ✅ Fully Dynamic & Protected | Batch 2 (Image 5) | Dynamic concept DAG connected to live topic mastery via `knowledgeService.getConceptGraph`, subject filter tabs, interactive node diagnostic inspector, identified bottleneck calculation, and direct Socratic drill launcher. |
-| **Specialist Agents (`/app/agents`)** | ✅ Protected & Interactive | AI Team | Interactive overview of all 6 specialized AI agents with live confidence telemetry, active topics, and direct Socratic session launch triggers with URL parameter prefilling (`?agent=maths`, etc.). |
-| **Session History (`/app/history`)** | ✅ Fully Dynamic & Protected | Diagnostic Archive | Dynamic audit trail of past Socratic tutorials, diagnostic checkpoints, and belief score updates loaded via `historyService.getStudentHistory` with interactive session resumption. |
-| **Student Profile (`/app/profile`)** | ✅ Dynamic & Protected | Dynamic Identity | Complete dynamic student identity connected to `public.students` table via Supabase Auth (`auth_user_id`), profile editing (name, goal, focus tutors), read-only academic email, onboarding completion indicator, secure password change, and instant sign out. |
+Last verified: backend `test_api.py` → **28 passed, 0 failed, 2 skipped**.
 
 ---
 
-## Dynamic Application Architecture
+## Working end to end
 
-### 1. Centralized API Service Layer (`src/services/`)
-- [`api.js`](file:///c:/Users/soham%20parab/.gemini/antigravity-ide/scratch/kurukshetra/frontend/src/services/api.js): Centralized HTTP wrapper with request latency timing, error status parsing, and generic GET/POST/PUT/DELETE methods.
-- [`chatService.js`](file:///c:/Users/soham%20parab/.gemini/antigravity-ide/scratch/kurukshetra/frontend/src/services/chatService.js): Dispatches student questions to `POST /api/chat`, manages conversation message histories, and includes resilient Socratic fallback generation.
-- [`studentService.js`](file:///c:/Users/soham%20parab/.gemini/antigravity-ide/scratch/kurukshetra/frontend/src/services/studentService.js): Retrieves live student mastery (`/api/students/{id}/mastery`), Agent Trace telemetry (`/api/students/{id}/trace`), recommendations, and submits diagnostic assessments (`/api/assessments`).
-- [`progressService.js`](file:///c:/Users/soham%20parab/.gemini/antigravity-ide/scratch/kurukshetra/frontend/src/services/progressService.js): Computes dynamic sprint milestones, velocity percentiles, and placement fit benchmarks tailored to student goals.
-- [`knowledgeService.js`](file:///c:/Users/soham%20parab/.gemini/antigravity-ide/scratch/kurukshetra/frontend/src/services/knowledgeService.js): Resolves concept DAG nodes, prerequisite chains, and student misconceptions merged with live mastery scores.
-- [`historyService.js`](file:///c:/Users/soham%20parab/.gemini/antigravity-ide/scratch/kurukshetra/frontend/src/services/historyService.js): Maps past student routing events and conversation sessions into structured audit records.
+| Capability | Status | Where |
+|---|---|---|
+| Two-stage routing (trained TF-IDF → LLM fallback) | ✅ | `agents/router.py` |
+| LangGraph orchestration (11 nodes) | ✅ | `agents/graph.py` |
+| Coordinator decision policy | ✅ | `agents/decision.py` |
+| 5 specialist agents + verifier | ✅ | `agents/` |
+| Multi-agent collaboration | ✅ | runner-up probability ≥ 0.25 |
+| Subject-aware RAG (19 chunks) | ✅ | `knowledge/` |
+| Structured verification + 1 retry | ✅ | `agents/verifier_agent.py` |
+| Shared student context | ✅ | `services/context_service.py` |
+| BKT mastery + root-cause detection | ✅ | `services/progress_engine.py` |
+| Recommendations | ✅ | `services/recommendation_engine.py` |
+| Conversation history (resumable) | ✅ | `services/conversation_service.py` |
+| Real Agent Trace events | ✅ | `services/trace.py` → `AgentTracePanel` |
+| Voice input (Web Speech API) | ✅ | `hooks/useSpeechRecognition.js` |
+| Image questions (transcribe → route) | ✅ | `agents/llm_client.py` |
+| Supabase auth + demo fallback | ✅ | `context/AuthContext.jsx`, `lib/supabase.js` |
 
-### 2. Multi-Provider Backend LLM Gateway (`backend/app/agents/llm_client.py`)
-- Resilient sequential fallback: **Gemini** → **Groq** → **Cerebras** → **OpenRouter** → **Cloudflare Workers AI** → **Ollama Local** → **Socratic Pedagogical Fallback**.
-- API keys kept strictly on the backend (`backend/.env`), completely separated from frontend bundle.
-- Backend smoke tests passing: **13 passed, 0 failed, 2 skipped**.
+## Frontend pages
 
-### 3. Separation of Concerns
-- **UI Components**: Purely declarative, consuming services and React context.
-- **Service Layer**: Handles HTTP requests, Supabase database queries, fallback data formatting, and error normalization.
-- **FastAPI Backend**: Handles coordinator routing, specialist agent dispatch, BKT updates, and LLM gateway completions.
-- **Database & Auth**: Supabase PostgreSQL (`students`, `student_mastery`, `agent_routing_log`, `assessments`, `recommendations`) + Supabase Auth.
+| Page | Data source |
+|---|---|
+| **Tutor** | `POST /api/chat` — live chat, Agent Trace, knowledge check, voice, images |
+| **Student Brain** | `GET /mastery` + `/root-cause` — live metrics, facets, blocker |
+| **History** | `GET /conversations` — real threads, click to resume |
+| **Agents** | `GET /api/agents` + `/trace` — live scope, mean confidence, route counts |
+| Knowledge Map | mock (`data/mockData.js`) |
+| Progress & Roadmap | partly mock — benchmarks/ATS are design-only |
+
+## Verified scenarios
+
+| Test | Result |
+|---|---|
+| "Explain recursion…" | `dsa` @ 0.78, single agent |
+| "Explain Bayes theorem." | `maths` @ 0.87, RAG grounded |
+| "Naive Bayes using conditional probability" | `maths` + **`aiml`**, 3 chunks, verified |
+| "Why is my normalization answer wrong?" | `dbms`, strategy `worked_example` |
+| "Software engineering placement roadmap" | `general` @ 0.74 |
+| "Confused about probability in ML" | `maths`, strategy `worked_example` |
+| Single-subject question | correctly stays single-agent |
+| RAG subject filter | maths content excluded from a dsa-filtered query |
 
 ---
 
-## Build & Verification Results
-- `npm run build`: Production bundle compiled with **0 errors**.
-- Backend smoke test (`test_api.py`): **13 passed, 0 failed, 2 skipped**.
-- All routes verified and operational (`/`, `/login`, `/register`, `/app/tutor`, `/app/student-brain`, `/app/knowledge-map`, `/app/progress`, `/app/history`, `/app/agents`, `/app/profile`).
+## Known gaps
+
+1. **Gemini key is invalid** — the value in `.env` is an OAuth token
+   (`AQ.Ab8RN...`); Gemini keys start with `AIza`. Every orchestration stage runs
+   and is verified, but agent *prose* is a canned placeholder until the key is
+   replaced at [aistudio.google.com/apikey](https://aistudio.google.com/apikey).
+   Nothing else is blocking.
+
+2. **DKT-LSTM not trained** — BKT is live and running the mastery loop. Run
+   `ml/notebooks/02_dkt_training.ipynb` (~5 min) to enable the deep tier and
+   produce the loss curve for the pitch.
+
+3. **Knowledge Map / Progress benchmarks still mock** — deliberate: the backend
+   has no equivalent data, and the visuals are design-only.
+
+4. **Telemetry is poll-based**, not SSE. `LiveTelemetryStream` reads
+   `/students/{id}/trace` with a manual refresh — sufficient for the demo and
+   avoids introducing streaming infrastructure.
+
+5. **RAG uses TF-IDF, not embeddings.** Deliberate — see ARCHITECTURE §4.
+   `retriever.py` exposes a vector-store-shaped interface, so swapping in
+   pgvector is a one-file change.
+
+---
+
+## Run
+
+```powershell
+cd backend;  .\.venv\Scripts\uvicorn.exe app.main:app --reload --port 8000
+cd frontend; npm run dev
+cd backend;  .\.venv\Scripts\python.exe test_api.py
+```

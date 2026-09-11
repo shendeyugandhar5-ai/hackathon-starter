@@ -29,6 +29,24 @@ app.add_middleware(
 app.include_router(api_router)
 
 
+@app.on_event("startup")
+def warm_ocr_engine() -> None:
+    """Load the OCR models in the background as soon as the server is up.
+
+    Initialising the ONNX detection/recognition models takes ~10-15s. Paying
+    that on the first image a student uploads makes the feature look broken;
+    paying it on a background thread at startup means it is ready by the time
+    anyone attaches one. Failure here is not fatal - `extract_text` reports
+    the same problem per-request.
+    """
+    import threading
+
+    from app.services.ocr import active_engine
+
+    threading.Thread(target=active_engine, daemon=True,
+                     name="ocr-warmup").start()
+
+
 @app.get("/", response_model=RootResponse, summary="API Root Status")
 def root():
     """Simple API status and welcome response."""

@@ -147,3 +147,76 @@ class AssessmentResult(BaseModel):
     misconception_logged: Optional[str] = None
     escalate_to_human: bool = False
     escalation_reason: Optional[str] = None
+
+
+class GraphNode(BaseModel):
+    id: str
+    label: str
+    node_type: Literal["concept", "question", "agent", "misconception"]
+    subject: Optional[str] = None
+    mastery: Optional[int] = None
+    state: Optional[str] = None
+    metadata: dict = {}
+
+
+class GraphEdge(BaseModel):
+    id: str
+    source: str
+    target: str
+    edge_type: Literal[
+        "prerequisite_of",
+        "asked_about",
+        "answered_by",
+        "supported",
+        "affects",
+        "journey_step",
+        "related_to",
+    ]
+    weight: float = 1.0
+    label: Optional[str] = None
+    metadata: dict = {}
+
+
+class GraphSummary(BaseModel):
+    total_concepts: int = 0
+    mastered_concepts: int = 0
+    learning_concepts: int = 0
+    weak_concepts: int = 0
+    subjects_covered: List[str] = []
+    agents_used: List[str] = []
+    total_questions: int = 0
+    diversification_score: float = 0.0
+    top_bottleneck: Optional[str] = None
+
+
+class TimelineEvent(BaseModel):
+    id: str
+    timestamp: Optional[str] = None
+    event_type: str
+    title: str
+    description: str
+    agent: Optional[str] = None
+    subject: Optional[str] = None
+    concept: Optional[str] = None
+
+
+class LearningGraphResponse(BaseModel):
+    student_id: str
+    nodes: List[GraphNode] = []
+    edges: List[GraphEdge] = []
+    summary: GraphSummary
+    timeline: List[TimelineEvent] = []
+    is_empty: bool = False
+
+
+class LearnerGraphContext(BaseModel):
+    student_id: str
+    weak_concepts: List[dict] = []
+    mastered_concepts: List[str] = []
+    recent_agents: List[str] = []
+    subjects_covered: List[str] = []
+    learning_path: List[str] = []
+    recent_questions: List[str] = []
+    top_bottleneck: Optional[str] = None
+    diversification_score: float = 0.0
+

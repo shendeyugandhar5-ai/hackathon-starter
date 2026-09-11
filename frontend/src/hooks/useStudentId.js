@@ -1,29 +1,34 @@
 /**
- * Resolves the backend `student_id` for the signed-in user.
+ * Resolves the backend `student_id` for the current user.
  *
- * The backend auto-creates a student row on first chat (`ensure_student`),
- * so each authenticated user keeps an independent mastery record.
+ * Precedence, highest first:
+ *   1. The authenticated Supabase user's id  — real users always win
+ *   2. VITE_DEMO_STUDENT_ID                   — explicit demo override
+ *   3. 'guest'                                — unauthenticated fallback
  *
- * Set VITE_DEMO_STUDENT_ID only when intentionally using a shared demo account.
+ * The demo id only applies when nobody is signed in, so a logged-in student
+ * can never be silently served the seeded demo profile's data.
+ *
+ * The backend auto-creates the student row on first contact
+ * (`ensure_student`), so any stable id works.
  */
 import { useEffect, useMemo } from "react";
 import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 
-const DEMO_STUDENT_ID =
-  import.meta.env.VITE_DEMO_STUDENT_ID !== undefined
-    ? import.meta.env.VITE_DEMO_STUDENT_ID
-    : "";
+const DEMO_STUDENT_ID = import.meta.env.VITE_DEMO_STUDENT_ID || '';
 
 export function useStudentId() {
-  const { profile } = useAuth();
+  const { profile, isAuthenticated } = useAuth();
 
-  const studentId = useMemo(
-    () => DEMO_STUDENT_ID || profile?.student_id || profile?.id || "guest",
-    [profile?.student_id, profile?.id],
-  );
+  const studentId = useMemo(() => {
+    // An authenticated user always uses their own id
+    if (isAuthenticated && profile?.id) return profile.id;
+    // Otherwise fall back to the demo profile, then to a guest bucket
+    return DEMO_STUDENT_ID || 'guest';
+  }, [isAuthenticated, profile?.id]);
 
-  // Make sure the row exists so mastery/trace writes have somewhere to land
+  // Ensure the row exists so mastery/trace/conversation writes land somewhere
   useEffect(() => {
     if (!studentId) return;
     api.createStudent({

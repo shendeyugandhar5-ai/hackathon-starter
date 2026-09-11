@@ -132,6 +132,24 @@ GENERAL_EXAMPLES = [
     "What should my daily routine look like?",
     "Help me set realistic study goals.",
     "How do I prepare for HR rounds?",
+    # Role-specific roadmap phrasings. Without these the classifier latches
+    # onto the domain word ("software engineering", "data science") and
+    # misroutes a roadmap request to a subject specialist.
+    "Give me a software engineering placement roadmap.",
+    "Give me a data science placement roadmap.",
+    "Give me a roadmap for becoming a backend developer.",
+    "What is the roadmap for a machine learning engineer role?",
+    "Roadmap for full stack development placements",
+    "Study plan for software engineering interviews",
+    "How do I prepare for a software engineering role?",
+    "What should I study to become a software engineer?",
+    "Preparation plan for data analyst roles",
+    "Career roadmap for backend engineering",
+    "What is the best preparation strategy for product companies?",
+    "Plan my placement preparation for the next month.",
+    "Which subjects should I prioritize for placements?",
+    "How do I structure my revision before interviews?",
+    "Give me a week by week preparation schedule.",
 ]
 
 

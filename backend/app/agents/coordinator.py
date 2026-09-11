@@ -1,36 +1,25 @@
-"""Coordinator agent - the routing brain.
+"""Coordinator - the entry point for one student turn.
 
-One /api/chat turn, end to end:
+The orchestration itself lives in `graph.py` (LangGraph). This module owns
+the agent registry, the image pre-processing that keeps the trained router
+usable for photographed questions, and the mapping from graph state to the
+/api/chat response contract.
 
-    UNDERSTAND  build shared student context from the database
-    ROUTE       trained Tier-1 classifier, LLM fallback below threshold
-    EXPLAIN WHY record agent + confidence + reason for the Agent Trace panel
-    COLLABORATE dispatch to one or more specialists (General is a leaf node)
-    VERIFY      combine multi-agent answers through the verifier
-    REMEMBER    persist the student and agent messages
-    RECOMMEND   derive the next-best-action from the updated context
+Kept deliberately thin so there is exactly one place where a turn is
+executed, and one place where the response shape is built.
 """
 import logging
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 from app.agents.aiml_agent import AIMLAgent
-from app.agents.base import AgentName, SpecialistResponse
+from app.agents.base import AgentName
 from app.agents.dbms_agent import DBMSAgent
 from app.agents.dsa_agent import DSAAgent
 from app.agents.general_agent import GeneralAgent
-from app.agents.llm_client import is_available as llm_available
+from app.agents.llm_client import extract_question_from_image, parse_data_url
 from app.agents.maths_agent import MathsAgent
-from app.agents.router import detect_subjects, llm_classify, router_classify
-from app.agents.verifier_agent import verify_and_combine
-from app.core.config import settings
-from app.services import conversation_service
-from app.services.context_service import build_context
-from app.services.recommendation_engine import (
-    derive_recommendations,
-    persist_recommendations,
-    top_recommendation,
-)
-from app.services.routing_log import log_routing
+from app.services import conversation_service, ocr
+from app.services.trace import STEP_OCR, TraceRecorder
 
 logger = logging.getLogger("learnos.coordinator")
 
@@ -58,117 +47,128 @@ AGENT_PROFILES: Dict[str, Dict[str, str]] = {
 
 
 def coordinate(message: str, student_id: str,
-               conversation_id: Optional[str] = None) -> Dict[str, Any]:
+               conversation_id: Optional[str] = None,
+               image_data_url: Optional[str] = None) -> Dict[str, Any]:
     """Handle one student turn and return the full /api/chat contract."""
+    from app.agents.graph import run_graph  # late import keeps startup light
 
-    # --- UNDERSTAND: assemble everything we know about this student --------
-    conversation_service.ensure_student(student_id)
+    recorder = TraceRecorder()
+
+    # --- image pre-processing: OCR first ----------------------------------
+    # Whenever a picture is involved, the text comes out of it before
+    # anything else happens. Two reasons, both load-bearing: the chat model
+    # we route to is text-only, so the question has to *be* text to be
+    # answerable at all; and the trained router classifies text, so
+    # extracting it here keeps image questions inside the normal
+    # routing/trace story instead of dumping them on the General agent.
+    image = parse_data_url(image_data_url) if image_data_url else None
+    transcribed = ""
+    transcription_source = ""
+    ocr_info: Optional[Dict[str, Any]] = None
+    routing_text = message or ""
+
+    if image:
+        result = ocr.extract_text(image)
+        ocr_info = result.as_dict()
+
+        if result.ok:
+            transcribed = result.text
+            transcription_source = result.engine
+            # `confidence` is a named field on the event, so it is dropped
+            # from the extra data rather than passed twice.
+            extra = {k: v for k, v in ocr_info.items() if k != "confidence"}
+            recorder.add(
+                STEP_OCR, "OCR text extraction",
+                f"Read {len(result.text)} characters across {result.line_count} "
+                f"lines using {result.engine}",
+                confidence=round(result.confidence, 3), **extra,
+            )
+        else:
+            # Nothing readable - a diagram with no labels, a blurred photo,
+            # or no engine installed. A vision-capable model may still manage
+            # it; a text-only one will say so, which is honest either way.
+            recorder.fail(STEP_OCR, "OCR text extraction",
+                          result.error or "no text extracted")
+            transcribed = extract_question_from_image(image)
+            if transcribed:
+                transcription_source = "vision_model"
+                recorder.add(STEP_OCR, "Vision model fallback",
+                             f"OCR found no text; the vision model read "
+                             f"{len(transcribed)} characters instead")
+
+        if transcribed:
+            routing_text = f"{message} {transcribed}".strip() if message else transcribed
+
+    # Once the text is out, the image itself is redundant - and sending image
+    # parts to a text-only model is an error rather than a graceful
+    # degradation. It travels on only when nothing could be read from it.
+    llm_image = None if transcribed else image
+
+    agent_message = message or ""
+    if transcribed:
+        read_by = "OCR" if transcription_source not in ("", "vision_model") else "the vision model"
+        agent_message = (
+            f"{message}\n\n[Question read from the attached image by {read_by}:]\n{transcribed}".strip()
+            if message
+            else f"The student attached this question as an image. "
+                 f"{read_by.capitalize()} read it as:\n\n{transcribed}"
+        )
+    elif image and not message:
+        agent_message = "The student attached a question as an image. Read it and answer."
+
     if conversation_id:
-        conversation_service.ensure_conversation(conversation_id, student_id, title=message)
+        title = (message or transcribed or "Image question")[:120]
+        conversation_service.ensure_conversation(conversation_id, student_id, title=title)
 
-    ctx = build_context(student_id, conversation_id)
-    context_block = ctx.to_prompt_block()
+    # --- run the orchestration graph --------------------------------------
+    state: Dict[str, Any] = {
+        "student_id": student_id,
+        "conversation_id": conversation_id,
+        "user_message": agent_message,
+        "routing_text": routing_text,
+        "image": llm_image,
+        "recorder": recorder,
+        "errors": [],
+    }
+    result = run_graph(state)
 
-    # --- ROUTE ------------------------------------------------------------
-    agent, confidence = router_classify(message)
-    used_llm_fallback = False
-    low_confidence = confidence < settings.ROUTER_CONFIDENCE_THRESHOLD
+    # --- shape the response ----------------------------------------------
+    contributing: List[str] = [r["agent"] for r in result.get("agent_responses", [])]
+    routed_reason = result.get("routed_reason", "")
+    if transcribed:
+        via = "OCR" if transcription_source not in ("", "vision_model") else "vision model"
+        routed_reason += f" | routed on text extracted from the attached image via {via}"
 
-    if low_confidence and llm_available():
-        agent = llm_classify(message)
-        used_llm_fallback = True
-
-    if used_llm_fallback:
-        routed_reason = (
-            f"Router confidence {confidence:.2f} was below "
-            f"{settings.ROUTER_CONFIDENCE_THRESHOLD}; LLM fallback chose '{agent}'"
-        )
-    elif low_confidence:
-        routed_reason = (
-            f"Trained router matched '{agent}' with low confidence {confidence:.2f} "
-            f"(no LLM configured for fallback)"
-        )
-    else:
-        routed_reason = f"Trained router matched '{agent}' with confidence {confidence:.2f}"
-
-    # Personalization signal: mention when context steered the teaching
-    if ctx.weak_topics:
-        weak_names = {w["topic"] for w in ctx.weak_topics}
-        routed_reason += f" | personalized using {len(weak_names)} known weak topic(s)"
-
-    # --- COLLABORATE + VERIFY --------------------------------------------
-    if agent == "general":
-        # Leaf node: General answers fully here. No handoff in or out.
-        result = specialists["general"].handle(message, student_id, student_context=context_block)
-        final_text = result.response
-        contributing = ["general"]
-    else:
-        result, final_text, contributing = _handle_specialist(
-            message, student_id, agent, context_block
-        )
-
-    # --- EXPLAIN WHY: persist the routing decision for the trace panel -----
-    log_routing(
-        student_id=student_id,
-        conversation_id=conversation_id,
-        message=message,
-        agent=agent,
-        confidence=confidence,
-        used_llm_fallback=used_llm_fallback,
-        routed_reason=routed_reason,
-    )
-
-    # --- REMEMBER ---------------------------------------------------------
-    if conversation_id:
-        conversation_service.save_message(conversation_id, student_id, "student", message)
-        conversation_service.save_message(conversation_id, student_id, "agent", final_text, agent=agent)
-
-    # --- RECOMMEND --------------------------------------------------------
-    recommendation = result.recommendation.model_dump() if result.recommendation else None
-    if recommendation is None:
-        recommendation = top_recommendation(ctx)
-    persist_recommendations(student_id, derive_recommendations(ctx))
+    verification = result.get("verification")
 
     return {
-        "agent": agent,
-        "confidence": confidence,
+        "agent": result.get("primary_agent", "general"),
+        "confidence": result.get("router_confidence", 0.0),
         "routed_reason": routed_reason,
-        "response": final_text,
-        "mastery_updates": [m.model_dump() for m in result.mastery_updates],
-        "recommendation": recommendation,
-        "contributing_agents": contributing,
+        "response": result.get("final_response", ""),
+        "mastery_updates": result.get("mastery_updates", []),
+        "recommendation": result.get("recommendation"),
+        "contributing_agents": contributing or [result.get("primary_agent", "general")],
         "context_used": {
-            "weak_topics": [w["topic"] for w in ctx.weak_topics],
+            "weak_topics": [w["topic"] for w in result.get("weak_topics", [])],
             "prerequisite_gaps": [
                 {"prerequisite": g["prerequisite"], "blocks": g["blocks"]}
-                for g in ctx.prerequisite_gaps[:3]
+                for g in result.get("prerequisite_gaps", [])[:3]
             ],
-            "recent_messages": len(ctx.recent_messages),
+            "recent_messages": 0,
         },
+        # New, backwards-compatible explainability fields
+        "teaching_strategy": result.get("teaching_strategy"),
+        "supporting_agents": result.get("supporting_agents", []),
+        "retrieved_context": [
+            {"subject": c["subject"], "topic": c["topic"],
+             "source": c["source"], "score": c["score"]}
+            for c in result.get("retrieved", [])
+        ],
+        "verification": verification,
+        # Null for text-only turns; lets the UI show what was read from an image
+        "ocr": ({**ocr_info, "text": transcribed, "source": transcription_source}
+                if ocr_info else None),
+        "knowledge_check": result.get("knowledge_check"),
+        "trace_events": recorder.dump(),
     }
-
-
-def _handle_specialist(message: str, student_id: str, agent: AgentName,
-                       context_block: str) -> Tuple[SpecialistResponse, str, List[str]]:
-    """Dispatch to a specialist, pulling in collaborators when the question spans subjects."""
-    response = specialists[agent].handle(message, student_id, student_context=context_block)
-    answers: List[Tuple[str, str]] = [(agent, response.response)]
-
-    if response.needs_handoff and response.handoff_target and response.handoff_target != "general":
-        # Handoff is specialist-to-specialist only
-        handoff = specialists[response.handoff_target].handle(
-            message, student_id, context=response, student_context=context_block
-        )
-        answers.append((response.handoff_target, handoff.response))
-        result = handoff
-    else:
-        collaborators = [a for a in detect_subjects(message) if a != agent][:2]
-        for collaborator in collaborators:
-            collab = specialists[collaborator].handle(
-                message, student_id, student_context=context_block
-            )
-            answers.append((collaborator, collab.response))
-        result = response
-
-    final_text = verify_and_combine(message, answers) if len(answers) > 1 else answers[0][1]
-    return result, final_text, [name for name, _ in answers]

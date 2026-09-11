@@ -78,11 +78,13 @@ export const api = {
    * Returns: { conversation_id, agent, confidence, routed_reason, response,
    *            mastery_updates, recommendation, contributing_agents, context_used }
    */
-  sendMessage: ({ studentId, message, conversationId = null }) =>
+  sendMessage: ({ studentId, message, conversationId = null, image = null }) =>
     post('/api/chat', {
       student_id: studentId,
       message,
       conversation_id: conversationId,
+      // Data URL of a photographed/screenshotted question, when attached
+      image,
     }),
 
   // ------------------------------------------------------------ students --
@@ -104,6 +106,12 @@ export const api = {
 
   /** Cross-subject prerequisite gaps — which weak topic is blocking what. */
   getRootCause: (studentId) => get(`/api/students/${studentId}/root-cause`),
+
+  /** Personalized Obsidian-inspired learning journey graph */
+  getLearningGraph: (studentId) => get(`/api/students/${studentId}/learning-graph`),
+
+  /** High-signal graph context for AI agents */
+  getLearningGraphContext: (studentId) => get(`/api/students/${studentId}/learning-graph/context`),
 
   // ------------------------------------------------------- conversations --
   getConversations: (studentId, limit = 20) =>
