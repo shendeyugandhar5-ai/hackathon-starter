@@ -32,31 +32,78 @@ The main endpoint. One turn: understand → route → collaborate → verify →
 { "student_id": "rahul", "conversation_id": "optional-uuid", "message": "Explain Bayes theorem" }
 ```
 
+`message` may be empty when `image` (a `data:image/...;base64,...` URL) is supplied;
+one of the two is required. Voice input is transcribed in the browser and arrives
+as ordinary `message` text.
+
 ```json
 // Response
 {
   "conversation_id": "b0c1…",
   "agent": "maths",
-  "confidence": 0.87,
-  "routed_reason": "Trained router matched 'maths' with confidence 0.87 | personalized using 5 known weak topic(s)",
+  "confidence": 0.58,
+  "routed_reason": "Trained router matched 'maths' with confidence 0.58 | strategy: step_by_step",
   "response": "…",
   "mastery_updates": [],
   "recommendation": { "topic": "conditional_probability", "reason": "Root cause: …", "priority": "high" },
-  "contributing_agents": ["maths"],
+  "contributing_agents": ["maths", "aiml"],
   "context_used": {
     "weak_topics": ["conditional_probability", "probability", "naive_bayes"],
     "prerequisite_gaps": [{ "prerequisite": "conditional_probability", "blocks": "naive_bayes" }],
     "recent_messages": 4
+  },
+
+  "teaching_strategy": "step_by_step",
+  "supporting_agents": ["aiml"],
+  "retrieved_context": [
+    { "subject": "aiml", "topic": "naive_bayes", "source": "ml_notes", "score": 0.3475 }
+  ],
+  "verification": { "passed": true, "confidence": 0.94, "issues": [], "status": "ok" },
+  "knowledge_check": { "question": "…", "subject": "maths", "topic": "conditional_probability" },
+  "trace_events": [
+    { "step": "ml_router", "label": "ML Router -> Maths", "detail": "…",
+      "status": "ok", "agent": "maths", "confidence": 0.58, "duration_ms": 202.1, "data": {} }
+  ]
+}
+```
+
+All fields below `context_used` were **added backward-compatibly** — they are
+optional, and existing clients that ignore them keep working.
+
+### Agent Trace fields
+
+| Field | Use |
+|---|---|
+| `trace_events` | Ordered execution record. `status` is `ok` / `skipped` / `failed` — a `skipped` step means the coordinator *chose* not to run it |
+| `teaching_strategy` | Adaptive strategy picked from the student's mastery |
+| `supporting_agents` | Non-empty means genuine multi-agent collaboration |
+| `retrieved_context` | Which knowledge chunks grounded the answer, with scores |
+| `verification` | Structured verdict; `status: "skipped"` when not required |
+| `knowledge_check` | Generated quiz question, when the turn warranted one |
+
+`trace_events` step ids: `query_received`, `ml_router`, `student_context`,
+`coordinator_decision`, `rag_retrieval`, `specialist_response`, `collaboration`,
+`verification`, `knowledge_check`, `mastery_update`, `recommendation`, `error`.
+
+### `GET /api/health`
+Reports subsystem readiness without exposing any secret:
+
+```json
+{
+  "status": "ok", "database": "connected",
+  "database_details": { "latency_ms": 63.8 },
+  "subsystems": {
+    "ml_router": true,
+    "langgraph": true,
+    "rag": { "available": true, "chunks": 19, "backend": "tfidf-cosine",
+             "by_subject": { "maths": 5, "aiml": 4, "dsa": 4, "dbms": 4, "general": 2 } },
+    "llm_configured": true,
+    "progress_engine": { "bkt": true, "dkt_available": false }
   }
 }
 ```
 
-**For the demo:** `routed_reason`, `confidence`, `contributing_agents`, and `context_used`
-are what make routing and personalization *visible*. Render them in the Agent Trace panel.
-`contributing_agents.length > 1` means cross-agent collaboration fired.
-
-### `GET /api/health`
-`{ "status": "ok", "database": "connected", "database_details": { "latency_ms": 63.8 } }`
+`llm_configured` reports whether a key is *present*, not whether it is valid.
 
 ### `GET /api/agents`
 All five agents with `name`, `label`, `scope`. Use it to render the agent legend.

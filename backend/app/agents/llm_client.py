@@ -97,14 +97,31 @@ def _call_ollama(system_prompt: str, message: str, model: str = "llama3") -> Opt
 
 
 def is_available() -> bool:
-    """Whether any real LLM provider is available right now."""
-    return bool(
-        settings.GEMINI_API_KEY or
-        settings.GROQ_API_KEY or
-        settings.CEREBRAS_API_KEY or
-        settings.OPENROUTER_API_KEY or
-        settings.CLOUDFLARE_API_TOKEN
-    )
+    """Whether a real LLM call can actually be made right now.
+
+    Reports whether a key is *configured* - not whether it is valid. An
+    invalid key still fails at call time, which is why callers should also
+    check `is_real_answer()` on the returned text.
+    """
+    return _get_client() is not None
+
+
+# Text `complete()` returns when it could not actually reach the model.
+CANNED_PREFIX = "[canned response"
+ERROR_REPLY = "Sorry, I couldn't reach the LLM just now - please try again."
+
+
+def is_real_answer(text: str) -> bool:
+    """False when `text` is a placeholder or the error fallback.
+
+    Anything that consumes model output as *content* - a quiz question, a
+    routing label, a transcription - must check this, or the placeholder
+    leaks into the UI as if it were a real answer.
+    """
+    if not text or not text.strip():
+        return False
+    stripped = text.strip()
+    return not (stripped.startswith(CANNED_PREFIX) or stripped.startswith(ERROR_REPLY[:28]))
 
 
 def parse_data_url(data_url: str) -> Optional[Dict[str, str]]:
@@ -170,7 +187,7 @@ def complete(system_prompt: str, message: str, model: Optional[str] = None,
         return response.text
     except Exception:
         logger.exception("LLM call failed; returning a safe fallback response")
-        return "Sorry, I couldn't reach the LLM just now - please try again."
+        return ERROR_REPLY
 
 
 def extract_question_from_image(image: Dict[str, str]) -> str:
@@ -194,7 +211,5 @@ def extract_question_from_image(image: Dict[str, str]) -> str:
         image=image,
     ).strip()
 
-    # Don't let the canned-response placeholder leak into routing
-    if text.startswith("[canned response"):
-        return ""
-    return text
+    # Don't let a placeholder or error string leak into routing
+    return text if is_real_answer(text) else ""

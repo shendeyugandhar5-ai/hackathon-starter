@@ -36,7 +36,8 @@ from typing import Any, Dict, List, Optional, TypedDict
 
 from app.agents import decision as decision_policy
 from app.agents.base import AgentName
-from app.agents.llm_client import complete, is_available as llm_available
+from app.agents.llm_client import complete, is_real_answer
+from app.agents.llm_client import is_available as llm_available
 from app.agents.router import llm_classify, router_classify
 from app.agents.verifier_agent import combine_answers, correct, verify
 from app.core.config import settings
@@ -365,7 +366,7 @@ def knowledge_check_node(state: EduHiveState) -> EduHiveState:
             max_tokens=160,
         ).strip()
 
-        if question and not question.startswith("[canned response"):
+        if is_real_answer(question):
             state["knowledge_check"] = {
                 "question": question, "subject": subject, "topic": topic,
             }

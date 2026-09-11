@@ -150,9 +150,15 @@ def run(client):
 
     r = client.post("/api/knowledge-check", json={"student_id": STUDENT})
     body = r.json() if r.status_code == 200 else {}
-    record("POST /api/knowledge-check", r.status_code == 200,
-           f"topic={body.get('topic')} ({body.get('reason')})"
-           if r.status_code == 200 else f"HTTP {r.status_code}")
+    if r.status_code == 503:
+        # Correct behaviour when the LLM is unreachable: refuse rather than
+        # return the error string as if it were a question.
+        record("POST /api/knowledge-check", True,
+               "503 - LLM unavailable, endpoint correctly declined", skipped=True)
+    else:
+        record("POST /api/knowledge-check", r.status_code == 200,
+               f"topic={body.get('topic')} ({body.get('reason')})"
+               if r.status_code == 200 else f"HTTP {r.status_code}")
 
     print("\n== LangGraph orchestration + RAG ==")
     try:

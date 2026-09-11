@@ -8,7 +8,7 @@ from typing import List
 from fastapi import APIRouter, HTTPException, Query
 
 from app.agents.coordinator import AGENT_PROFILES
-from app.agents.llm_client import complete
+from app.agents.llm_client import complete, is_real_answer
 from app.schemas.student import (
     AgentInfo,
     AssessmentResult,
@@ -180,6 +180,12 @@ def knowledge_check(payload: KnowledgeCheckRequest):
         + (f" in {subject}." if subject else "."),
         max_tokens=200,
     ).strip()
+
+    if not is_real_answer(question):
+        raise HTTPException(
+            status_code=503,
+            detail="Question generation is unavailable - the LLM could not be reached.",
+        )
 
     return KnowledgeCheckResponse(
         student_id=payload.student_id, subject=subject, topic=topic,

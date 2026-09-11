@@ -12,7 +12,7 @@ import os
 from typing import Dict, List, Optional, Tuple
 
 from app.agents.base import AgentName
-from app.agents.llm_client import complete
+from app.agents.llm_client import complete, is_real_answer
 from app.agents.prompts import ROUTER_SYSTEM_PROMPT
 
 logger = logging.getLogger("learnos.router")
@@ -103,11 +103,12 @@ def llm_classify(message: str) -> Optional[AgentName]:
     the trained router's own pick: falling back to a hardcoded 'general'
     would replace a real (if uncertain) prediction with a worse one.
     """
-    raw = complete(ROUTER_SYSTEM_PROMPT, message, max_tokens=10).strip().lower()
+    raw = complete(ROUTER_SYSTEM_PROMPT, message, max_tokens=10)
 
-    # The canned placeholder and the error string are not classifications
-    if not raw or raw.startswith("[canned response") or raw.startswith("sorry, i couldn't"):
+    # A placeholder or error string is not a classification
+    if not is_real_answer(raw):
         return None
+    raw = raw.strip().lower()
 
     for agent in ("dsa", "dbms", "maths", "aiml", "general"):
         if agent in raw:
