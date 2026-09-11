@@ -1,10 +1,25 @@
-import React, { useState } from 'react';
-import { Check, ArrowRight, Play, Lock, ChevronRight, Layers } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { structuredRoadmapWeeks } from '../../data/mockData';
+import React, { useState } from "react";
+import {
+  Check,
+  ArrowRight,
+  Play,
+  Lock,
+  ChevronRight,
+  Layers,
+} from "lucide-react";
+import { Link } from "react-router-dom";
+import { structuredRoadmapWeeks } from "../../data/mockData";
 
-export default function RoadmapPathway() {
-  const [activeTab, setActiveTab] = useState('all');
+export default function RoadmapPathway({ progressData }) {
+  const [activeTab, setActiveTab] = useState("all");
+  const currentWeek = progressData?.sprintPace?.currentWeek || 1;
+  const milestones = progressData?.milestones || [];
+  const currentMilestone =
+    milestones.find((milestone) => milestone.status === "in-progress") ||
+    milestones[0];
+  const completedMilestones = milestones.filter(
+    (milestone) => milestone.status === "completed",
+  ).length;
 
   return (
     <div className="bg-white rounded-xl p-5 md:p-6 border border-[#EAE5DC] shadow-[0_1px_3px_rgba(0,0,0,0.02)]">
@@ -15,38 +30,39 @@ export default function RoadmapPathway() {
             8-Week Structured Pathway
           </h2>
           <p className="text-xs text-[#78716C] mt-0.5">
-            Step-by-step milestones aligned with Tier-1 Data Scientist expectations
+            Step-by-step milestones aligned with Tier-1 Data Scientist
+            expectations
           </p>
         </div>
 
         {/* Filter Tabs */}
         <div className="flex items-center gap-1 bg-[#FAF7F2] p-1 rounded-lg border border-[#EAE5DC] text-xs font-mono">
           <button
-            onClick={() => setActiveTab('all')}
+            onClick={() => setActiveTab("all")}
             className={`px-2.5 py-1 rounded-md transition-colors ${
-              activeTab === 'all' 
-                ? 'bg-white text-[#1C1917] shadow-xs font-semibold' 
-                : 'text-[#78716C] hover:text-[#1C1917]'
+              activeTab === "all"
+                ? "bg-white text-[#1C1917] shadow-xs font-semibold"
+                : "text-[#78716C] hover:text-[#1C1917]"
             }`}
           >
             All Sprints
           </button>
           <button
-            onClick={() => setActiveTab('active')}
+            onClick={() => setActiveTab("active")}
             className={`px-2.5 py-1 rounded-md transition-colors ${
-              activeTab === 'active' 
-                ? 'bg-white text-[#1C1917] shadow-xs font-semibold' 
-                : 'text-[#78716C] hover:text-[#1C1917]'
+              activeTab === "active"
+                ? "bg-white text-[#1C1917] shadow-xs font-semibold"
+                : "text-[#78716C] hover:text-[#1C1917]"
             }`}
           >
-            Active (W2)
+            Active (W{currentWeek})
           </button>
           <button
-            onClick={() => setActiveTab('gates')}
+            onClick={() => setActiveTab("gates")}
             className={`px-2.5 py-1 rounded-md transition-colors ${
-              activeTab === 'gates' 
-                ? 'bg-white text-[#1C1917] shadow-xs font-semibold' 
-                : 'text-[#78716C] hover:text-[#1C1917]'
+              activeTab === "gates"
+                ? "bg-white text-[#1C1917] shadow-xs font-semibold"
+                : "text-[#78716C] hover:text-[#1C1917]"
             }`}
           >
             Milestone Gates
@@ -56,8 +72,7 @@ export default function RoadmapPathway() {
 
       {/* Structured Sprint Lineage Timeline */}
       <div className="mt-6 space-y-6 relative before:absolute before:top-3 before:bottom-3 before:left-3.5 before:w-0.5 before:bg-[#EAE5DC]">
-        
-        {/* WEEK 01: COMPLETED */}
+        {/* Current progress summary */}
         <div className="relative pl-9">
           {/* Timeline Node Icon */}
           <div className="absolute left-0 top-1 w-7 h-7 rounded-full bg-[#EAF4EE] border-2 border-[#2E7D52] flex items-center justify-center text-[#2E7D52] z-10">
@@ -68,41 +83,45 @@ export default function RoadmapPathway() {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-mono font-bold tracking-wider text-[#2E7D52]">
-                  WEEK 01 • COMPLETED
+                  {completedMilestones} MILESTONE
+                  {completedMilestones === 1 ? "" : "S"} COMPLETED
                 </span>
                 <span className="text-[10px] font-mono text-[#8C827A]">
-                  40 hrs logged
+                  {progressData?.focusedHours?.total || 0} hrs logged
                 </span>
               </div>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#EAF4EE] text-[#2E7D52] font-semibold border border-[#CDE5D5]">
-                89% Mastered
+                {progressData?.overallMastery || 0}% Mastered
               </span>
             </div>
 
             <h3 className="font-semibold text-sm text-[#1C1917] mt-1.5">
-              Foundations & Mathematical Bedrock
+              {currentMilestone?.title ||
+                "Your learning pathway is being prepared"}
             </h3>
             <p className="text-xs text-[#57534E] mt-1 leading-relaxed">
-              Linear Algebra (Eigenvalues, SVD), SQL aggregations, and differential calculus.
+              Progress is recalculated from your mastery, assessments, and
+              selected learning goals.
             </p>
 
             <div className="flex flex-wrap items-center gap-2 mt-3 pt-2.5 border-t border-[#EAE5DC] text-[11px] font-mono text-[#57534E]">
               <span className="inline-flex items-center gap-1 text-[#2E7D52]">
-                <Check className="w-3 h-3" /> Vector Spaces
+                <Check className="w-3 h-3" />{" "}
+                {progressData?.targetRole || "Personalized track"}
               </span>
               <span className="text-[#8C827A]">•</span>
               <span className="inline-flex items-center gap-1 text-[#2E7D52]">
-                <Check className="w-3 h-3" /> Gradient Descent
+                <Check className="w-3 h-3" /> Week {currentWeek} focus
               </span>
               <span className="text-[#8C827A]">•</span>
               <span className="px-2 py-0.5 rounded bg-[#FAF7F2] border border-[#DDD5C5] text-[#1C1917] font-semibold">
-                Capstone Score: 94/100
+                Placement Fit: {progressData?.placementFit || 0}/100
               </span>
             </div>
           </div>
         </div>
 
-        {/* WEEK 02: CURRENT SPRINT (HIGHLIGHTED) */}
+        {/* Current sprint */}
         <div className="relative pl-9">
           {/* Timeline Node Icon */}
           <div className="absolute left-0 top-1 w-7 h-7 rounded-full bg-[#FCF4E6] border-2 border-[#C07D1C] flex items-center justify-center text-[#C07D1C] z-10 shadow-xs">
@@ -113,22 +132,23 @@ export default function RoadmapPathway() {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-mono font-bold tracking-wider text-[#C07D1C]">
-                  WEEK 02 • CURRENT SPRINT
+                  WEEK {currentWeek} • CURRENT SPRINT
                 </span>
                 <span className="text-[10px] font-mono text-[#8C827A]">
-                  Ends in 3 days
+                  {currentMilestone?.status || "in-progress"}
                 </span>
               </div>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#FCF4E6] text-[#C07D1C] font-semibold border border-[#F3E2C4]">
-                65% In Progress
+                {progressData?.overallMastery || 0}% In Progress
               </span>
             </div>
 
             <h3 className="font-semibold text-sm md:text-base text-[#1C1917] mt-1.5">
-              Core Probability & Supervised Learning
+              {currentMilestone?.title || "Personalized learning sprint"}
             </h3>
             <p className="text-xs text-[#57534E] mt-1 leading-relaxed">
-              Conditional independence, Bayes rule formulations, and loss surface geometry.
+              Your next milestone updates as you complete assessments and tutor
+              sessions.
             </p>
 
             {/* Sub-breakdown blocker box */}
@@ -138,8 +158,12 @@ export default function RoadmapPathway() {
                   <span className="text-xs font-mono font-bold">!</span>
                 </div>
                 <div>
-                  <div className="text-xs font-semibold text-[#1C1917]">Conditional Probability</div>
-                  <div className="text-[10px] font-mono text-[#B93826] font-medium">42% Weak • Needs Fix</div>
+                  <div className="text-xs font-semibold text-[#1C1917]">
+                    Conditional Probability
+                  </div>
+                  <div className="text-[10px] font-mono text-[#B93826] font-medium">
+                    42% Weak • Needs Fix
+                  </div>
                 </div>
               </div>
 
@@ -147,8 +171,12 @@ export default function RoadmapPathway() {
 
               <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
                 <div className="text-right">
-                  <div className="text-xs font-semibold text-[#1C1917]">Naive Bayes Classifier</div>
-                  <div className="text-[10px] font-mono text-[#C07D1C] font-medium">58% In Progress</div>
+                  <div className="text-xs font-semibold text-[#1C1917]">
+                    Naive Bayes Classifier
+                  </div>
+                  <div className="text-[10px] font-mono text-[#C07D1C] font-medium">
+                    58% In Progress
+                  </div>
                 </div>
                 <div className="p-1 rounded bg-[#FCF4E6] border border-[#F3E2C4] text-[#C07D1C]">
                   <span className="text-xs font-mono font-bold">⏳</span>
@@ -159,7 +187,8 @@ export default function RoadmapPathway() {
             {/* Footer triggers */}
             <div className="mt-3.5 pt-3 border-t border-[#F0ECE1] flex flex-wrap items-center justify-between gap-2">
               <span className="text-[11px] font-mono text-[#78716C]">
-                Assigned Agents: <strong className="text-[#A8421E]">Maths + AIML</strong>
+                Assigned Agents:{" "}
+                <strong className="text-[#A8421E]">Maths + AIML</strong>
               </span>
               <Link
                 to="/app/tutor?sprint=2"
@@ -191,7 +220,8 @@ export default function RoadmapPathway() {
               Core DSA for Data Science & Algorithm Rigor
             </h3>
             <p className="text-xs text-[#78716C] mt-0.5">
-              Sliding window, vector space nearest neighbors, and memoization optimization.
+              Sliding window, vector space nearest neighbors, and memoization
+              optimization.
             </p>
           </div>
         </div>
@@ -215,7 +245,8 @@ export default function RoadmapPathway() {
               Production DBMS, Indexing & Feature Stores
             </h3>
             <p className="text-xs text-[#78716C] mt-0.5">
-              B+ Tree indices, query plan optimization, and offline feature store architecture.
+              B+ Tree indices, query plan optimization, and offline feature
+              store architecture.
             </p>
           </div>
         </div>
@@ -224,11 +255,11 @@ export default function RoadmapPathway() {
         <div className="relative pl-9 opacity-65">
           <div className="bg-[#F8F5EE] rounded-xl p-3 border border-[#EAE5DC] text-center">
             <span className="text-[11px] font-mono text-[#78716C]">
-              Weeks 05–08: Deep Learning, System Design & Placement • 4 Assessment Gates Ahead
+              Weeks 05–08: Deep Learning, System Design & Placement • 4
+              Assessment Gates Ahead
             </span>
           </div>
         </div>
-
       </div>
     </div>
   );

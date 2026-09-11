@@ -2,28 +2,26 @@
  * Resolves the backend `student_id` for the signed-in user.
  *
  * The backend auto-creates a student row on first chat (`ensure_student`),
- * so any stable id works. For the demo we default to the seeded student
- * ('rahul'), which already has mastery scores, prerequisite edges, and
- * recommendations — so the dashboard isn't empty on first load.
+ * so each authenticated user keeps an independent mastery record.
  *
- * Set VITE_DEMO_STUDENT_ID='' to use real per-user ids instead.
+ * Set VITE_DEMO_STUDENT_ID only when intentionally using a shared demo account.
  */
-import { useEffect, useMemo } from 'react';
-import { useAuth } from '../context/AuthContext';
-import api from '../services/api';
+import { useEffect, useMemo } from "react";
+import { useAuth } from "../context/AuthContext";
+import api from "../services/api";
 
 const DEMO_STUDENT_ID =
   import.meta.env.VITE_DEMO_STUDENT_ID !== undefined
     ? import.meta.env.VITE_DEMO_STUDENT_ID
-    : 'rahul';
+    : "";
 
 export function useStudentId() {
   const { profile } = useAuth();
 
-  const studentId = useMemo(() => {
-    if (DEMO_STUDENT_ID) return DEMO_STUDENT_ID;
-    return profile?.id || 'guest';
-  }, [profile?.id]);
+  const studentId = useMemo(
+    () => DEMO_STUDENT_ID || profile?.student_id || profile?.id || "guest",
+    [profile?.student_id, profile?.id],
+  );
 
   // Make sure the row exists so mastery/trace writes have somewhere to land
   useEffect(() => {
