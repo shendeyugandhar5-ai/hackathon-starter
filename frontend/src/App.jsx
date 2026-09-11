@@ -13,7 +13,10 @@ import Tutor from './pages/Tutor';
 import KnowledgeMap from './pages/KnowledgeMap';
 import History from './pages/History';
 import Agents from './pages/Agents';
+<<<<<<< HEAD
 import Profile from './pages/Profile';
+=======
+>>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
 
 export default function App() {
   return (
@@ -41,7 +44,10 @@ export default function App() {
             <Route path="progress" element={<ProgressRoadmap />} />
             <Route path="history" element={<History />} />
             <Route path="agents" element={<Agents />} />
+<<<<<<< HEAD
             <Route path="profile" element={<Profile />} />
+=======
+>>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
           </Route>
 
           {/* Fallback redirect */}

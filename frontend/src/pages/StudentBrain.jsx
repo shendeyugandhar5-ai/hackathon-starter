@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { useState, useEffect } from 'react';
+=======
+import React, { useState } from 'react';
+>>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
 import { useOutletContext } from 'react-router-dom';
 import { Sparkles, Download, Layers, Activity, RefreshCw } from 'lucide-react';
 import TopBar from '../components/layout/TopBar';
@@ -7,12 +11,16 @@ import BlockerAlert from '../components/brain/BlockerAlert';
 import CurricularFacetCard from '../components/brain/CurricularFacetCard';
 import TelemetryStream from '../components/brain/TelemetryStream';
 import ConceptMeshDAG from '../components/brain/ConceptMeshDAG';
+<<<<<<< HEAD
 import { useAuth } from '../context/AuthContext';
 import { studentService } from '../services/studentService';
+=======
+>>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
 import { studentProfile, prerequisiteBlocker, curricularFacets } from '../data/mockData';
 
 export default function StudentBrain() {
   const { setSidebarOpen } = useOutletContext();
+<<<<<<< HEAD
   const { profile, user } = useAuth();
   const [diagnosticActive, setDiagnosticActive] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -113,6 +121,9 @@ export default function StudentBrain() {
     a.download = `eduhive-brain-state-${studentId.slice(0, 8)}.json`;
     a.click();
   };
+=======
+  const [diagnosticActive, setDiagnosticActive] = useState(false);
+>>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
 
   return (
     <div className="min-h-screen bg-[#FAF7F2] pb-12">
@@ -129,7 +140,11 @@ export default function StudentBrain() {
             <div className="flex items-center gap-2 text-[11px] font-mono text-[#8C827A]">
               <span>WORKSPACE CONTEXT</span>
               <span>/</span>
+<<<<<<< HEAD
               <span className="text-[#A8421E] font-semibold">Student Model #{studentId.slice(0, 7)}</span>
+=======
+              <span className="text-[#A8421E] font-semibold">Student Model #0889</span>
+>>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
               <span>/</span>
               <span>Bayesian Knowledge Tracing</span>
             </div>
@@ -137,15 +152,21 @@ export default function StudentBrain() {
             {/* Quick Action Pills */}
             <div className="flex items-center gap-2">
               <button 
+<<<<<<< HEAD
                 type="button"
                 onClick={() => setDiagnosticActive(!diagnosticActive)}
                 className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium border transition-colors cursor-pointer ${
+=======
+                onClick={() => setDiagnosticActive(!diagnosticActive)}
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium border transition-colors ${
+>>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
                   diagnosticActive 
                     ? 'bg-[#A8421E] text-white border-[#A8421E]' 
                     : 'bg-[#F4EFE6] hover:bg-[#EAE4D7] text-[#57534E] border-[#DDD5C5]'
                 }`}
               >
                 <Activity className="w-3.5 h-3.5" />
+<<<<<<< HEAD
                 <span>{diagnosticActive ? 'Active Diagnostic' : 'Diagnostic Mode'}</span>
               </button>
 
@@ -153,6 +174,13 @@ export default function StudentBrain() {
                 type="button"
                 onClick={handleExportState}
                 className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F4EFE6] hover:bg-[#EAE4D7] text-[#57534E] border border-[#DDD5C5] text-xs font-mono font-medium transition-colors cursor-pointer"
+=======
+                <span>Diagnostic Mode</span>
+              </button>
+
+              <button 
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F4EFE6] hover:bg-[#EAE4D7] text-[#57534E] border border-[#DDD5C5] text-xs font-mono font-medium transition-colors"
+>>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
                 title="Export Knowledge State JSON"
               >
                 <Download className="w-3.5 h-3.5" />
@@ -172,10 +200,17 @@ export default function StudentBrain() {
 
         {/* 4 Overview Metric Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<<<<<<< HEAD
           <MetricCard type="mastery" data={dynamicMetrics} />
           <MetricCard type="cognitive" data={dynamicMetrics} />
           <MetricCard type="retention" data={dynamicMetrics} />
           <MetricCard type="strategy" data={dynamicMetrics} />
+=======
+          <MetricCard type="mastery" data={studentProfile} />
+          <MetricCard type="cognitive" data={studentProfile} />
+          <MetricCard type="retention" data={studentProfile} />
+          <MetricCard type="strategy" data={studentProfile} />
+>>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
         </div>
 
         {/* Prerequisite Blocker Alert Banner */}
@@ -212,7 +247,11 @@ export default function StudentBrain() {
 
           {/* 4 Facet Cards in 2x2 Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+<<<<<<< HEAD
             {dynamicFacets.map((facet) => (
+=======
+            {curricularFacets.map((facet) => (
+>>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
               <CurricularFacetCard key={facet.id} facet={facet} />
             ))}
           </div>
@@ -222,7 +261,11 @@ export default function StudentBrain() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
           {/* Telemetry Stream (5 cols) */}
           <div className="lg:col-span-5">
+<<<<<<< HEAD
             <TelemetryStream events={dynamicTelemetry} />
+=======
+            <TelemetryStream />
+>>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
           </div>
 
           {/* Concept Mesh DAG (7 cols) */}

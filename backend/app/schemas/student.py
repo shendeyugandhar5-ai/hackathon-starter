@@ -73,6 +73,69 @@ class AssessmentSubmit(BaseModel):
     misconception_type: Optional[str] = None
 
 
+class StudentCreate(BaseModel):
+    id: str
+    name: Optional[str] = None
+    goal: Optional[str] = None
+
+
+class StudentProfile(BaseModel):
+    id: str
+    name: Optional[str] = None
+    goal: Optional[str] = None
+    overall_score: float = 0.0
+    topic_count: int = 0
+    weak_topic_count: int = 0
+    conversation_count: int = 0
+
+
+class ConversationRow(BaseModel):
+    id: str
+    title: Optional[str] = None
+    message_count: int = 0
+    created_at: Optional[datetime] = None
+    last_message_at: Optional[datetime] = None
+
+
+class PrerequisiteGap(BaseModel):
+    """Cross-subject root cause: a weak prerequisite blocking a dependent topic."""
+    prerequisite: str
+    prerequisite_subject: Optional[str] = None
+    score: float
+    blocks: str
+    blocks_subject: Optional[str] = None
+    blocked_score: float
+    weight: float = 1.0
+
+
+class RootCauseResponse(BaseModel):
+    student_id: str
+    gaps: List[PrerequisiteGap] = []
+    summary: Optional[str] = None
+
+
+class AgentInfo(BaseModel):
+    name: str
+    label: str
+    scope: str
+
+
+class KnowledgeCheckRequest(BaseModel):
+    student_id: str
+    subject: Optional[str] = None
+    topic: Optional[str] = None
+
+
+class KnowledgeCheckResponse(BaseModel):
+    """A generated quiz question - the TEST half of TEACH -> TEST."""
+    student_id: str
+    subject: Optional[str] = None
+    topic: Optional[str] = None
+    agent: Optional[str] = None
+    question: str
+    reason: Optional[str] = None
+
+
 class AssessmentResult(BaseModel):
     """TEST -> DIAGNOSE -> ADAPT: what the system did with the answer."""
     assessment_id: Optional[str] = None

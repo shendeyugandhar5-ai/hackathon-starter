@@ -14,6 +14,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
 
+<<<<<<< HEAD
   // Helper to construct profile object from student record and auth user
   const buildStudentProfile = (userData, studentData = null) => {
     if (!userData && !studentData) return null;
@@ -63,11 +64,42 @@ export function AuthProvider({ children }) {
     if (!currentUser) {
       setProfile(null);
       return null;
+=======
+  // Helper to construct profile object from user and metadata/table
+  const buildProfile = (userData, profileData = {}) => {
+    const meta = userData?.user_metadata || {};
+    const fullName = profileData?.full_name || meta.full_name || userData?.email?.split('@')[0] || studentProfile.name;
+    const nameParts = fullName.trim().split(' ');
+    const initials = nameParts.length > 1 
+      ? (nameParts[0][0] + nameParts[nameParts.length - 1][0]).toUpperCase()
+      : fullName.slice(0, 2).toUpperCase();
+
+    return {
+      id: userData?.id,
+      email: userData?.email,
+      full_name: fullName,
+      initials: initials,
+      goal: profileData?.goal || meta.goal || 'Placement Preparation',
+      track: profileData?.track || meta.track || 'Data Science Track',
+      cohort: profileData?.cohort || 'Data Science & ML Engineering Cohort',
+      active_agents: profileData?.active_agents || meta.active_agents || ['dsa', 'dbms', 'maths', 'aiml'],
+      mastery: profileData?.mastery ?? studentProfile.overallMastery,
+      created_at: profileData?.created_at || userData?.created_at || new Date().toISOString()
+    };
+  };
+
+  // Fetch or create profile from Supabase Database
+  const fetchProfile = async (currentUser) => {
+    if (!currentUser) {
+      setProfile(null);
+      return;
+>>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
     }
 
     if (isSupabaseConfigured && supabase) {
       try {
         const { data, error } = await supabase
+<<<<<<< HEAD
           .from('students')
           .select('*')
           .eq('auth_user_id', currentUser.id)
@@ -184,6 +216,38 @@ export function AuthProvider({ children }) {
       const updatedProfile = buildStudentProfile(user, studentData);
       setProfile(updatedProfile);
       return updatedProfile;
+=======
+          .from('profiles')
+          .select('*')
+          .eq('id', currentUser.id)
+          .maybeSingle();
+
+        if (data) {
+          setProfile(buildProfile(currentUser, data));
+          return;
+        }
+
+        // If no profile record yet, create one
+        const initialProfile = {
+          id: currentUser.id,
+          full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0],
+          email: currentUser.email,
+          goal: currentUser.user_metadata?.goal || 'Placement Preparation',
+          track: 'Data Science Track',
+          active_agents: currentUser.user_metadata?.active_agents || ['dsa', 'dbms', 'maths', 'aiml'],
+          created_at: new Date().toISOString()
+        };
+
+        await supabase.from('profiles').upsert(initialProfile);
+        setProfile(buildProfile(currentUser, initialProfile));
+      } catch (err) {
+        console.warn('Profile fetch warning (falling back to user metadata):', err);
+        setProfile(buildProfile(currentUser));
+      }
+    } else {
+      // Local fallback mode
+      setProfile(buildProfile(currentUser, currentUser.profile));
+>>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
     }
   };
 
@@ -229,7 +293,11 @@ export function AuthProvider({ children }) {
               if (parsed?.user) {
                 setUser(parsed.user);
                 setSession(parsed);
+<<<<<<< HEAD
                 setProfile(buildStudentProfile(parsed.user, parsed.user.student_profile));
+=======
+                setProfile(buildProfile(parsed.user, parsed.user.profile));
+>>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
               }
             } catch (e) {
               localStorage.removeItem(LOCAL_STORAGE_SESSION_KEY);
@@ -287,6 +355,7 @@ export function AuthProvider({ children }) {
           id: 'mock-user-0889',
           email: email.trim(),
           user_metadata: {
+<<<<<<< HEAD
             full_name: 'Rahul Sharma',
             goal: 'Placement Preparation',
             active_agents: ['DSA Tutor', 'DBMS Tutor', 'Maths Tutor', 'AIML Tutor']
@@ -300,6 +369,12 @@ export function AuthProvider({ children }) {
             focus_tutors: ['DSA Tutor', 'DBMS Tutor', 'Maths Tutor', 'AIML Tutor'],
             onboarding_completed: true,
             updated_at: new Date().toISOString()
+=======
+            full_name: studentProfile.name,
+            goal: 'Placement Preparation',
+            track: 'Data Science Track',
+            active_agents: ['dsa', 'dbms', 'maths', 'aiml']
+>>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
           }
         };
       }
@@ -318,7 +393,11 @@ export function AuthProvider({ children }) {
       localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, JSON.stringify(localSession));
       setUser(matchedUser);
       setSession(localSession);
+<<<<<<< HEAD
       setProfile(buildStudentProfile(matchedUser, matchedUser.student_profile));
+=======
+      setProfile(buildProfile(matchedUser));
+>>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
       return { user: matchedUser, session: localSession };
     }
   };
@@ -330,7 +409,12 @@ export function AuthProvider({ children }) {
     const userMetadata = {
       full_name: fullName,
       goal: goal || 'Placement Preparation',
+<<<<<<< HEAD
       active_agents: activeAgents || ['DSA Tutor', 'DBMS Tutor', 'Maths Tutor', 'AIML Tutor']
+=======
+      track: 'Data Science Track',
+      active_agents: activeAgents || ['dsa', 'dbms', 'maths', 'aiml']
+>>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
     };
 
     if (isSupabaseConfigured && supabase) {
@@ -347,6 +431,7 @@ export function AuthProvider({ children }) {
         throw error;
       }
 
+<<<<<<< HEAD
       // If user signed up and session is established, insert row into public.students
       if (data.user) {
         try {
@@ -364,6 +449,9 @@ export function AuthProvider({ children }) {
         }
       }
 
+=======
+      // Check if email confirmation is required
+>>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
       const needsEmailConfirmation = data.user && !data.session;
 
       if (data.user && data.session) {
@@ -392,6 +480,7 @@ export function AuthProvider({ children }) {
         throw error;
       }
 
+<<<<<<< HEAD
       const userId = 'user-' + Math.random().toString(36).substring(2, 9);
       const studentData = {
         id: 'student-' + userId,
@@ -410,6 +499,13 @@ export function AuthProvider({ children }) {
         password, // for local validation only
         user_metadata: userMetadata,
         student_profile: studentData,
+=======
+      const newUser = {
+        id: 'user-' + Math.random().toString(36).substring(2, 9),
+        email: email.trim(),
+        password, // for local validation only
+        user_metadata: userMetadata,
+>>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
         created_at: new Date().toISOString()
       };
 
@@ -424,7 +520,11 @@ export function AuthProvider({ children }) {
       localStorage.setItem(LOCAL_STORAGE_SESSION_KEY, JSON.stringify(localSession));
       setUser(newUser);
       setSession(localSession);
+<<<<<<< HEAD
       setProfile(buildStudentProfile(newUser, studentData));
+=======
+      setProfile(buildProfile(newUser));
+>>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
 
       return {
         user: newUser,
@@ -460,8 +560,12 @@ export function AuthProvider({ children }) {
     signIn,
     signUp,
     signOut,
+<<<<<<< HEAD
     fetchProfile,
     updateStudentProfile
+=======
+    fetchProfile
+>>>>>>> 7a83365997f7d8fa8cbcfd7b32a7d5b25feae5d7
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

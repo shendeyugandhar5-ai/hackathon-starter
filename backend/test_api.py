@@ -66,7 +66,52 @@ def run(client):
     record("POST /api/chat contract shape", expected_keys <= got_keys,
            f"missing={expected_keys - got_keys or 'none'}")
 
+    print("\n== Shared context + conversation history ==")
+    r = client.get("/api/agents")
+    agents = r.json() if r.status_code == 200 else []
+    record("GET  /api/agents", len(agents) == 5, f"{len(agents)} agents")
+
+    r = client.post("/api/students", json={"student_id": STUDENT} | {
+        "id": STUDENT, "name": "Rahul", "goal": "Data Scientist"})
+    record("POST /api/students", r.status_code in (200, 201),
+           f"topics={r.json().get('topic_count')}" if r.status_code in (200, 201) else f"HTTP {r.status_code}")
+
+    r = client.get(f"/api/students/{STUDENT}")
+    body = r.json() if r.status_code == 200 else {}
+    record("GET  /api/students/{id}", r.status_code == 200,
+           f"overall={body.get('overall_score', 0):.0%}, weak={body.get('weak_topic_count')}")
+
+    # Conversation persistence: two turns in one thread, then read it back
+    r = client.post("/api/chat", json={"student_id": STUDENT, "message": "What is a hash map?"})
+    cid = r.json().get("conversation_id")
+    client.post("/api/chat", json={"student_id": STUDENT, "conversation_id": cid,
+                                   "message": "And how does collision handling work?"})
+    r = client.get(f"/api/conversations/{cid}/messages")
+    msgs = r.json().get("messages", []) if r.status_code == 200 else []
+    record("Conversation history persists", len(msgs) >= 4,
+           f"{len(msgs)} messages saved across 2 turns"
+           if msgs else "nothing persisted - check database")
+
+    r = client.get(f"/api/students/{STUDENT}/conversations")
+    convs = r.json() if r.status_code == 200 else []
+    record("GET  /api/students/{id}/conversations", r.status_code == 200,
+           f"{len(convs)} conversations")
+
+    # Shared context must actually reach the agent
+    r = client.post("/api/chat", json={"student_id": STUDENT, "message": "Explain Naive Bayes"})
+    body = r.json()
+    ctx = body.get("context_used") or {}
+    record("Shared context injected into agents", bool(ctx.get("weak_topics")),
+           f"{len(ctx.get('weak_topics', []))} weak topics, "
+           f"{len(ctx.get('prerequisite_gaps', []))} prereq gaps passed to agent")
+
     print("\n== Student data (needs database/schema.sql) ==")
+
+    r = client.get(f"/api/students/{STUDENT}/root-cause")
+    gaps = r.json().get("gaps", []) if r.status_code == 200 else []
+    record("GET  /api/students/{id}/root-cause", r.status_code == 200,
+           f"{len(gaps)} prerequisite gaps: {r.json().get('summary', '')[:70]}"
+           if gaps else "no gaps found", skipped=not gaps)
     r = client.get(f"/api/students/{STUDENT}/mastery")
     body = r.json() if r.status_code == 200 else {}
     topics = body.get("topics", [])
@@ -103,10 +148,11 @@ def run(client):
            if has_update else "no mastery update - apply database/schema.sql",
            skipped=not has_update)
 
-    if conversation_id:
-        r = client.get(f"/api/conversations/{conversation_id}/messages")
-        record("GET  /api/conversations/{id}/messages", r.status_code == 200,
-               f"{len(r.json().get('messages', []))} messages")
+    r = client.post("/api/knowledge-check", json={"student_id": STUDENT})
+    body = r.json() if r.status_code == 200 else {}
+    record("POST /api/knowledge-check", r.status_code == 200,
+           f"topic={body.get('topic')} ({body.get('reason')})"
+           if r.status_code == 200 else f"HTTP {r.status_code}")
 
     print("\n== Trained models ==")
     try:
