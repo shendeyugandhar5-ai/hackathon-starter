@@ -9,10 +9,10 @@ falls back further to the LLM below ROUTER_CONFIDENCE_THRESHOLD.
 """
 import logging
 import os
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from app.agents.base import AgentName
-from app.agents.llm_client import complete
+from app.agents.llm_client import complete, is_real_answer
 from app.agents.prompts import ROUTER_SYSTEM_PROMPT
 
 logger = logging.getLogger("learnos.router")
@@ -95,13 +95,50 @@ def router_classify(message: str) -> Tuple[AgentName, float]:
     return _keyword_classify(message)
 
 
-def llm_classify(message: str) -> AgentName:
-    """LLM fallback classifier for messages the trained/keyword router is unsure about."""
-    raw = complete(ROUTER_SYSTEM_PROMPT, message, max_tokens=10).strip().lower()
+def llm_classify(message: str) -> Optional[AgentName]:
+    """LLM fallback classifier for messages the trained router is unsure about.
+
+    Returns None when the LLM could not actually classify - a bad API key,
+    a network failure, or an unrecognizable reply. Callers must then keep
+    the trained router's own pick: falling back to a hardcoded 'general'
+    would replace a real (if uncertain) prediction with a worse one.
+    """
+    # Budget looks absurd for a one-word answer, and is not. Reasoning
+    # models (Groq's gpt-oss) spend tokens thinking before they emit any
+    # content: measured at 36-82 completion tokens to reply 'dbms'. At 10
+    # the reply came back empty, the fallback silently never fired, and
+    # ambiguous questions kept a 0.25-confidence guess.
+    raw = complete(ROUTER_SYSTEM_PROMPT, message, max_tokens=192)
+
+    # A placeholder or error string is not a classification
+    if not is_real_answer(raw):
+        return None
+    raw = raw.strip().lower()
+
     for agent in ("dsa", "dbms", "maths", "aiml", "general"):
         if agent in raw:
             return agent
-    return "general"
+    return None
+
+
+def subject_scores(message: str) -> Dict[AgentName, float]:
+    """The trained classifier's full probability distribution over agents.
+
+    The coordinator uses the runner-up probability to decide whether a
+    question genuinely spans two subjects - a better signal than keyword
+    matching, and it reuses the model already trained rather than adding
+    another. Returns {} when no trained model is loaded, so callers can
+    fall back to `detect_subjects`.
+    """
+    _load_trained_model()
+    if _vectorizer is None or _classifier is None:
+        return {}
+    try:
+        probs = _classifier.predict_proba(_vectorizer.transform([message]))[0]
+        return {agent: float(p) for agent, p in zip(_classifier.classes_, probs)}
+    except Exception:
+        logger.exception("subject_scores failed; falling back to keyword detection")
+        return {}
 
 
 def detect_subjects(message: str, max_subjects: int = 3) -> List[AgentName]:

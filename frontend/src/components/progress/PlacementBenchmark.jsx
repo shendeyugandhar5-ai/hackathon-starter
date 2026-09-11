@@ -1,8 +1,29 @@
-import React from 'react';
-import { Briefcase, CheckCircle, AlertCircle, Lock, UserCheck, MessageSquare } from 'lucide-react';
-import { curricularFacets, placementBenchmarks, atsResumeMatch, mentorData } from '../../data/mockData';
+import React from "react";
+import {
+  Briefcase,
+  CheckCircle,
+  AlertCircle,
+  Lock,
+  UserCheck,
+  MessageSquare,
+} from "lucide-react";
+import {
+  curricularFacets,
+  placementBenchmarks,
+  atsResumeMatch,
+  mentorData,
+} from "../../data/mockData";
 
-export default function PlacementBenchmark() {
+export default function PlacementBenchmark({ progressData }) {
+  const liveFacets = progressData?.subjects?.length
+    ? progressData.subjects.map((subject) => ({
+        id: subject.subject,
+        discipline: subject.subject.toUpperCase(),
+        mastery: Math.round(subject.average_score * 100),
+        activeFocus: { title: subject.weak_topics?.[0] || "Steady progress" },
+        status: subject.average_score < 0.5 ? "WEAK" : "LEARNING",
+      }))
+    : curricularFacets;
   return (
     <div className="space-y-4">
       {/* 1. Curricular Mastery Facets Summary */}
@@ -15,8 +36,8 @@ export default function PlacementBenchmark() {
         </p>
 
         <div className="mt-4 space-y-3">
-          {curricularFacets.map((facet) => {
-            const isWeak = facet.status === 'WEAK';
+          {liveFacets.map((facet) => {
+            const isWeak = facet.status === "WEAK";
             return (
               <div key={facet.id} className="text-xs">
                 <div className="flex items-center justify-between font-medium text-[#1C1917]">
@@ -25,13 +46,17 @@ export default function PlacementBenchmark() {
                 </div>
                 <div className="w-full bg-[#EAE5DC] h-1.5 rounded-full mt-1.5 overflow-hidden">
                   <div
-                    className={`h-full rounded-full ${isWeak ? 'bg-[#B93826]' : 'bg-[#2E7D52]'}`}
+                    className={`h-full rounded-full ${isWeak ? "bg-[#B93826]" : "bg-[#2E7D52]"}`}
                     style={{ width: `${facet.mastery}%` }}
                   />
                 </div>
                 <div className="flex items-center justify-between text-[10px] font-mono text-[#8C827A] mt-1">
                   <span>Focus: {facet.activeFocus.title}</span>
-                  {isWeak && <span className="text-[#B93826] font-semibold">Active Blocker: Cond. Prob</span>}
+                  {isWeak && (
+                    <span className="text-[#B93826] font-semibold">
+                      Active Blocker: Cond. Prob
+                    </span>
+                  )}
                 </div>
               </div>
             );
@@ -58,13 +83,16 @@ export default function PlacementBenchmark() {
         {/* Company match items */}
         <div className="mt-3 space-y-2.5">
           {placementBenchmarks.map((bench) => (
-            <div 
+            <div
               key={bench.company}
               className="p-3 rounded-lg bg-[#FAF8F5] border border-[#EAE5DC] flex items-center justify-between"
             >
               <div>
                 <div className="text-xs font-semibold text-[#1C1917]">
-                  {bench.company} <span className="font-normal text-[#57534E]">• {bench.role}</span>
+                  {bench.company}{" "}
+                  <span className="font-normal text-[#57534E]">
+                    • {bench.role}
+                  </span>
                 </div>
                 <div className="text-[10px] font-mono text-[#8C827A] mt-0.5">
                   {bench.tags}
@@ -90,10 +118,10 @@ export default function PlacementBenchmark() {
                 key={kw.name}
                 className={`text-[10px] font-mono px-2 py-0.5 rounded flex items-center gap-1 border ${
                   kw.matched
-                    ? 'bg-[#EAF4EE] text-[#2E7D52] border-[#CDE5D5]'
+                    ? "bg-[#EAF4EE] text-[#2E7D52] border-[#CDE5D5]"
                     : kw.warning
-                      ? 'bg-[#FDF0ED] text-[#B93826] border-[#F7CFC2]'
-                      : 'bg-[#F8F5EE] text-[#8C827A] border-[#E7E2D7]'
+                      ? "bg-[#FDF0ED] text-[#B93826] border-[#F7CFC2]"
+                      : "bg-[#F8F5EE] text-[#8C827A] border-[#E7E2D7]"
                 }`}
               >
                 {kw.matched && <CheckCircle className="w-2.5 h-2.5" />}
@@ -116,9 +144,7 @@ export default function PlacementBenchmark() {
             <div className="text-xs font-semibold text-[#1C1917]">
               {mentorData.name}
             </div>
-            <div className="text-[10px] text-[#78716C]">
-              {mentorData.title}
-            </div>
+            <div className="text-[10px] text-[#78716C]">{mentorData.title}</div>
           </div>
         </div>
 

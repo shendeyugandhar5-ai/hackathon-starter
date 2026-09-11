@@ -11,7 +11,11 @@ AgentName = Literal["dsa", "dbms", "maths", "aiml", "general"]
 class ChatRequest(BaseModel):
     student_id: str
     conversation_id: Optional[str] = None
-    message: str
+    # Optional when an image carries the question; one of the two must be present
+    message: str = ""
+    # A question photographed or screenshotted by the student, as a browser
+    # data URL: "data:image/png;base64,iVBOR..." (max ~6MB decoded)
+    image: Optional[str] = None
 
 
 class MasteryUpdate(BaseModel):
@@ -33,6 +37,53 @@ class ContextUsed(BaseModel):
     recent_messages: int = 0
 
 
+class TraceEventOut(BaseModel):
+    """One observable step of the orchestration graph."""
+    step: str
+    label: str
+    detail: Optional[str] = None
+    status: str = "ok"            # ok | skipped | failed
+    agent: Optional[str] = None
+    confidence: Optional[float] = None
+    duration_ms: Optional[float] = None
+    data: dict = {}
+
+
+class RetrievedChunk(BaseModel):
+    """A knowledge chunk the RAG layer grounded the answer on."""
+    subject: str
+    topic: str
+    source: str
+    score: float
+
+
+class VerificationOut(BaseModel):
+    passed: bool
+    confidence: Optional[float] = None
+    issues: List[str] = []
+    status: str = "ok"            # ok | skipped | unparsed
+
+
+class KnowledgeCheckOut(BaseModel):
+    question: str
+    subject: Optional[str] = None
+    topic: Optional[str] = None
+
+
+class OCROut(BaseModel):
+    """What was read out of an attached image. Null on text-only turns."""
+
+    ok: bool
+    engine: str                   # rapidocr | tesseract | none
+    source: str = ""              # engine name, or 'vision_model' when OCR failed
+    text: str = ""                # the extracted question, as routed
+    confidence: float = 0.0
+    line_count: int = 0
+    chars: int = 0
+    duration_ms: float = 0.0
+    error: Optional[str] = None
+
+
 class ChatResponse(BaseModel):
     conversation_id: Optional[str] = None
     agent: AgentName
@@ -45,3 +96,13 @@ class ChatResponse(BaseModel):
     # Every agent that contributed; length > 1 means cross-agent collaboration
     contributing_agents: List[AgentName] = []
     context_used: Optional[ContextUsed] = None
+
+    # --- explainability (added backward-compatibly; all optional) ---------
+    teaching_strategy: Optional[str] = None
+    supporting_agents: List[AgentName] = []
+    retrieved_context: List[RetrievedChunk] = []
+    verification: Optional[VerificationOut] = None
+    ocr: Optional[OCROut] = None
+    knowledge_check: Optional[KnowledgeCheckOut] = None
+    # Ordered execution record driving the Agent Trace panel
+    trace_events: List[TraceEventOut] = []

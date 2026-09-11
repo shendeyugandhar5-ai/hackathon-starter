@@ -1,1001 +1,1001 @@
 text,label
-What's the difference between space complexity and arrays?,dsa
-"Hey, Help me set realistic study goals. Any advice?",general
-How is denormalization related to primary keys?,dbms
-Explain GROUP BY clauses.,dbms
-"I'm stuck on queues, can you help?",dsa
-Show me how to implement arrays.,dsa
-Break down eigenvalues for me.,maths
-Break down gradient for me.,maths
-Help me with recursion.,dsa
-Can you help me: What's a good resume format for freshers? Any advice?,general
-Need help understanding big O notation,dsa
-Revise denormalization with me.,dbms
-Build me a study plan for the next 4 weeks. Any advice?,general
-How do I solve questions about linked lists?,dsa
-What are common mistakes in recursion?,dsa
-"I'm stuck on inner joins, can you help?",dbms
-"Honestly, How do I balance college exams and placement prep? Please guide me.",general
-permutations vs normal distribution,maths
-Should I do an internship or prepare for placements? Please guide me.,general
-Debug my stored procedures solution.,dbms
-Can you explain third normal form with an example?,dbms
-Show me how to implement backpropagation.,aiml
-hypothesis testing explained simply,maths
-Is conditional probability asked in placement interviews?,maths
-"I'm stuck on discrete mathematics, can you help?",maths
-Why is graph theory important?,maths
-Compare set theory and graph theory.,maths
-I don't understand determinants.,maths
-What are the steps for tree traversal?,dsa
-Teach me big O notation.,dsa
-integrals explained simply,maths
-So Give me tips for group discussions. Any advice?,general
-I don't understand stored procedures.,dbms
-So What's a good resume format for freshers? Any advice?,general
-Explain determinants.,maths
-Teach me queues.,dsa
-Give me a problem on hypothesis testing.,maths
-So How do I improve my problem solving speed? Any advice?,general
-Debug my gradient descent solution.,aiml
-Is SQL joins asked in placement interviews?,dbms
-Show me how to implement indexing.,dbms
-indexing vs database schema design,dbms
-logarithms vs conditional probability,maths
-How does combinations work?,maths
-How does ensemble methods work?,aiml
-Can you help me: What's the difference between service and product companies? Thanks!,general
-"I'm stuck on heaps, can you help?",dsa
-Need help understanding inner joins,dbms
-Can you help me: Help me set realistic study goals. Any advice?,general
-Compare hypothesis testing and chain rule.,maths
-I don't understand transactions.,dbms
-Give me practice problems on permutations.,maths
-time complexity vs binary search,dsa
-"Honestly, How long does it take to get placement ready? Any advice?",general
-Tell me about matrix multiplication.,maths
-What are common mistakes in depth first search?,dsa
-ER diagrams vs foreign keys,dbms
-Give me practice problems on support vector machines.,aiml
-Break down hash maps for me.,dsa
-Is recursion asked in placement interviews?,dsa
-Quick question - Tell me what to study today. I'm not sure.,general
-What are common mistakes in normalization?,dbms
-time complexity interview questions,dsa
-Quiz me on third normal form.,dbms
-Help me with batch normalization.,aiml
-Can you explain stored procedures with an example?,dbms
-Show me how to implement backtracking.,dsa
-ensemble methods vs learning rate,aiml
-Summarize logarithms for revision.,maths
-Need help understanding denormalization,dbms
-Quick question - How many hours a day should I study? Thanks!,general
-What's the difference between GROUP BY clauses and ACID properties?,dbms
-How is time complexity related to queues?,dsa
-Tell me about bias variance tradeoff.,aiml
-Tell me about combinations.,maths
-How long does it take to get placement ready? Please guide me.,general
-Summarize discrete mathematics for revision.,maths
-What are common mistakes in cross validation?,aiml
-Teach me permutations.,maths
-Quick question - Can you summarize what I've learned so far? Please guide me.,general
-"Honestly, How do I build a good GitHub profile? Please guide me.",general
-How is linked lists related to tree traversal?,dsa
-transformers interview questions,aiml
-Help me with GROUP BY clauses.,dbms
-What should my daily routine look like? Thanks!,general
-Quick question - How do I negotiate a job offer? Thanks!,general
-Give me practice problems on concurrency control.,dbms
-Debug my GROUP BY clauses solution.,dbms
-inner joins explained simply,dbms
-What should I learn first to become a data scientist? Please guide me.,general
-binary search interview questions,dsa
-"Hey, What certifications actually matter? Thanks!",general
-Give me practice problems on k-means clustering.,aiml
-stored procedures interview questions,dbms
-What's the difference between service and product companies?,general
-Need help understanding query optimization,dbms
-Compare transactions and query optimization.,dbms
-set theory interview questions,maths
-"I'm stuck on gradient, can you help?",maths
-Debug my eigenvalues solution.,maths
-support vector machines vs confusion matrices,aiml
-How does SQL joins work?,dbms
-What is B-tree indexes?,dbms
-So What's the difference between service and product companies?,general
-Show me how to implement probability.,maths
-Can you help me: Which companies should I apply to? Thanks!,general
-How is binary search related to linked list cycle detection?,dsa
-"My answer for greedy algorithms was wrong, why?",dsa
-Show me how to implement binary trees.,dsa
-How do I solve questions about bias variance tradeoff?,aiml
-Revise Bayes theorem with me.,maths
-space complexity interview questions,dsa
-Need help understanding binary trees,dsa
-Walk me through stacks step by step.,dsa
-How do I solve questions about deadlocks?,dbms
-Teach me partial derivatives.,maths
-Debug my permutations solution.,maths
-What should I learn first to become a data scientist? Any advice?,general
-What is merge sort?,dsa
-So How do I explain my project in an interview? I'm not sure.,general
-"I'm stuck on sliding window, can you help?",dsa
-I don't understand graph theory.,maths
-Explain cross validation.,aiml
-"I'm stuck on combinations, can you help?",maths
-"Honestly, What's the difference between service and product companies?",general
-What's the difference between matrix multiplication and limits?,maths
-Give me a problem on stored procedures.,dbms
-Quick question - How do I answer 'tell me about yourself' in an interview? Any advice?,general
-"My answer for linked list cycle detection was wrong, why?",dsa
-Is hypothesis testing asked in placement interviews?,maths
-Give me practice problems on B-tree indexes.,dbms
-stacks interview questions,dsa
-What is binary trees?,dsa
-Tell me about left joins.,dbms
-I don't know where to start. Please guide me.,general
-Write set theory code for me.,maths
-Why is eigenvalues important?,maths
-I don't understand subqueries.,dbms
-I don't know where to start.,general
-"My answer for linked lists was wrong, why?",dsa
-Revise overfitting with me.,aiml
-What are common mistakes in indexing?,dbms
-cross validation interview questions,aiml
-naive bayes explained simply,aiml
-I don't understand left joins.,dbms
-Teach me third normal form.,dbms
-So What's the best way to take notes while studying? I'm not sure.,general
-Debug my B-tree indexes solution.,dbms
-Summarize big O notation for revision.,dsa
-How does dynamic programming work?,dsa
-Show me how to implement third normal form.,dbms
-What is subqueries?,dbms
-deadlocks interview questions,dbms
-What is hash maps?,dsa
-How does precision and recall work?,aiml
-What is loss functions?,aiml
-Why is inner joins important?,dbms
-Can you explain logistic regression with an example?,aiml
-What is set theory?,maths
-So Help me plan my week. I'm not sure.,general
-Summarize views for revision.,dbms
-I don't understand two pointers.,dsa
-Give me a problem on SQL joins.,dbms
-Need help understanding learning rate,aiml
-What is precision and recall?,aiml
-Walk me through query optimization step by step.,dbms
-What are common mistakes in convolutional neural networks?,aiml
-I don't understand feature engineering.,aiml
-Debug my learning rate solution.,aiml
-Quiz me on hypothesis testing.,maths
-Can you explain naive bayes with an example?,aiml
-Walk me through standard deviation step by step.,maths
-"Hey, What are good behavioral interview answers? I'm not sure.",general
-Is determinants asked in placement interviews?,maths
-"Honestly, What are my weakest areas right now? I'm not sure.",general
-Break down primary keys for me.,dbms
-Show me how to implement derivatives.,maths
-"Hey, How do I answer 'tell me about yourself' in an interview?",general
-Revise neural networks with me.,aiml
-Can you help me: What should my daily routine look like? Any advice?,general
-Need help understanding determinants,maths
-Can you help me: How do I balance college exams and placement prep? I'm not sure.,general
-Need help understanding heaps,dsa
-Is merge sort asked in placement interviews?,dsa
-What is confusion matrices?,aiml
-How does logistic regression work?,aiml
-How does gradient work?,maths
-Can you help me: How do I balance college exams and placement prep? Any advice?,general
-Revise ACID properties with me.,dbms
-Can you explain arrays with an example?,dsa
-"Hey, Can you review my overall progress? Thanks!",general
-Give me practice problems on recursion.,dsa
-"Hey, How do I stay motivated while preparing? I'm not sure.",general
-Tell me about B-tree indexes.,dbms
-Show me how to implement convolutional neural networks.,aiml
-Tell me about SQL joins.,dbms
-Write arrays code for me.,dsa
-How do I solve questions about overfitting?,aiml
-What are common mistakes in embeddings?,aiml
-Quick question - How do I handle interview rejection?,general
-"I'm stuck on quicksort, can you help?",dsa
-What are the steps for normal distribution?,maths
-ACID properties explained simply,dbms
-What are common mistakes in ACID properties?,dbms
-sliding window interview questions,dsa
-"Hey, How do I build a good GitHub profile? I'm not sure.",general
-Give me a problem on dynamic programming.,dsa
-Show me how to implement combinations.,maths
-How do I solve questions about regularization?,aiml
-Compare linked list cycle detection and recursion.,dsa
-What is sliding window?,dsa
-Quiz me on indexing.,dbms
-What's the best way to take notes while studying?,general
-Can you explain normal distribution with an example?,maths
-What are the steps for subqueries?,dbms
-"My answer for regularization was wrong, why?",aiml
-What are the steps for foreign keys?,dbms
-neural networks explained simply,aiml
-"Honestly, What topics are most important for product company interviews?",general
-database schema design interview questions,dbms
-Why is backtracking important?,dsa
-Can you explain ER diagrams with an example?,dbms
-Show me how to implement big O notation.,dsa
-How do I solve questions about SQL queries?,dbms
-Explain ensemble methods.,aiml
-Why is backpropagation important?,aiml
-vectors vs probability,maths
-Write foreign keys code for me.,dbms
-Give me practice problems on heaps.,dsa
-Walk me through normalization step by step.,dbms
-Revise k-means clustering with me.,aiml
-"Honestly, Should I focus on projects or DSA first? Thanks!",general
-How is tree traversal related to backtracking?,dsa
-Give me a problem on join queries.,dbms
-Why is transformers important?,aiml
-Break down logarithms for me.,maths
-Quiz me on support vector machines.,aiml
-Give me practice problems on confusion matrices.,aiml
-hash maps explained simply,dsa
-Break down embeddings for me.,aiml
-Compare merge sort and dynamic programming.,dsa
-Write partial derivatives code for me.,maths
-Explain inner joins.,dbms
-Break down limits for me.,maths
-"Hey, How do I handle interview rejection? I'm not sure.",general
-Help me with standard deviation.,maths
-Walk me through big O notation step by step.,dsa
-How do I solve questions about determinants?,maths
-"My answer for convolutional neural networks was wrong, why?",aiml
-What are good behavioral interview answers? Thanks!,general
-Revise naive bayes with me.,aiml
-Is first normal form asked in placement interviews?,dbms
-Quick question - Should I focus on projects or DSA first? Any advice?,general
-Walk me through ACID properties step by step.,dbms
-Can you explain logarithms with an example?,maths
-What is probability?,maths
-Summarize database schema design for revision.,dbms
-So How do I explain my project in an interview? Please guide me.,general
-Walk me through hash maps step by step.,dsa
-"I'm stuck on activation functions, can you help?",aiml
-How does breadth first search work?,dsa
-Which companies should I apply to? Thanks!,general
-Debug my embeddings solution.,aiml
-How does set theory work?,maths
-Quiz me on graphs.,dsa
-So Am I on track for my goals? Any advice?,general
-Debug my determinants solution.,maths
-Is feature engineering asked in placement interviews?,aiml
-What is normalization?,dbms
-So Give me a roadmap to crack placements. Any advice?,general
-Revise confusion matrices with me.,aiml
-Walk me through join queries step by step.,dbms
-How is hypothesis testing related to chain rule?,maths
-What is overfitting?,aiml
-"I failed my last mock interview, what now? Thanks!",general
-How does normal distribution work?,maths
-"Hey, What should I learn first to become a data scientist? Please guide me.",general
-Give me a problem on deadlocks.,dbms
-"My answer for deadlocks was wrong, why?",dbms
-Explain regularization.,aiml
-Compare partial derivatives and determinants.,maths
-"Honestly, What are good behavioral interview answers?",general
-So How do I explain my project in an interview? Any advice?,general
-What is random forests?,aiml
-How is linked list cycle detection related to binary search?,dsa
-How do I solve questions about transformers?,aiml
-Teach me recursion.,dsa
-Debug my loss functions solution.,aiml
-Write limits code for me.,maths
-Revise depth first search with me.,dsa
-Is support vector machines asked in placement interviews?,aiml
-Give me a problem on subqueries.,dbms
-What is discrete mathematics?,maths
-"My answer for random forests was wrong, why?",aiml
-"I'm stuck on loss functions, can you help?",aiml
-"My answer for conditional probability was wrong, why?",maths
-So How do I stay motivated while preparing? I'm not sure.,general
-concurrency control interview questions,dbms
-What are common mistakes in sliding window?,dsa
-Is partial derivatives asked in placement interviews?,maths
-How is overfitting related to linear regression?,aiml
-Teach me merge sort.,dsa
-Can you explain heaps with an example?,dsa
-Help me plan my week. Thanks!,general
-I don't understand binary search.,dsa
-Write normal distribution code for me.,maths
-How do I solve questions about arrays?,dsa
-What should I revise the night before an interview?,general
-Teach me loss functions.,aiml
-"Hey, Help me plan my week. Thanks!",general
-Walk me through activation functions step by step.,aiml
-Help me with linear regression.,aiml
-What's the difference between indexing and stored procedures?,dbms
-What is query optimization?,dbms
-I don't understand integrals.,maths
-So How do I negotiate a job offer?,general
-What is views?,dbms
-Teach me decision trees.,aiml
-Quiz me on feature engineering.,aiml
-Revise normalization with me.,dbms
-Break down relational algebra for me.,dbms
-What are the steps for breadth first search?,dsa
-Quick question - How long does it take to get placement ready? I'm not sure.,general
-Quiz me on transformers.,aiml
-Show me how to implement discrete mathematics.,maths
-"I'm stuck on support vector machines, can you help?",aiml
-Is denormalization asked in placement interviews?,dbms
-determinants explained simply,maths
-Need help understanding queues,dsa
-"Hey, What's the best way to take notes while studying?",general
-Explain loss functions.,aiml
-What is combinations?,maths
-What is graphs?,dsa
-Compare gradient and Bayes theorem.,maths
-Help me with probability.,maths
-"My answer for stored procedures was wrong, why?",dbms
-Show me how to implement stored procedures.,dbms
-Summarize hypothesis testing for revision.,maths
-Is regularization asked in placement interviews?,aiml
-What's the difference between limits and matrix multiplication?,maths
-Debug my ACID properties solution.,dbms
-I don't understand logistic regression.,aiml
-"Hey, How do I answer 'tell me about yourself' in an interview? Please guide me.",general
-gradient descent interview questions,aiml
-Revise heaps with me.,dsa
-Write recursion code for me.,dsa
-"Honestly, Give me tips for group discussions.",general
-"Quick question - I have 2 months before placements, what should I focus on? I'm not sure.",general
-Give me a problem on normalization.,dbms
-Quick question - Give me tips for group discussions. Any advice?,general
-Give me a problem on gradient.,maths
-Can you help me: Can you review my overall progress? Thanks!,general
-Tell me about batch normalization.,aiml
-Walk me through k-means clustering step by step.,aiml
-How does decision trees work?,aiml
-I keep forgetting what I studied last week. I'm not sure.,general
-Should I do an internship or prepare for placements? Thanks!,general
-two pointers interview questions,dsa
-How do I solve questions about big O notation?,dsa
-Quick question - Am I on track for my goals? Thanks!,general
-Give me a problem on backtracking.,dsa
-How is dynamic programming related to queues?,dsa
-Help me with left joins.,dbms
-"Hey, What are good behavioral interview answers? Please guide me.",general
-What are common mistakes in linear regression?,aiml
-Summarize neural networks for revision.,aiml
-How do I solve questions about relational algebra?,dbms
-What are the steps for logarithms?,maths
-Tell me about primary keys.,dbms
-How is primary keys related to query optimization?,dbms
-What are the steps for integrals?,maths
-"Honestly, I don't know where to start. Any advice?",general
-What are the steps for matrix multiplication?,maths
-join queries explained simply,dbms
-Can you help me: Give me a roadmap to crack placements. I'm not sure.,general
-I don't understand dynamic programming.,dsa
-"Hey, Tell me what to study today. Any advice?",general
-Quick question - Can you review my overall progress? Thanks!,general
-Explain stored procedures.,dbms
-Quick question - How do I negotiate a job offer? I'm not sure.,general
-convolutional neural networks explained simply,aiml
-Can you explain vectors with an example?,maths
-"I'm stuck on stacks, can you help?",dsa
-Help me with conditional probability.,maths
-Revise SQL queries with me.,dbms
-Compare naive bayes and logistic regression.,aiml
-Debug my big O notation solution.,dsa
-Explain relational algebra.,dbms
-Quick question - Can you summarize what I've learned so far?,general
-Break down inner joins for me.,dbms
-Quiz me on derivatives.,maths
-Break down B-tree indexes for me.,dbms
-arrays vs dynamic programming,dsa
-What are good behavioral interview answers?,general
-What's the difference between naive bayes and bias variance tradeoff?,aiml
-Break down chain rule for me.,maths
-Give me a problem on views.,dbms
-Give me practice problems on linked lists.,dsa
-What's the difference between probability and variance?,maths
-I don't understand hash maps.,dsa
-What is first normal form?,dbms
-concurrency control vs primary keys,dbms
-Give me practice problems on backtracking.,dsa
-Quiz me on normal distribution.,maths
-How important is CGPA for placements?,general
-"Honestly, How should I prepare for technical interviews? Please guide me.",general
-How do I solve questions about discrete mathematics?,maths
-Compare ensemble methods and batch normalization.,aiml
-Explain time complexity.,dsa
-Compare vectors and expected value.,maths
-"Honestly, What should I learn first to become a data scientist? Please guide me.",general
-Walk me through batch normalization step by step.,aiml
-heaps interview questions,dsa
-Need help understanding GROUP BY clauses,dbms
-Quick question - Help me plan my week. Any advice?,general
-Help me with tree traversal.,dsa
-"Quick question - I have 2 months before placements, what should I focus on?",general
-How does batch normalization work?,aiml
-Give me a problem on gradient descent.,aiml
-What is tree traversal?,dsa
-I don't understand third normal form.,dbms
-Need help understanding embeddings,aiml
-"I'm stuck on confusion matrices, can you help?",aiml
-What are common mistakes in SQL joins?,dbms
-Tell me about GROUP BY clauses.,dbms
-Quiz me on quicksort.,dsa
-SQL joins interview questions,dbms
-Can you help me: How do I negotiate a job offer?,general
-Can you help me: How do I explain my project in an interview? Thanks!,general
-"I'm stuck on convolutional neural networks, can you help?",aiml
-"Hey, I failed my last mock interview, what now? Any advice?",general
-Can you help me: What should my daily routine look like? Please guide me.,general
-Give me a problem on k-means clustering.,aiml
-Can you help me: Tell me what to study today. Any advice?,general
-Help me with deadlocks.,dbms
-Help me with queues.,dsa
-Give me a problem on embeddings.,aiml
-Am I on track for my goals? Thanks!,general
-Why is hash maps important?,dsa
-Why is regularization important?,aiml
-Teach me relational algebra.,dbms
-How does ER diagrams work?,dbms
-How is B-tree indexes related to views?,dbms
-Help me with backpropagation.,aiml
-What should my daily routine look like? I'm not sure.,general
-Give me a problem on tree traversal.,dsa
-Explain two pointers.,dsa
-Tell me about Bayes theorem.,maths
-Can you help me: How do I prepare for HR rounds?,general
-"Honestly, What topics are most important for product company interviews? Any advice?",general
-What's the difference between denormalization and deadlocks?,dbms
-Tell me about ensemble methods.,aiml
-Tell me about big O notation.,dsa
-I don't understand activation functions.,aiml
-How do I solve questions about chain rule?,maths
-What are common mistakes in confusion matrices?,aiml
-So What are good behavioral interview answers? Any advice?,general
-SQL queries explained simply,dbms
-"Can you help me: I failed my last mock interview, what now? I'm not sure.",general
-"My answer for quicksort was wrong, why?",dsa
-Can you help me: I'm feeling overwhelmed with placement prep. Please guide me.,general
-Is inner joins asked in placement interviews?,dbms
-Explain backtracking.,dsa
-How does integrals work?,maths
-Need help understanding recursion,dsa
-How do I solve questions about derivatives?,maths
-Summarize subqueries for revision.,dbms
-What is space complexity?,dsa
-"I'm stuck on random forests, can you help?",aiml
-Quiz me on query optimization.,dbms
-Debug my neural networks solution.,aiml
-Help me with gradient.,maths
-"I'm stuck on triggers, can you help?",dbms
-Quick question - Give me a roadmap to crack placements. Any advice?,general
-Help me with precision and recall.,aiml
-Explain feature engineering.,aiml
-What's the difference between ensemble methods and regularization?,aiml
-Help me with linked list cycle detection.,dsa
-So What certifications actually matter?,general
-Why is left joins important?,dbms
-What are the steps for triggers?,dbms
-Quick question - I'm feeling overwhelmed with placement prep.,general
-"Hey, How should I prepare for technical interviews? I'm not sure.",general
-"Hey, I keep forgetting what I studied last week. Thanks!",general
-Revise big O notation with me.,dsa
-Break down conditional probability for me.,maths
-"I'm stuck on normal distribution, can you help?",maths
-"I'm stuck on standard deviation, can you help?",maths
-B-tree indexes vs ACID properties,dbms
-Show me how to implement vectors.,maths
-So What topics are most important for product company interviews? Any advice?,general
-Why is determinants important?,maths
-Can you explain primary keys with an example?,dbms
-Break down Bayes theorem for me.,maths
-What's the difference between arrays and stacks?,dsa
-Summarize integrals for revision.,maths
-I don't understand transformers.,aiml
-"Hey, I have 2 months before placements, what should I focus on? Please guide me.",general
-Need help understanding bias variance tradeoff,aiml
-"Hey, What topics are most important for product company interviews? I'm not sure.",general
-How does triggers work?,dbms
-Compare time complexity and binary search.,dsa
-Can you help me: What certifications actually matter? Please guide me.,general
-Revise random forests with me.,aiml
-Quiz me on stacks.,dsa
-Break down naive bayes for me.,aiml
-tree traversal vs queues,dsa
-What are the steps for first normal form?,dbms
-Revise discrete mathematics with me.,maths
-Explain Bayes theorem.,maths
-denormalization explained simply,dbms
-Teach me linear algebra.,maths
-How does database schema design work?,dbms
-"Hey, How do I improve my problem solving speed?",general
-Write subqueries code for me.,dbms
-Explain transactions.,dbms
-Can you help me: What should I revise the night before an interview?,general
-Can you help me: What topics are most important for product company interviews? Please guide me.,general
-Can you explain random forests with an example?,aiml
-Break down sliding window for me.,dsa
-Revise foreign keys with me.,dbms
-What is cross validation?,aiml
-Is discrete mathematics asked in placement interviews?,maths
-What is batch normalization?,aiml
-Quiz me on conditional probability.,maths
-Need help understanding loss functions,aiml
-Summarize graphs for revision.,dsa
-Is transformers asked in placement interviews?,aiml
-Compare queues and sliding window.,dsa
-"Quick question - I failed my last mock interview, what now?",general
-Quick question - What's the difference between service and product companies? I'm not sure.,general
-Help me with dynamic programming.,dsa
-Is tries asked in placement interviews?,dsa
-Give me a problem on loss functions.,aiml
-Quick question - How do I negotiate a job offer? Please guide me.,general
-Can you summarize what I've learned so far? I'm not sure.,general
-breadth first search explained simply,dsa
-Why is quicksort important?,dsa
-triggers interview questions,dbms
-"My answer for support vector machines was wrong, why?",aiml
-Show me how to implement views.,dbms
-"Hey, Give me tips for group discussions. Any advice?",general
-conditional probability explained simply,maths
-"I'm stuck on linear algebra, can you help?",maths
-So What should I learn first to become a data scientist? Any advice?,general
-What are common mistakes in linked lists?,dsa
-Summarize indexing for revision.,dbms
-Show me how to implement decision trees.,aiml
-What is hypothesis testing?,maths
-Need help understanding stored procedures,dbms
-Debug my stacks solution.,dsa
-Walk me through backtracking step by step.,dsa
-Write logistic regression code for me.,aiml
-Tell me about ACID properties.,dbms
-"Honestly, What are good behavioral interview answers? Any advice?",general
-Give me a problem on merge sort.,dsa
-Tell me about binary search.,dsa
-Write conditional probability code for me.,maths
-precision and recall interview questions,aiml
-Quiz me on breadth first search.,dsa
-Debug my backtracking solution.,dsa
-"Honestly, What certifications actually matter? Any advice?",general
-Teach me subqueries.,dbms
-"My answer for ensemble methods was wrong, why?",aiml
-How is binary trees related to dynamic programming?,dsa
-"My answer for eigenvalues was wrong, why?",maths
-Give me a problem on relational algebra.,dbms
-What's the difference between partial derivatives and gradient?,maths
-Help me with matrix multiplication.,maths
-I don't understand primary keys.,dbms
-Give me a roadmap to crack placements. Please guide me.,general
-Give me a problem on overfitting.,aiml
-Explain chain rule.,maths
-Need help understanding activation functions,aiml
-Break down batch normalization for me.,aiml
-Tell me about linked lists.,dsa
-"I'm stuck on vectors, can you help?",maths
-"Honestly, Give me a roadmap to crack placements. Any advice?",general
-primary keys vs SQL joins,dbms
-Revise gradient with me.,maths
-transformers explained simply,aiml
-"Hey, How do I explain my project in an interview? Please guide me.",general
-Tell me about permutations.,maths
-Need help understanding cross validation,aiml
-Quick question - What topics are most important for product company interviews? I'm not sure.,general
-Can you explain linear algebra with an example?,maths
-Teach me Bayes theorem.,maths
-Compare derivatives and hypothesis testing.,maths
-How do I solve questions about gradient?,maths
-What is SQL joins?,dbms
-How do I negotiate a job offer? Please guide me.,general
-Debug my primary keys solution.,dbms
-How does backpropagation work?,aiml
-Show me how to implement standard deviation.,maths
-Give me a problem on variance.,maths
-gradient vs Bayes theorem,maths
-views vs SQL queries,dbms
-I don't understand foreign keys.,dbms
-How is logarithms related to permutations?,maths
-Walk me through linked list cycle detection step by step.,dsa
-Walk me through heaps step by step.,dsa
-So Should I do an internship or prepare for placements? Please guide me.,general
-Quick question - Give me tips for group discussions.,general
-What are good behavioral interview answers? I'm not sure.,general
-What's the difference between transactions and denormalization?,dbms
-Quiz me on normalization.,dbms
-Walk me through backpropagation step by step.,aiml
-I don't understand variance.,maths
-Show me how to implement batch normalization.,aiml
-What are common mistakes in random forests?,aiml
-Show me how to implement graph theory.,maths
-Debug my space complexity solution.,dsa
-How do I negotiate a job offer? I'm not sure.,general
-"My answer for binary search was wrong, why?",dsa
-What's the difference between SQL joins and database schema design?,dbms
-What is permutations?,maths
-Quick question - What should I revise the night before an interview?,general
-Give me practice problems on linear regression.,aiml
-Give me a problem on decision trees.,aiml
-Debug my binary search solution.,dsa
-Break down third normal form for me.,dbms
-What is standard deviation?,maths
-I don't understand triggers.,dbms
-Help me with bias variance tradeoff.,aiml
-What are the steps for eigenvalues?,maths
-"Hey, What's the difference between service and product companies? I'm not sure.",general
-limits explained simply,maths
-"Honestly, What's the difference between service and product companies? Any advice?",general
-Quiz me on concurrency control.,dbms
-Is join queries asked in placement interviews?,dbms
-loss functions explained simply,aiml
-Break down indexing for me.,dbms
-Show me how to implement set theory.,maths
-Walk me through combinations step by step.,maths
-So What are my weakest areas right now? Please guide me.,general
-Summarize stored procedures for revision.,dbms
-What are common mistakes in hypothesis testing?,maths
-logarithms interview questions,maths
-"My answer for determinants was wrong, why?",maths
-Quiz me on space complexity.,dsa
-Quick question - Should I focus on projects or DSA first?,general
-Give me practice problems on random forests.,aiml
-What's the difference between big O notation and merge sort?,dsa
-Give me a problem on learning rate.,aiml
-"I'm stuck on linked list cycle detection, can you help?",dsa
-What are the steps for linked list cycle detection?,dsa
-Tell me about set theory.,maths
-Debug my set theory solution.,maths
-Revise quicksort with me.,dsa
-Quiz me on overfitting.,aiml
-How do I solve questions about loss functions?,aiml
-Give me practice problems on combinations.,maths
-Compare space complexity and two pointers.,dsa
-Explain binary search.,dsa
-What are common mistakes in loss functions?,aiml
-Help me with learning rate.,aiml
-limits vs vectors,maths
-What are common mistakes in logarithms?,maths
-How do I solve questions about limits?,maths
-Give me a problem on triggers.,dbms
-Give me a problem on recursion.,dsa
-Quick question - What should my daily routine look like? Thanks!,general
-Compare linked lists and heaps.,dsa
-Revise database schema design with me.,dbms
-Show me how to implement neural networks.,aiml
-naive bayes interview questions,aiml
-Write hash maps code for me.,dsa
-"I'm stuck on precision and recall, can you help?",aiml
-Can you help me: I keep forgetting what I studied last week. Any advice?,general
-Help me with integrals.,maths
-Tell me about first normal form.,dbms
-What are common mistakes in stacks?,dsa
-"Honestly, What should I revise the night before an interview? Thanks!",general
-combinations interview questions,maths
-"I'm stuck on feature engineering, can you help?",aiml
-How does space complexity work?,dsa
-Debug my Bayes theorem solution.,maths
-Why is big O notation important?,dsa
-Teach me precision and recall.,aiml
-What's the difference between learning rate and precision and recall?,aiml
-confusion matrices interview questions,aiml
-recursion explained simply,dsa
-How do I solve questions about feature engineering?,aiml
-Why is combinations important?,maths
-So What should I revise the night before an interview? Any advice?,general
-Can you explain chain rule with an example?,maths
-Need help understanding ACID properties,dbms
-Quick question - Which companies should I apply to?,general
-What's the difference between database schema design and primary keys?,dbms
-Revise learning rate with me.,aiml
-How do I explain my project in an interview? Thanks!,general
-Summarize naive bayes for revision.,aiml
-Need help understanding conditional probability,maths
-Revise feature engineering with me.,aiml
-Teach me ensemble methods.,aiml
-Break down gradient descent for me.,aiml
-Teach me stacks.,dsa
-Revise inner joins with me.,dbms
-"I'm stuck on big O notation, can you help?",dsa
-What are the steps for arrays?,dsa
-"My answer for two pointers was wrong, why?",dsa
-"Honestly, What should my daily routine look like? I'm not sure.",general
-"Honestly, What's the best way to take notes while studying? I'm not sure.",general
-Build me a study plan for the next 4 weeks.,general
-Can you explain backpropagation with an example?,aiml
-"Honestly, How do I handle interview rejection? Thanks!",general
-Quick question - What certifications actually matter? Any advice?,general
-I don't understand learning rate.,aiml
-Explain linear algebra.,maths
-Give me practice problems on stacks.,dsa
-Show me how to implement quicksort.,dsa
-What is database schema design?,dbms
-Teach me backtracking.,dsa
-"I'm stuck on Bayes theorem, can you help?",maths
-What are common mistakes in precision and recall?,aiml
-Need help understanding greedy algorithms,dsa
-Can you help me: What's a good resume format for freshers? Thanks!,general
-"Honestly, What should my daily routine look like?",general
-How is confusion matrices related to feature engineering?,aiml
-What are common mistakes in gradient?,maths
-Can you explain feature engineering with an example?,aiml
-Need help understanding convolutional neural networks,aiml
-Debug my linked lists solution.,dsa
-Can you help me: How do I balance college exams and placement prep?,general
-"My answer for normal distribution was wrong, why?",maths
-Give me a problem on precision and recall.,aiml
-Break down feature engineering for me.,aiml
-Explain binary trees.,dsa
-Need help understanding confusion matrices,aiml
-Summarize triggers for revision.,dbms
-Tell me about depth first search.,dsa
-How is tries related to binary trees?,dsa
-Help me with heaps.,dsa
-Can you help me: What's the best way to take notes while studying?,general
-Can you help me: What are my weakest areas right now? Any advice?,general
-Why is linear regression important?,aiml
-So Help me set realistic study goals. Any advice?,general
-How many hours a day should I study? Thanks!,general
-How does GROUP BY clauses work?,dbms
-So What's the best way to take notes while studying?,general
-Need help understanding hypothesis testing,maths
-Summarize stacks for revision.,dsa
-"Honestly, How do I answer 'tell me about yourself' in an interview?",general
-Quiz me on binary trees.,dsa
-I don't understand overfitting.,aiml
-How is gradient related to chain rule?,maths
-"Honestly, What's a good resume format for freshers? Any advice?",general
-Help me with denormalization.,dbms
-Quiz me on subqueries.,dbms
-Help me with chain rule.,maths
-Walk me through set theory step by step.,maths
-Quick question - What's the difference between service and product companies? Please guide me.,general
-Why is neural networks important?,aiml
-Quiz me on triggers.,dbms
-How is limits related to matrix multiplication?,maths
-Write linked lists code for me.,dsa
-Walk me through gradient descent step by step.,aiml
-Need help understanding random forests,aiml
-"Hey, What's the difference between service and product companies?",general
-Explain SQL queries.,dbms
-"Honestly, What's the best way to take notes while studying?",general
-What are common mistakes in ER diagrams?,dbms
-Need help understanding binary search,dsa
-What are common mistakes in graph theory?,maths
-"I'm stuck on derivatives, can you help?",maths
-So How should I prepare for technical interviews? I'm not sure.,general
-"Honestly, How do I explain my project in an interview? Thanks!",general
-Can you help me: What's a good resume format for freshers? Please guide me.,general
-"I'm stuck on third normal form, can you help?",dbms
-How does k-means clustering work?,aiml
-Debug my partial derivatives solution.,maths
-Give me practice problems on neural networks.,aiml
-What is dynamic programming?,dsa
-Need help understanding triggers,dbms
-Explain convolutional neural networks.,aiml
-How do I solve questions about greedy algorithms?,dsa
-Give me a problem on sliding window.,dsa
-Quiz me on gradient.,maths
-Give me a problem on partial derivatives.,maths
-Tell me about foreign keys.,dbms
-"I'm stuck on GROUP BY clauses, can you help?",dbms
-How do I solve questions about probability?,maths
-What's the difference between stored procedures and GROUP BY clauses?,dbms
-Help me with cross validation.,aiml
-Compare stacks and merge sort.,dsa
-What is concurrency control?,dbms
-I don't understand ER diagrams.,dbms
-Tell me about relational algebra.,dbms
-What's the difference between linked list cycle detection and quicksort?,dsa
-Can you explain indexing with an example?,dbms
-How does standard deviation work?,maths
-Write learning rate code for me.,aiml
-Is normalization asked in placement interviews?,dbms
-Summarize breadth first search for revision.,dsa
-"Honestly, Help me plan my week. Any advice?",general
-Tell me about expected value.,maths
-I don't understand neural networks.,aiml
-ensemble methods interview questions,aiml
-Compare arrays and linked list cycle detection.,dsa
-"Honestly, Can you summarize what I've learned so far?",general
-Quick question - I don't know where to start. Any advice?,general
-So How should I prepare for technical interviews? Please guide me.,general
-Give me a problem on hash maps.,dsa
-"My answer for graphs was wrong, why?",dsa
-Quick question - What should I learn first to become a data scientist?,general
-"Hey, What should I revise the night before an interview? Any advice?",general
-What is chain rule?,maths
-loss functions interview questions,aiml
-Explain heaps.,dsa
-Show me how to implement support vector machines.,aiml
-Write neural networks code for me.,aiml
-indexing explained simply,dbms
-I don't understand embeddings.,aiml
-Give me practice problems on depth first search.,dsa
-Can you explain limits with an example?,maths
-Compare normalization and relational algebra.,dbms
-I don't understand permutations.,maths
-How do I solve questions about hash maps?,dsa
-Give me a problem on integrals.,maths
-I don't understand combinations.,maths
-chain rule vs discrete mathematics,maths
-Quick question - How do I explain my project in an interview? I'm not sure.,general
-So How long does it take to get placement ready? Any advice?,general
-So How do I balance college exams and placement prep? Any advice?,general
-What's the difference between cross validation and regularization?,aiml
-Explain random forests.,aiml
-Show me how to implement primary keys.,dbms
-Break down probability for me.,maths
-Give me practice problems on indexing.,dbms
-Help me with depth first search.,dsa
-Quick question - What are my weakest areas right now? Any advice?,general
-What is learning rate?,aiml
-What is derivatives?,maths
-Break down set theory for me.,maths
-What is eigenvalues?,maths
-How do I solve questions about views?,dbms
-How do I answer 'tell me about yourself' in an interview? Any advice?,general
-"I'm stuck on time complexity, can you help?",dsa
-join queries vs transactions,dbms
-activation functions explained simply,aiml
-logistic regression vs regularization,aiml
-Explain combinations.,maths
-Write discrete mathematics code for me.,maths
-Give me practice problems on variance.,maths
-So What should my daily routine look like?,general
-Compare graphs and binary trees.,dsa
-precision and recall explained simply,aiml
-How do I solve questions about variance?,maths
-How does merge sort work?,dsa
-heaps explained simply,dsa
-Revise precision and recall with me.,aiml
-"My answer for recursion was wrong, why?",dsa
-Quiz me on activation functions.,aiml
-"My answer for embeddings was wrong, why?",aiml
-Teach me concurrency control.,dbms
-I don't understand first normal form.,dbms
-Need help understanding set theory,maths
-Give me practice problems on merge sort.,dsa
-So What's a good resume format for freshers? Please guide me.,general
-foreign keys vs ACID properties,dbms
-Need help understanding arrays,dsa
-Debug my batch normalization solution.,aiml
-"Honestly, Can you summarize what I've learned so far? I'm not sure.",general
-Revise binary search with me.,dsa
-What's the difference between tree traversal and heaps?,dsa
-What are the steps for chain rule?,maths
-So What's the best way to take notes while studying? Please guide me.,general
-Can you help me: How do I handle interview rejection? I'm not sure.,general
-Walk me through transformers step by step.,aiml
-database schema design explained simply,dbms
-Debug my chain rule solution.,maths
-Can you explain hypothesis testing with an example?,maths
-Tell me about hypothesis testing.,maths
-Debug my third normal form solution.,dbms
-Break down support vector machines for me.,aiml
-How do I solve questions about embeddings?,aiml
-Why is tree traversal important?,dsa
-Show me how to implement concurrency control.,dbms
-"Hey, Give me tips for group discussions. Thanks!",general
-Give me practice problems on database schema design.,dbms
 How does probability work?,maths
-Walk me through convolutional neural networks step by step.,aiml
-What are the steps for transformers?,aiml
-Tell me about neural networks.,aiml
-So Should I focus on projects or DSA first? I'm not sure.,general
-Quick question - How long does it take to get placement ready?,general
-Need help understanding concurrency control,dbms
-Help me with views.,dbms
-Debug my linked list cycle detection solution.,dsa
-How is stacks related to backtracking?,dsa
-How is permutations related to conditional probability?,maths
-"I'm stuck on transactions, can you help?",dbms
-Can you help me: How do I negotiate a job offer? Please guide me.,general
-Show me how to implement first normal form.,dbms
-Can you help me: What certifications actually matter? Thanks!,general
-Teach me limits.,maths
-Why is space complexity important?,dsa
-What's the difference between discrete mathematics and integrals?,maths
-Give me practice problems on gradient descent.,aiml
-"I'm stuck on join queries, can you help?",dbms
-How does bias variance tradeoff work?,aiml
-Can you help me: I keep forgetting what I studied last week.,general
-query optimization interview questions,dbms
-What is linear algebra?,maths
-How is vectors related to set theory?,maths
-How do I solve questions about subqueries?,dbms
-"Honestly, Build me a study plan for the next 4 weeks.",general
-Can you explain space complexity with an example?,dsa
-Tell me about convolutional neural networks.,aiml
-Why is third normal form important?,dbms
-Give me practice problems on breadth first search.,dsa
-Can you explain views with an example?,dbms
-embeddings interview questions,aiml
-Quick question - How important is CGPA for placements?,general
-Need help understanding backtracking,dsa
-"My answer for indexing was wrong, why?",dbms
-How is relational algebra related to indexing?,dbms
-Compare determinants and hypothesis testing.,maths
-Why is limits important?,maths
-So What are my weakest areas right now? Thanks!,general
-Teach me query optimization.,dbms
-Debug my greedy algorithms solution.,dsa
-"I'm stuck on database schema design, can you help?",dbms
-Quiz me on queues.,dsa
-So Am I on track for my goals?,general
-How is database schema design related to subqueries?,dbms
-Compare hash maps and binary search.,dsa
-"Hey, What topics are most important for product company interviews? Thanks!",general
-What's the difference between logistic regression and random forests?,aiml
-Explain standard deviation.,maths
-Help me with graph theory.,maths
-How is random forests related to naive bayes?,aiml
-"Honestly, Should I do an internship or prepare for placements? Please guide me.",general
-How is sliding window related to stacks?,dsa
-"Honestly, What certifications actually matter? Please guide me.",general
-Explain normal distribution.,maths
-"Hey, How do I explain my project in an interview? Thanks!",general
-Write naive bayes code for me.,aiml
-Give me practice problems on binary trees.,dsa
-Can you explain binary trees with an example?,dsa
-How is arrays related to linked lists?,dsa
-SQL queries interview questions,dbms
-"Hey, How do I explain my project in an interview? I'm not sure.",general
-What's the difference between regularization and confusion matrices?,aiml
-Why is SQL queries important?,dbms
-Tell me about recursion.,dsa
-I don't understand graphs.,dsa
-"My answer for heaps was wrong, why?",dsa
-Can you explain probability with an example?,maths
-"Hey, What's a good resume format for freshers? Please guide me.",general
-Tell me about precision and recall.,aiml
-What's a good resume format for freshers? Any advice?,general
-Need help understanding variance,maths
 Debug my foreign keys solution.,dbms
-Tell me about inner joins.,dbms
-I don't understand regularization.,aiml
-"Hey, Am I on track for my goals? Thanks!",general
-Quiz me on embeddings.,aiml
-Walk me through learning rate step by step.,aiml
-Is B-tree indexes asked in placement interviews?,dbms
+space complexity interview questions,dsa
+Walk me through linked list cycle detection step by step.,dsa
+foreign keys vs ACID properties,dbms
+Write naive bayes code for me.,aiml
+I don't understand integrals.,maths
+time complexity vs binary search,dsa
 Debug my query optimization solution.,dbms
-Break down queues for me.,dsa
-Is eigenvalues asked in placement interviews?,maths
-standard deviation vs variance,maths
-Explain integrals.,maths
-"My answer for neural networks was wrong, why?",aiml
-How is normal distribution related to eigenvalues?,maths
-stacks explained simply,dsa
-Give me practice problems on space complexity.,dsa
-What is two pointers?,dsa
-What are common mistakes in time complexity?,dsa
-Need help understanding graph theory,maths
-"Honestly, Build me a study plan for the next 4 weeks. Thanks!",general
-How do I solve questions about standard deviation?,maths
-Debug my breadth first search solution.,dsa
-"I failed my last mock interview, what now? Any advice?",general
-ACID properties interview questions,dbms
-Quiz me on regularization.,aiml
-Revise support vector machines with me.,aiml
-Can you help me: Give me tips for group discussions. Please guide me.,general
-Quick question - What should my daily routine look like? I'm not sure.,general
-"Hey, What's a good resume format for freshers? Any advice?",general
-Can you help me: How do I improve my problem solving speed? Please guide me.,general
-Teach me logistic regression.,aiml
-Give me a problem on GROUP BY clauses.,dbms
-Help me with quicksort.,dsa
-What is support vector machines?,aiml
-"Honestly, How do I prepare for HR rounds? I'm not sure.",general
-"My answer for views was wrong, why?",dbms
+"Honestly, How do I build a good GitHub profile? Thanks!",general
+What is SQL joins?,dbms
+So Give me tips for group discussions.,general
+"I'm stuck on loss functions, can you help?",aiml
+Quick question - Which companies should I apply to? Thanks!,general
+Need help understanding concurrency control,dbms
+Debug my determinants solution.,maths
+Debug my linked lists solution.,dsa
+How does set theory work?,maths
+Summarize breadth first search for revision.,dsa
+How do I solve questions about feature engineering?,aiml
+inner joins explained simply,dbms
+Compare vectors and expected value.,maths
+"My answer for determinants was wrong, why?",maths
+Compare linked list cycle detection and recursion.,dsa
 Write variance code for me.,maths
-How do I balance college exams and placement prep? Any advice?,general
-So What's the difference between service and product companies? Any advice?,general
-Quick question - Help me set realistic study goals. I'm not sure.,general
-Revise vectors with me.,maths
-What are the steps for naive bayes?,aiml
-Tell me about space complexity.,dsa
-How do I solve questions about ACID properties?,dbms
-"My answer for variance was wrong, why?",maths
-dynamic programming explained simply,dsa
+Quiz me on derivatives.,maths
+Quick question - How important is CGPA for placements?,general
+sliding window interview questions,dsa
+Debug my ACID properties solution.,dbms
+What is two pointers?,dsa
+How is dynamic programming related to queues?,dsa
+Need help understanding stored procedures,dbms
+"Honestly, I don't know where to start. Please guide me.",general
+Break down Bayes theorem for me.,maths
+I don't understand combinations.,maths
+logistic regression vs regularization,aiml
+Tell me about neural networks.,aiml
+Show me how to implement primary keys.,dbms
+"My answer for graphs was wrong, why?",dsa
+"Hey, What's the best way to take notes while studying? I'm not sure.",general
+Tell me about binary search.,dsa
+cross validation interview questions,aiml
+So Build me a study plan for the next 4 weeks. I'm not sure.,general
+Can you explain third normal form with an example?,dbms
+"My answer for neural networks was wrong, why?",aiml
+How do I answer 'tell me about yourself' in an interview? Please guide me.,general
+Show me how to implement combinations.,maths
+Can you help me: I keep forgetting what I studied last week. Any advice?,general
+Tell me about Bayes theorem.,maths
+So Which subjects should I prioritize for placements? Any advice?,general
+Write limits code for me.,maths
+Can you help me: What's a good resume format for freshers? Any advice?,general
+What is cross validation?,aiml
+"Hey, What's the difference between service and product companies? Please guide me.",general
+How do I solve questions about regularization?,aiml
+database schema design explained simply,dbms
+How is overfitting related to linear regression?,aiml
+Explain regularization.,aiml
+Can you explain normal distribution with an example?,maths
+"I failed my last mock interview, what now? Please guide me.",general
+What's the difference between space complexity and arrays?,dsa
+Quick question - What's the best way to take notes while studying? Any advice?,general
+I don't understand first normal form.,dbms
+So Give me a roadmap for becoming a backend developer.,general
+Write logistic regression code for me.,aiml
+Can you explain space complexity with an example?,dsa
+What's the difference between big O notation and merge sort?,dsa
+Break down queues for me.,dsa
+What is B-tree indexes?,dbms
 Is Bayes theorem asked in placement interviews?,maths
+Tell me about combinations.,maths
+What is the best preparation strategy for product companies?,general
+"I'm stuck on third normal form, can you help?",dbms
+Need help understanding recursion,dsa
+"I'm stuck on convolutional neural networks, can you help?",aiml
+What are the steps for linked list cycle detection?,dsa
+hypothesis testing explained simply,maths
+So How do I explain my project in an interview? Thanks!,general
+What's the difference between indexing and stored procedures?,dbms
+Help me with conditional probability.,maths
+Explain heaps.,dsa
+How is vectors related to set theory?,maths
+stacks explained simply,dsa
+Can you explain feature engineering with an example?,aiml
+What are common mistakes in depth first search?,dsa
+Need help understanding learning rate,aiml
+Debug my third normal form solution.,dbms
+What is views?,dbms
+Need help understanding ACID properties,dbms
+How do I solve questions about subqueries?,dbms
+Break down limits for me.,maths
+Can you explain binary trees with an example?,dsa
+naive bayes explained simply,aiml
+Is eigenvalues asked in placement interviews?,maths
+Can you explain primary keys with an example?,dbms
+What is derivatives?,maths
+I don't understand ER diagrams.,dbms
+How is logarithms related to permutations?,maths
+dynamic programming explained simply,dsa
+"I'm stuck on stacks, can you help?",dsa
+Revise overfitting with me.,aiml
+Why is hash maps important?,dsa
+precision and recall interview questions,aiml
+Give me practice problems on space complexity.,dsa
+What's the difference between transactions and denormalization?,dbms
+hash maps explained simply,dsa
+"Hey, What's a good resume format for freshers? Please guide me.",general
+What should I study to become a software engineer?,general
+Teach me limits.,maths
+Help me with recursion.,dsa
+Debug my embeddings solution.,aiml
+Give me practice problems on B-tree indexes.,dbms
+Quiz me on space complexity.,dsa
+"Hey, How do I answer 'tell me about yourself' in an interview?",general
+How does backpropagation work?,aiml
+join queries vs transactions,dbms
+"I'm stuck on linear algebra, can you help?",maths
+What are common mistakes in convolutional neural networks?,aiml
+What are the steps for transformers?,aiml
+How do I stay motivated while preparing?,general
+Teach me ensemble methods.,aiml
+"Honestly, What topics are most important for product company interviews? Any advice?",general
+So What should I revise the night before an interview? Thanks!,general
+Give me practice problems on variance.,maths
+Quiz me on third normal form.,dbms
+Why is space complexity important?,dsa
+So Give me tips for group discussions. Any advice?,general
+Revise random forests with me.,aiml
+Break down eigenvalues for me.,maths
+Need help understanding triggers,dbms
+What's the difference between arrays and stacks?,dsa
+"I'm stuck on derivatives, can you help?",maths
+"My answer for quicksort was wrong, why?",dsa
+What are the steps for chain rule?,maths
+Explain standard deviation.,maths
+Summarize stacks for revision.,dsa
+"Hey, Should I do an internship or prepare for placements? Please guide me.",general
+"Honestly, How should I prepare for technical interviews? Any advice?",general
+Explain GROUP BY clauses.,dbms
+Summarize graphs for revision.,dsa
+What is combinations?,maths
+What's the difference between naive bayes and bias variance tradeoff?,aiml
+Compare hypothesis testing and chain rule.,maths
+Debug my backtracking solution.,dsa
+"My answer for linked list cycle detection was wrong, why?",dsa
+Give me practice problems on confusion matrices.,aiml
+"Hey, Can you summarize what I've learned so far?",general
+Summarize stored procedures for revision.,dbms
+"Hey, What is the best preparation strategy for product companies? Please guide me.",general
+Summarize discrete mathematics for revision.,maths
+"Honestly, What certifications actually matter?",general
+Need help understanding hypothesis testing,maths
+Show me how to implement backtracking.,dsa
+Teach me recursion.,dsa
+Give me a problem on dynamic programming.,dsa
+Is denormalization asked in placement interviews?,dbms
+I don't understand primary keys.,dbms
+"Honestly, Give me a software engineering placement roadmap. Please guide me.",general
+Quiz me on regularization.,aiml
+What's the difference between ensemble methods and regularization?,aiml
+"Honestly, Preparation plan for data analyst roles Any advice?",general
+"Hey, Study plan for software engineering interviews Any advice?",general
+Give me practice problems on merge sort.,dsa
+indexing explained simply,dbms
+"Honestly, What's the difference between service and product companies? Please guide me.",general
+Explain backtracking.,dsa
+Revise discrete mathematics with me.,maths
+Walk me through combinations step by step.,maths
+Show me how to implement support vector machines.,aiml
+How do I solve questions about relational algebra?,dbms
+What is graphs?,dsa
+logarithms interview questions,maths
+naive bayes interview questions,aiml
+How is permutations related to conditional probability?,maths
+What are common mistakes in gradient?,maths
+Explain binary trees.,dsa
+What is random forests?,aiml
+How does bias variance tradeoff work?,aiml
+"Honestly, Tell me what to study today. Please guide me.",general
+"I'm stuck on time complexity, can you help?",dsa
+time complexity interview questions,dsa
+Can you help me: Preparation plan for data analyst roles I'm not sure.,general
+Is first normal form asked in placement interviews?,dbms
+Show me how to implement backpropagation.,aiml
+How does precision and recall work?,aiml
+Can you explain random forests with an example?,aiml
+So What's a good resume format for freshers? Thanks!,general
+"I'm stuck on precision and recall, can you help?",aiml
+binary search interview questions,dsa
+Debug my greedy algorithms solution.,dsa
+transformers interview questions,aiml
+"Hey, Give me a software engineering placement roadmap. Thanks!",general
+Need help understanding convolutional neural networks,aiml
+Break down chain rule for me.,maths
+Quiz me on normalization.,dbms
+What are the steps for eigenvalues?,maths
+conditional probability explained simply,maths
+Summarize subqueries for revision.,dbms
+Debug my stacks solution.,dsa
+"My answer for deadlocks was wrong, why?",dbms
+Summarize naive bayes for revision.,aiml
+Revise gradient with me.,maths
+How does ensemble methods work?,aiml
+"I'm stuck on Bayes theorem, can you help?",maths
+Quick question - How do I prepare for HR rounds?,general
+Show me how to implement big O notation.,dsa
+Tell me about B-tree indexes.,dbms
+I don't understand stored procedures.,dbms
+Show me how to implement neural networks.,aiml
+Summarize logarithms for revision.,maths
+tree traversal vs queues,dsa
+Explain feature engineering.,aiml
+What are common mistakes in cross validation?,aiml
+"Quick question - I failed my last mock interview, what now?",general
+What are common mistakes in linked lists?,dsa
+Why is graph theory important?,maths
+How does combinations work?,maths
+What is discrete mathematics?,maths
+What's the difference between tree traversal and heaps?,dsa
+Give me practice problems on linear regression.,aiml
+Quiz me on stacks.,dsa
+Give me a problem on deadlocks.,dbms
+Walk me through gradient descent step by step.,aiml
+What is space complexity?,dsa
+Can you help me: What should I study to become a software engineer? Please guide me.,general
+Revise precision and recall with me.,aiml
+"Hey, How do I negotiate a job offer?",general
+Can you explain indexing with an example?,dbms
+Show me how to implement views.,dbms
+"Honestly, Roadmap for full stack development placements I'm not sure.",general
+Quiz me on conditional probability.,maths
+What are the steps for breadth first search?,dsa
+What are common mistakes in ER diagrams?,dbms
+Help me with depth first search.,dsa
+How do I solve questions about arrays?,dsa
+Help me with standard deviation.,maths
+Show me how to implement discrete mathematics.,maths
+Help me with quicksort.,dsa
+Can you help me: Give me a software engineering placement roadmap. Any advice?,general
+Revise depth first search with me.,dsa
+"I'm stuck on confusion matrices, can you help?",aiml
+"My answer for support vector machines was wrong, why?",aiml
+Quick question - How long does it take to get placement ready? Any advice?,general
+Show me how to implement quicksort.,dsa
+Can you help me: What should my daily routine look like? Any advice?,general
+So What should I revise the night before an interview?,general
+Need help understanding arrays,dsa
+What is set theory?,maths
+What's the difference between regularization and confusion matrices?,aiml
+How is random forests related to naive bayes?,aiml
+Help me with cross validation.,aiml
+primary keys vs SQL joins,dbms
+I don't understand subqueries.,dbms
+"Hey, Help me set realistic study goals. Thanks!",general
+Why is big O notation important?,dsa
+Give me a problem on sliding window.,dsa
+Walk me through k-means clustering step by step.,aiml
+indexing vs database schema design,dbms
+How do I solve questions about transformers?,aiml
+Give me a problem on gradient descent.,aiml
+Quiz me on concurrency control.,dbms
+Compare linked lists and heaps.,dsa
+What's the best way to take notes while studying? Please guide me.,general
+What is normalization?,dbms
+Show me how to implement graph theory.,maths
+"Honestly, Am I on track for my goals? Any advice?",general
+Can you help me: How do I explain my project in an interview? I'm not sure.,general
+Help me with backpropagation.,aiml
+"My answer for normal distribution was wrong, why?",maths
+Break down inner joins for me.,dbms
+Break down conditional probability for me.,maths
+Debug my breadth first search solution.,dsa
+"Hey, Which subjects should I prioritize for placements? Any advice?",general
+How do I structure my revision before interviews? Thanks!,general
+How is primary keys related to query optimization?,dbms
+Walk me through transformers step by step.,aiml
+Give me practice problems on backtracking.,dsa
+Help me with graph theory.,maths
+"Honestly, How should I prepare for technical interviews? Thanks!",general
+Is feature engineering asked in placement interviews?,aiml
+Compare derivatives and hypothesis testing.,maths
+"My answer for heaps was wrong, why?",dsa
+How is binary search related to linked list cycle detection?,dsa
+Quick question - Which subjects should I prioritize for placements? Any advice?,general
+"Honestly, I failed my last mock interview, what now? Please guide me.",general
+database schema design interview questions,dbms
+So Study plan for software engineering interviews,general
+Give me a problem on relational algebra.,dbms
+Give me practice problems on stacks.,dsa
+Quiz me on query optimization.,dbms
+Show me how to implement standard deviation.,maths
+How do I explain my project in an interview?,general
+Revise denormalization with me.,dbms
+Why is eigenvalues important?,maths
+Can you help me: Help me plan my week. Any advice?,general
+Revise neural networks with me.,aiml
+Quick question - Can you review my overall progress?,general
+"Hey, Give me a roadmap to crack placements. Thanks!",general
+Tell me about hypothesis testing.,maths
+two pointers interview questions,dsa
+"I'm stuck on inner joins, can you help?",dbms
+Tell me about depth first search.,dsa
+Explain random forests.,aiml
+Why is SQL queries important?,dbms
+Help me with linear regression.,aiml
+Why is linear regression important?,aiml
+How is stacks related to backtracking?,dsa
+SQL queries interview questions,dbms
+Revise foreign keys with me.,dbms
+Can you help me: What should I revise the night before an interview? Please guide me.,general
+"My answer for eigenvalues was wrong, why?",maths
+Write normal distribution code for me.,maths
+What are common mistakes in logarithms?,maths
+Explain inner joins.,dbms
+embeddings interview questions,aiml
+"Honestly, How do I prepare for HR rounds?",general
+Revise SQL queries with me.,dbms
+So Give me a week by week preparation schedule.,general
+How does ER diagrams work?,dbms
+"Honestly, What topics are most important for product company interviews? Please guide me.",general
+I don't understand feature engineering.,aiml
+What are common mistakes in SQL joins?,dbms
+How do I solve questions about determinants?,maths
+Write discrete mathematics code for me.,maths
+I don't understand overfitting.,aiml
+"Hey, What's the best way to take notes while studying? Thanks!",general
+Compare normalization and relational algebra.,dbms
+Write set theory code for me.,maths
+Why is backtracking important?,dsa
+Quiz me on embeddings.,aiml
+Need help understanding binary trees,dsa
+How do I solve questions about big O notation?,dsa
+Teach me relational algebra.,dbms
+Quick question - What should I learn first to become a data scientist? I'm not sure.,general
+Teach me merge sort.,dsa
+Revise quicksort with me.,dsa
+ensemble methods vs learning rate,aiml
+Revise k-means clustering with me.,aiml
+How do I solve questions about standard deviation?,maths
+Tell me about relational algebra.,dbms
+Walk me through hash maps step by step.,dsa
+Tell me about convolutional neural networks.,aiml
+What are common mistakes in precision and recall?,aiml
+Can you help me: Which companies should I apply to? I'm not sure.,general
+Summarize views for revision.,dbms
+How do I negotiate a job offer?,general
+Quick question - Should I do an internship or prepare for placements? I'm not sure.,general
+Compare graphs and binary trees.,dsa
+deadlocks interview questions,dbms
+Debug my Bayes theorem solution.,maths
+How do I solve questions about greedy algorithms?,dsa
+Break down B-tree indexes for me.,dbms
+concurrency control interview questions,dbms
+"Honestly, Preparation plan for data analyst roles I'm not sure.",general
+"Honestly, Study plan for software engineering interviews Any advice?",general
+Help me with dynamic programming.,dsa
+How do I solve questions about loss functions?,aiml
+What are common mistakes in graph theory?,maths
+What is permutations?,maths
+How do I solve questions about linked lists?,dsa
+"Honestly, What's the difference between service and product companies? Any advice?",general
+"My answer for views was wrong, why?",dbms
+Can you explain hypothesis testing with an example?,maths
+What is chain rule?,maths
+What's the difference between discrete mathematics and integrals?,maths
+Teach me precision and recall.,aiml
+query optimization interview questions,dbms
+How do I solve questions about chain rule?,maths
+Quick question - Give me tips for group discussions. I'm not sure.,general
+triggers interview questions,dbms
+I don't understand third normal form.,dbms
+I don't understand learning rate.,aiml
+Can you explain chain rule with an example?,maths
+What is support vector machines?,aiml
+Debug my eigenvalues solution.,maths
+Can you help me: Give me a software engineering placement roadmap. Please guide me.,general
+Give me a problem on recursion.,dsa
+Debug my learning rate solution.,aiml
+I don't understand two pointers.,dsa
+"Honestly, What's the difference between service and product companies? I'm not sure.",general
+What are common mistakes in confusion matrices?,aiml
+Revise vectors with me.,maths
+Quick question - What should I revise the night before an interview? Any advice?,general
+What are common mistakes in sliding window?,dsa
+stacks interview questions,dsa
+Help me with integrals.,maths
+"My answer for regularization was wrong, why?",aiml
+Tell me about left joins.,dbms
+Can you help me: What's the best way to take notes while studying? Any advice?,general
+What are common mistakes in time complexity?,dsa
+"I'm stuck on join queries, can you help?",dbms
+Walk me through convolutional neural networks step by step.,aiml
+Debug my primary keys solution.,dbms
+How do I solve questions about SQL queries?,dbms
+Teach me linear algebra.,maths
+SQL joins interview questions,dbms
+I don't understand embeddings.,aiml
+Show me how to implement set theory.,maths
+How is arrays related to linked lists?,dsa
+Is regularization asked in placement interviews?,aiml
+What are common mistakes in indexing?,dbms
+"I'm stuck on feature engineering, can you help?",aiml
+Help me with probability.,maths
+I don't understand graphs.,dsa
+So What should my daily routine look like? Any advice?,general
+So Can you summarize what I've learned so far? Please guide me.,general
+Help me with chain rule.,maths
+How is normal distribution related to eigenvalues?,maths
+Debug my loss functions solution.,aiml
+Need help understanding confusion matrices,aiml
+Revise heaps with me.,dsa
+Can you explain naive bayes with an example?,aiml
+"Hey, Give me tips for group discussions. Thanks!",general
+I don't understand graph theory.,maths
+Walk me through normalization step by step.,dbms
+Tell me about foreign keys.,dbms
+Break down embeddings for me.,aiml
+Can you explain logistic regression with an example?,aiml
+So Can you summarize what I've learned so far?,general
+"I'm stuck on activation functions, can you help?",aiml
+Revise support vector machines with me.,aiml
+Quiz me on hypothesis testing.,maths
+Need help understanding heaps,dsa
+"My answer for stored procedures was wrong, why?",dbms
+Help me with matrix multiplication.,maths
+Can you help me: How do I handle interview rejection? Please guide me.,general
+Tell me about precision and recall.,aiml
+"Hey, Should I focus on projects or DSA first? Any advice?",general
+Give me practice problems on database schema design.,dbms
+Give me practice problems on random forests.,aiml
+What's the difference between matrix multiplication and limits?,maths
+arrays vs dynamic programming,dsa
+What is concurrency control?,dbms
+"Honestly, How do I explain my project in an interview? Please guide me.",general
+"Honestly, How many hours a day should I study? I'm not sure.",general
+I don't understand regularization.,aiml
+Explain normal distribution.,maths
+Quick question - Help me set realistic study goals. Please guide me.,general
+What is learning rate?,aiml
+Give me a problem on decision trees.,aiml
+Give me a problem on join queries.,dbms
+Explain transactions.,dbms
+"My answer for random forests was wrong, why?",aiml
+"My answer for two pointers was wrong, why?",dsa
+"Honestly, Can you summarize what I've learned so far? Any advice?",general
+How do I solve questions about discrete mathematics?,maths
+"Hey, Should I focus on projects or DSA first? Please guide me.",general
+Why is inner joins important?,dbms
+Walk me through batch normalization step by step.,aiml
+So Which companies should I apply to?,general
+Quiz me on queues.,dsa
+Quick question - Give me a roadmap to crack placements. I'm not sure.,general
+Give me a problem on hash maps.,dsa
+Need help understanding embeddings,aiml
+Can you explain linear algebra with an example?,maths
+convolutional neural networks explained simply,aiml
+"Hey, How do I prepare for HR rounds? Any advice?",general
+ER diagrams vs foreign keys,dbms
+Is normalization asked in placement interviews?,dbms
+Debug my chain rule solution.,maths
+set theory interview questions,maths
+I don't understand dynamic programming.,dsa
+Quick question - What's a good resume format for freshers? I'm not sure.,general
+chain rule vs discrete mathematics,maths
+"Honestly, I failed my last mock interview, what now? Any advice?",general
+Give me a problem on subqueries.,dbms
+Can you explain probability with an example?,maths
+Quick question - What topics are most important for product company interviews? I'm not sure.,general
+"Hey, Give me a software engineering placement roadmap. I'm not sure.",general
+What's the difference between linked list cycle detection and quicksort?,dsa
+Compare time complexity and binary search.,dsa
+Break down logarithms for me.,maths
+What's the difference between denormalization and deadlocks?,dbms
+"My answer for convolutional neural networks was wrong, why?",aiml
+"My answer for recursion was wrong, why?",dsa
+So Should I do an internship or prepare for placements? Please guide me.,general
+"Hey, What should my daily routine look like?",general
+Why is transformers important?,aiml
+Can you explain heaps with an example?,dsa
+Help me with views.,dbms
+How do I balance college exams and placement prep?,general
+Explain Bayes theorem.,maths
+Is tries asked in placement interviews?,dsa
+Help me with batch normalization.,aiml
+Tell me what to study today. Thanks!,general
+What are common mistakes in recursion?,dsa
+What's the difference between cross validation and regularization?,aiml
+What are common mistakes in random forests?,aiml
+Give me a problem on tree traversal.,dsa
+Is merge sort asked in placement interviews?,dsa
+loss functions explained simply,aiml
+logarithms vs conditional probability,maths
+Write linked lists code for me.,dsa
+How do I solve questions about variance?,maths
+Show me how to implement convolutional neural networks.,aiml
+Help me with deadlocks.,dbms
+Help me with denormalization.,dbms
+Break down naive bayes for me.,aiml
+How is database schema design related to subqueries?,dbms
+I don't understand hash maps.,dsa
+Is determinants asked in placement interviews?,maths
+"So I failed my last mock interview, what now? Any advice?",general
+Can you help me: What is the roadmap for a machine learning engineer role? I'm not sure.,general
+activation functions explained simply,aiml
+Teach me query optimization.,dbms
+Give me a problem on k-means clustering.,aiml
+Quiz me on overfitting.,aiml
+Tell me about linked lists.,dsa
+Give me a problem on learning rate.,aiml
+Why is backpropagation important?,aiml
+Revise feature engineering with me.,aiml
+neural networks explained simply,aiml
+Is conditional probability asked in placement interviews?,maths
+"Honestly, Give me a software engineering placement roadmap. Thanks!",general
+Walk me through big O notation step by step.,dsa
+How important is CGPA for placements? Please guide me.,general
+How is binary trees related to dynamic programming?,dsa
+Why is neural networks important?,aiml
+I don't understand variance.,maths
+Give me a problem on GROUP BY clauses.,dbms
+Need help understanding determinants,maths
+I don't understand foreign keys.,dbms
+How does dynamic programming work?,dsa
+"Hey, Give me a data science placement roadmap. I'm not sure.",general
+How does breadth first search work?,dsa
+Give me practice problems on concurrency control.,dbms
+What is eigenvalues?,maths
+Teach me subqueries.,dbms
+"I'm stuck on support vector machines, can you help?",aiml
+Show me how to implement third normal form.,dbms
+What is binary trees?,dsa
+So How long does it take to get placement ready? Thanks!,general
+I don't understand neural networks.,aiml
+breadth first search explained simply,dsa
+"I'm stuck on random forests, can you help?",aiml
+What's the difference between learning rate and precision and recall?,aiml
+Revise database schema design with me.,dbms
+So How do I balance college exams and placement prep?,general
+Can you help me: Which companies should I apply to? Please guide me.,general
+Quick question - Give me a week by week preparation schedule. I'm not sure.,general
+Teach me loss functions.,aiml
+Write learning rate code for me.,aiml
+Show me how to implement binary trees.,dsa
+Give me practice problems on binary trees.,dsa
+Debug my permutations solution.,maths
+Give me practice problems on neural networks.,aiml
+Break down probability for me.,maths
+Tell me about SQL joins.,dbms
+What are the steps for arrays?,dsa
+transformers explained simply,aiml
+Quiz me on graphs.,dsa
+How is relational algebra related to indexing?,dbms
+Compare merge sort and dynamic programming.,dsa
+Revise naive bayes with me.,aiml
+Quick question - Am I on track for my goals? Please guide me.,general
+Quick question - How do I structure my revision before interviews? I'm not sure.,general
+Need help understanding denormalization,dbms
+What are common mistakes in hypothesis testing?,maths
+Can you help me: Should I do an internship or prepare for placements? Please guide me.,general
+Debug my GROUP BY clauses solution.,dbms
+"My answer for conditional probability was wrong, why?",maths
+Break down sliding window for me.,dsa
+"I'm stuck on sliding window, can you help?",dsa
+How do I solve questions about hash maps?,dsa
+Break down third normal form for me.,dbms
+Break down support vector machines for me.,aiml
+Show me how to implement vectors.,maths
+Quick question - Help me plan my week. Any advice?,general
+What is batch normalization?,aiml
+What are the steps for triggers?,dbms
+Show me how to implement arrays.,dsa
+Give me practice problems on linked lists.,dsa
+Teach me backtracking.,dsa
+Debug my batch normalization solution.,aiml
+I don't understand binary search.,dsa
+What is merge sort?,dsa
+How does merge sort work?,dsa
+Summarize database schema design for revision.,dbms
+Can you help me: What's a good resume format for freshers? Thanks!,general
+"Honestly, I'm feeling overwhelmed with placement prep. I'm not sure.",general
+Quiz me on normal distribution.,maths
+How does gradient work?,maths
+What's the difference between probability and variance?,maths
+Debug my big O notation solution.,dsa
+How does SQL joins work?,dbms
+Quiz me on transformers.,aiml
+How does space complexity work?,dsa
+Write hash maps code for me.,dsa
+Walk me through stacks step by step.,dsa
+"My answer for embeddings was wrong, why?",aiml
+So What is the roadmap for a machine learning engineer role?,general
+Debug my set theory solution.,maths
+Give me a problem on embeddings.,aiml
+Break down batch normalization for me.,aiml
+What is loss functions?,aiml
+Give me a problem on SQL joins.,dbms
+Compare partial derivatives and determinants.,maths
+Quick question - Give me a roadmap to crack placements. Any advice?,general
+So What should I study to become a software engineer? Any advice?,general
+Quick question - How many hours a day should I study? Any advice?,general
+Explain SQL queries.,dbms
+I don't understand logistic regression.,aiml
+How does batch normalization work?,aiml
+So Help me plan my week. Thanks!,general
+Explain cross validation.,aiml
+Tell me about matrix multiplication.,maths
+Give me a problem on gradient.,maths
+"Honestly, What is the best preparation strategy for product companies? I'm not sure.",general
+"My answer for binary search was wrong, why?",dsa
+ACID properties interview questions,dbms
+Debug my gradient descent solution.,aiml
+Debug my space complexity solution.,dsa
+What are common mistakes in normalization?,dbms
+"Honestly, Which subjects should I prioritize for placements? Please guide me.",general
+What's the difference between GROUP BY clauses and ACID properties?,dbms
+Give me practice problems on permutations.,maths
+Help me with precision and recall.,aiml
+Write foreign keys code for me.,dbms
+What is standard deviation?,maths
+Walk me through standard deviation step by step.,maths
+Can you help me: What is the best preparation strategy for product companies?,general
+How is hypothesis testing related to chain rule?,maths
+Give me a problem on partial derivatives.,maths
+Help me with learning rate.,aiml
+How do I prepare for a software engineering role? Thanks!,general
+Tell me about space complexity.,dsa
+How do I solve questions about limits?,maths
+Compare queues and sliding window.,dsa
+Give me practice problems on depth first search.,dsa
+Debug my stored procedures solution.,dbms
+Break down feature engineering for me.,aiml
+"Honestly, Build me a study plan for the next 4 weeks. Please guide me.",general
+So Should I do an internship or prepare for placements? Thanks!,general
+Quick question - How should I prepare for technical interviews? Please guide me.,general
+How do I solve questions about deadlocks?,dbms
+"I'm stuck on combinations, can you help?",maths
+Help me with queues.,dsa
+denormalization explained simply,dbms
+Explain loss functions.,aiml
+"Honestly, How do I build a good GitHub profile? Any advice?",general
+"Hey, Am I on track for my goals?",general
+Give me a problem on views.,dbms
+What are common mistakes in embeddings?,aiml
+I don't understand transformers.,aiml
+Write conditional probability code for me.,maths
+Need help understanding conditional probability,maths
+gradient descent interview questions,aiml
+Show me how to implement probability.,maths
+Walk me through backpropagation step by step.,aiml
+Compare naive bayes and logistic regression.,aiml
+Compare space complexity and two pointers.,dsa
+Break down set theory for me.,maths
+Need help understanding queues,dsa
+"My answer for ensemble methods was wrong, why?",aiml
+Debug my neural networks solution.,aiml
+ACID properties explained simply,dbms
+Quick question - How should I prepare for technical interviews? I'm not sure.,general
+What are the steps for normal distribution?,maths
+Can you help me: Career roadmap for backend engineering Thanks!,general
+"Hey, How do I prepare for HR rounds? Please guide me.",general
+"My answer for indexing was wrong, why?",dbms
+Teach me big O notation.,dsa
+How is linked lists related to tree traversal?,dsa
+recursion explained simply,dsa
+Break down gradient for me.,maths
+"Honestly, What should I study to become a software engineer? Any advice?",general
+Teach me queues.,dsa
+Quiz me on activation functions.,aiml
+Quick question - Give me tips for group discussions. Any advice?,general
+What's the difference between database schema design and primary keys?,dbms
+Can you explain stored procedures with an example?,dbms
+"So I have 2 months before placements, what should I focus on? Any advice?",general
+Need help understanding GROUP BY clauses,dbms
+What are the steps for foreign keys?,dbms
+Explain ensemble methods.,aiml
+"I'm stuck on queues, can you help?",dsa
+So Career roadmap for backend engineering,general
+Tell me about bias variance tradeoff.,aiml
+How is denormalization related to primary keys?,dbms
+Need help understanding big O notation,dsa
+Debug my binary search solution.,dsa
+How does integrals work?,maths
+How many hours a day should I study? Any advice?,general
+Give me practice problems on heaps.,dsa
+Quick question - Can you review my overall progress? I'm not sure.,general
+How do I prepare for a software engineering role? Any advice?,general
+confusion matrices interview questions,aiml
+Give me a problem on merge sort.,dsa
+Quiz me on quicksort.,dsa
+What is dynamic programming?,dsa
+I don't understand permutations.,maths
+"I'm stuck on big O notation, can you help?",dsa
+"Honestly, What should I study to become a software engineer?",general
+How is confusion matrices related to feature engineering?,aiml
+Quiz me on triggers.,dbms
+Revise learning rate with me.,aiml
+What is the best preparation strategy for product companies? Any advice?,general
+Revise big O notation with me.,dsa
+"My answer for greedy algorithms was wrong, why?",dsa
+"Honestly, How long does it take to get placement ready?",general
+Quiz me on feature engineering.,aiml
+How do I solve questions about gradient?,maths
+What should I study to become a software engineer? I'm not sure.,general
+Debug my partial derivatives solution.,maths
+Need help understanding random forests,aiml
+Give me a problem on stored procedures.,dbms
+permutations vs normal distribution,maths
+What is first normal form?,dbms
+Is discrete mathematics asked in placement interviews?,maths
+What's the difference between logistic regression and random forests?,aiml
+Revise confusion matrices with me.,aiml
+What is query optimization?,dbms
+I don't understand transactions.,dbms
+Need help understanding loss functions,aiml
+Is inner joins asked in placement interviews?,dbms
+"Hey, Give me tips for group discussions.",general
+Is SQL joins asked in placement interviews?,dbms
+Can you help me: How do I improve my problem solving speed? Thanks!,general
+Need help understanding greedy algorithms,dsa
+Walk me through backtracking step by step.,dsa
+What is hash maps?,dsa
+Explain combinations.,maths
+"Honestly, How do I answer 'tell me about yourself' in an interview?",general
+Quick question - Am I on track for my goals? I'm not sure.,general
+Is transformers asked in placement interviews?,aiml
+Give me a problem on loss functions.,aiml
+Help me with left joins.,dbms
+Walk me through activation functions step by step.,aiml
+What are common mistakes in stacks?,dsa
+Quiz me on breadth first search.,dsa
+precision and recall explained simply,aiml
+What's the difference between limits and matrix multiplication?,maths
+Summarize indexing for revision.,dbms
+Can you help me: How do I balance college exams and placement prep?,general
+"Honestly, Which companies should I apply to? Thanks!",general
+How do I handle interview rejection? Any advice?,general
+Explain chain rule.,maths
+How does standard deviation work?,maths
+Give me a problem on integrals.,maths
+"Honestly, What is the roadmap for a machine learning engineer role?",general
+What are the steps for subqueries?,dbms
+Can you explain ER diagrams with an example?,dbms
+Why is third normal form important?,dbms
+So Help me set realistic study goals.,general
+Need help understanding set theory,maths
+Explain convolutional neural networks.,aiml
+Need help understanding activation functions,aiml
+Can you help me: I'm feeling overwhelmed with placement prep. Thanks!,general
+Quick question - What are good behavioral interview answers? Thanks!,general
+Explain relational algebra.,dbms
+"Hey, Can you review my overall progress? Please guide me.",general
+How do I solve questions about embeddings?,aiml
+SQL queries explained simply,dbms
+Help me with linked list cycle detection.,dsa
+determinants explained simply,maths
+How is tree traversal related to backtracking?,dsa
+Tell me about inner joins.,dbms
+Can you help me: Should I do an internship or prepare for placements? I'm not sure.,general
+Teach me Bayes theorem.,maths
+Help me with gradient.,maths
+Show me how to implement concurrency control.,dbms
+"I'm stuck on GROUP BY clauses, can you help?",dbms
+How do I solve questions about views?,dbms
+Need help understanding inner joins,dbms
+How does logistic regression work?,aiml
+Teach me permutations.,maths
+Explain binary search.,dsa
+Can you explain backpropagation with an example?,aiml
+Can you help me: I don't know where to start. Please guide me.,general
+I don't understand triggers.,dbms
+Walk me through ACID properties step by step.,dbms
+Explain time complexity.,dsa
+What is sliding window?,dsa
+How do I solve questions about overfitting?,aiml
+How is linked list cycle detection related to binary search?,dsa
+Quick question - Can you summarize what I've learned so far? Thanks!,general
+"My answer for linked lists was wrong, why?",dsa
+Summarize hypothesis testing for revision.,maths
+Teach me partial derivatives.,maths
+"Hey, I failed my last mock interview, what now?",general
+Help me with GROUP BY clauses.,dbms
+Compare determinants and hypothesis testing.,maths
+"Honestly, How do I stay motivated while preparing? Thanks!",general
+What is precision and recall?,aiml
+"My answer for variance was wrong, why?",maths
+How is limits related to matrix multiplication?,maths
+Show me how to implement batch normalization.,aiml
+Why is tree traversal important?,dsa
+Can you explain logarithms with an example?,maths
+Show me how to implement derivatives.,maths
+Tell me about big O notation.,dsa
+Can you help me: What should I learn first to become a data scientist? I'm not sure.,general
+Summarize integrals for revision.,maths
+Help me with heaps.,dsa
+How does decision trees work?,aiml
+Compare arrays and linked list cycle detection.,dsa
+Show me how to implement indexing.,dbms
+Is join queries asked in placement interviews?,dbms
+integrals explained simply,maths
+Need help understanding graph theory,maths
+Give me a problem on normalization.,dbms
+Explain stored procedures.,dbms
+Give me a problem on precision and recall.,aiml
+Give me practice problems on breadth first search.,dsa
+Can you help me: What is the best preparation strategy for product companies? Thanks!,general
+Quick question - How do I prepare for a software engineering role? I'm not sure.,general
+limits explained simply,maths
+Explain two pointers.,dsa
+How do I solve questions about derivatives?,maths
+Teach me stacks.,dsa
+What is linear algebra?,maths
+What's the difference between service and product companies? Any advice?,general
+What's the difference between partial derivatives and gradient?,maths
+Show me how to implement first normal form.,dbms
+What is subqueries?,dbms
+Show me how to implement decision trees.,aiml
+"Hey, What should I study to become a software engineer? Thanks!",general
+limits vs vectors,maths
+Can you help me: Give me a week by week preparation schedule. Please guide me.,general
+Is partial derivatives asked in placement interviews?,maths
+"Hey, What's the difference between service and product companies? Any advice?",general
+Tell me about recursion.,dsa
+Give me practice problems on indexing.,dbms
+join queries explained simply,dbms
+What should I revise the night before an interview? Any advice?,general
+Why is combinations important?,maths
+I'm feeling overwhelmed with placement prep. Any advice?,general
+Break down relational algebra for me.,dbms
+So How do I build a good GitHub profile? Thanks!,general
+Write partial derivatives code for me.,maths
+How is tries related to binary trees?,dsa
+Tell me about primary keys.,dbms
+Give me practice problems on support vector machines.,aiml
+Summarize triggers for revision.,dbms
+Compare transactions and query optimization.,dbms
+Help me with tree traversal.,dsa
+Why is limits important?,maths
+Show me how to implement stored procedures.,dbms
+Is B-tree indexes asked in placement interviews?,dbms
+Give me practice problems on k-means clustering.,aiml
+Break down hash maps for me.,dsa
+Write arrays code for me.,dsa
+Help me with bias variance tradeoff.,aiml
+Quick question - How important is CGPA for placements? Thanks!,general
+"Honestly, Tell me what to study today. Thanks!",general
+How do I solve questions about probability?,maths
+Give me a problem on overfitting.,aiml
+What is tree traversal?,dsa
+I don't understand determinants.,maths
+Need help understanding binary search,dsa
+Can you help me: Can you review my overall progress? Please guide me.,general
+Compare ensemble methods and batch normalization.,aiml
+Explain integrals.,maths
+Write subqueries code for me.,dbms
+Can you explain limits with an example?,maths
+"I'm stuck on quicksort, can you help?",dsa
+What is probability?,maths
+Why is determinants important?,maths
+Give me a problem on variance.,maths
+Quick question - Plan my placement preparation for the next month. Please guide me.,general
+Compare gradient and Bayes theorem.,maths
+How is sliding window related to stacks?,dsa
+Need help understanding backtracking,dsa
+"I'm stuck on normal distribution, can you help?",maths
+Tell me about batch normalization.,aiml
+Tell me about ACID properties.,dbms
+"I'm stuck on vectors, can you help?",maths
+How does triggers work?,dbms
+combinations interview questions,maths
+What should I study to become a software engineer? Thanks!,general
+How do I balance college exams and placement prep? I'm not sure.,general
+Give me a problem on hypothesis testing.,maths
+Need help understanding query optimization,dbms
+"Honestly, Can you summarize what I've learned so far? I'm not sure.",general
+What's the best way to take notes while studying?,general
+Walk me through join queries step by step.,dbms
+Need help understanding cross validation,aiml
+Quiz me on indexing.,dbms
+Can you help me: Give me a data science placement roadmap. Please guide me.,general
+How should I prepare for technical interviews? Any advice?,general
+Compare stacks and merge sort.,dsa
+Can you explain vectors with an example?,maths
+"Honestly, Plan my placement preparation for the next month. I'm not sure.",general
+I don't understand activation functions.,aiml
+Quiz me on binary trees.,dsa
+Write neural networks code for me.,aiml
+What are the steps for matrix multiplication?,maths
+Why is regularization important?,aiml
+Summarize neural networks for revision.,aiml
+Is recursion asked in placement interviews?,dsa
+Summarize big O notation for revision.,dsa
+Can you help me: What's the difference between service and product companies?,general
+Need help understanding bias variance tradeoff,aiml
+How is time complexity related to queues?,dsa
+Revise normalization with me.,dbms
+What are common mistakes in linear regression?,aiml
+What should I learn first to become a data scientist? Any advice?,general
+Tell me about GROUP BY clauses.,dbms
+Quick question - Should I focus on projects or DSA first?,general
+Give me a problem on triggers.,dbms
+Break down indexing for me.,dbms
+What's the difference between stored procedures and GROUP BY clauses?,dbms
+I don't understand left joins.,dbms
+"Honestly, I keep forgetting what I studied last week. I'm not sure.",general
+Why is left joins important?,dbms
+ensemble methods interview questions,aiml
+Can you explain views with an example?,dbms
+How is B-tree indexes related to views?,dbms
+Break down gradient descent for me.,aiml
+Is hypothesis testing asked in placement interviews?,maths
+Give me a problem on backtracking.,dsa
+support vector machines vs confusion matrices,aiml
+What are the steps for naive bayes?,aiml
+Write recursion code for me.,dsa
+B-tree indexes vs ACID properties,dbms
+Explain linear algebra.,maths
+I keep forgetting what I studied last week. I'm not sure.,general
+Revise ACID properties with me.,dbms
+Walk me through query optimization step by step.,dbms
+Debug my B-tree indexes solution.,dbms
+Give me practice problems on combinations.,maths
+heaps interview questions,dsa
+What is hypothesis testing?,maths
+heaps explained simply,dsa
+Tell me about first normal form.,dbms
+"Honestly, Give me tips for group discussions. Any advice?",general
+Walk me through learning rate step by step.,aiml
+What is overfitting?,aiml
+What are the steps for integrals?,maths
+"I'm stuck on linked list cycle detection, can you help?",dsa
+What are the steps for first normal form?,dbms
+Break down primary keys for me.,dbms
+Teach me concurrency control.,dbms
+"Hey, How do I prepare for a software engineering role? Any advice?",general
+Teach me decision trees.,aiml
+What are the steps for tree traversal?,dsa
+gradient vs Bayes theorem,maths
+Walk me through set theory step by step.,maths
+Quiz me on subqueries.,dbms
+Need help understanding variance,maths
+"I'm stuck on transactions, can you help?",dbms
+How do I build a good GitHub profile? I'm not sure.,general
+How does GROUP BY clauses work?,dbms
+Is support vector machines asked in placement interviews?,aiml
+Teach me logistic regression.,aiml
+How do I solve questions about ACID properties?,dbms
+"Hey, Career roadmap for backend engineering Please guide me.",general
+How does k-means clustering work?,aiml
+concurrency control vs primary keys,dbms
+Can you explain arrays with an example?,dsa
+Revise inner joins with me.,dbms
+So How do I structure my revision before interviews? Thanks!,general
+How is gradient related to chain rule?,maths
+"I'm stuck on heaps, can you help?",dsa
+Plan my placement preparation for the next month.,general
+How do I solve questions about bias variance tradeoff?,aiml
+Help me set realistic study goals. Thanks!,general
+What are the steps for logarithms?,maths
+Tell me about ensemble methods.,aiml
+Explain determinants.,maths
+What is confusion matrices?,aiml
+stored procedures interview questions,dbms
+loss functions interview questions,aiml
+What is database schema design?,dbms
+Quiz me on support vector machines.,aiml
+Tell me about expected value.,maths
+How does normal distribution work?,maths
+What are common mistakes in ACID properties?,dbms
+"I'm stuck on discrete mathematics, can you help?",maths
+Give me practice problems on gradient descent.,aiml
+"I'm stuck on database schema design, can you help?",dbms
+So What topics are most important for product company interviews?,general
+So Which companies should I apply to? Please guide me.,general
+"Hey, I'm feeling overwhelmed with placement prep. Thanks!",general
+standard deviation vs variance,maths
+"Hey, What should my daily routine look like? Thanks!",general
+What's the difference between SQL joins and database schema design?,dbms
+"I'm stuck on gradient, can you help?",maths
+Quick question - What topics are most important for product company interviews? Thanks!,general
+Give me practice problems on recursion.,dsa
+"Honestly, What are good behavioral interview answers? Please guide me.",general
+"I'm stuck on triggers, can you help?",dbms
+Teach me third normal form.,dbms
+Tell me about set theory.,maths
+Compare hash maps and binary search.,dsa
+Tell me about permutations.,maths
+Walk me through heaps step by step.,dsa
+Compare set theory and graph theory.,maths
+"I'm stuck on standard deviation, can you help?",maths
+Revise binary search with me.,dsa
+views vs SQL queries,dbms
+Debug my linked list cycle detection solution.,dsa
+vectors vs probability,maths
+Revise Bayes theorem with me.,maths
+Can you help me: Help me plan my week.,general
+Quiz me on gradient.,maths
+Why is quicksort important?,dsa
+Preparation plan for data analyst roles Thanks!,general
+What are common mistakes in loss functions?,aiml
+How does database schema design work?,dbms
