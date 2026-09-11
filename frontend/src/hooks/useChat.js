@@ -21,9 +21,10 @@ export function useChat(studentId) {
   const nextId = () => `m${++idRef.current}`;
 
   const send = useCallback(
-    async (text) => {
+    async (text, image = null) => {
       const trimmed = (text || '').trim();
-      if (!trimmed || sending || !studentId) return null;
+      // Either words or an image is enough to ask a question
+      if ((!trimmed && !image) || sending || !studentId) return null;
 
       setError(null);
       setSending(true);
@@ -32,6 +33,7 @@ export function useChat(studentId) {
         id: nextId(),
         role: 'student',
         content: trimmed,
+        imageUrl: image?.dataUrl || null,
         createdAt: new Date().toISOString(),
       };
       setMessages((prev) => [...prev, studentMsg]);
@@ -40,6 +42,7 @@ export function useChat(studentId) {
         studentId,
         message: trimmed,
         conversationId,
+        image: image?.dataUrl || null,
       });
 
       setSending(false);

@@ -11,7 +11,11 @@ AgentName = Literal["dsa", "dbms", "maths", "aiml", "general"]
 class ChatRequest(BaseModel):
     student_id: str
     conversation_id: Optional[str] = None
-    message: str
+    # Optional when an image carries the question; one of the two must be present
+    message: str = ""
+    # A question photographed or screenshotted by the student, as a browser
+    # data URL: "data:image/png;base64,iVBOR..." (max ~6MB decoded)
+    image: Optional[str] = None
 
 
 class MasteryUpdate(BaseModel):

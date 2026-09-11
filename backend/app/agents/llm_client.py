@@ -9,18 +9,22 @@ Sequential fallback architecture:
 6. Ollama Local Gateway (REST API)
 7. Socratic Pedagogical Derivation Fallback
 """
-import json
+import base64
+import binascii
 import logging
-import urllib.request
-import urllib.error
-from typing import Optional
+import re
+from typing import Dict, Optional
 
 from app.core.config import settings
 
 logger = logging.getLogger("learnos.llm")
 
-_gemini_client = None
-_gemini_load_attempted = False
+# Gemini accepts larger, but a tutoring screenshot has no business being
+# bigger than this - and it bounds the request size from the browser.
+MAX_IMAGE_BYTES = 6 * 1024 * 1024
+
+_client = None
+_client_load_attempted = False
 
 
 def _get_gemini():
@@ -103,78 +107,94 @@ def is_available() -> bool:
     )
 
 
-def complete(system_prompt: str, message: str, model: Optional[str] = None, max_tokens: int = 1024) -> str:
-    """Multi-turn completion with sequential provider fallback."""
-    # 1. Try Gemini
-    gemini = _get_gemini()
-    if gemini is not None:
-        try:
-            gemini_model = gemini.GenerativeModel(
-                model_name=model or settings.LLM_MODEL,
-                system_instruction=system_prompt,
-            )
-            resp = gemini_model.generate_content(
-                message,
-                generation_config={"max_output_tokens": max_tokens},
-            )
-            if resp and resp.text:
-                return resp.text
-        except Exception as e:
-            logger.warning("Gemini completion failed: %s; trying next provider...", e)
+def parse_data_url(data_url: str) -> Optional[Dict[str, str]]:
+    """Turn a browser `data:image/png;base64,iVBOR...` string into Gemini's
+    inline-image shape: {"mime_type": ..., "data": <base64>}.
 
-    # 2. Try Groq
-    if settings.GROQ_API_KEY:
-        ans = _call_openai_compatible(
-            "https://api.groq.com/openai/v1/chat/completions",
-            settings.GROQ_API_KEY,
-            "llama-3.3-70b-versatile",
-            system_prompt,
-            message,
-            max_tokens,
+    Returns None for anything that isn't a base64 image data URL.
+    """
+    if not data_url or not isinstance(data_url, str):
+        return None
+
+    match = re.match(r"^data:(image/[\w.+-]+);base64,(.+)$", data_url.strip(), re.DOTALL)
+    if not match:
+        return None
+
+    mime_type, payload = match.group(1), match.group(2)
+    # Validate the payload really is base64 before handing it to the SDK
+    try:
+        raw = base64.b64decode(payload, validate=True)
+    except (binascii.Error, ValueError):
+        logger.warning("Rejected image attachment: payload is not valid base64")
+        return None
+
+    if len(raw) > MAX_IMAGE_BYTES:
+        logger.warning("Rejected image attachment: %.1fMB exceeds limit", len(raw) / 1e6)
+        return None
+
+    return {"mime_type": mime_type, "data": raw}
+
+
+def complete(system_prompt: str, message: str, model: Optional[str] = None,
+             max_tokens: int = 1024, image: Optional[Dict[str, str]] = None) -> str:
+    """Single-turn completion: system prompt + student message -> text.
+
+    `image` is an optional {"mime_type", "data"} dict from `parse_data_url`.
+    When present it's sent alongside the text, so the agent can read a
+    photographed question, diagram, or code screenshot directly.
+
+    Falls back to a canned placeholder when no API key is configured.
+    """
+    client = _get_client()
+    if client is None:
+        return (
+            "[canned response - set GEMINI_API_KEY to get real answers]\n"
+            f"You asked: {message}"
+            + ("\n[an image was attached]" if image else "")
         )
-        if ans:
-            return ans
 
-    # 3. Try Cerebras
-    if settings.CEREBRAS_API_KEY:
-        ans = _call_openai_compatible(
-            "https://api.cerebras.ai/v1/chat/completions",
-            settings.CEREBRAS_API_KEY,
-            "llama3.1-70b",
-            system_prompt,
-            message,
-            max_tokens,
+    try:
+        gemini_model = client.GenerativeModel(
+            model_name=model or settings.LLM_MODEL,
+            system_instruction=system_prompt,
         )
-        if ans:
-            return ans
+        # Gemini accepts a list of parts; text plus optional inline image
+        parts = [message] if message else []
+        if image:
+            parts.append(image)
 
-    # 4. Try OpenRouter
-    if settings.OPENROUTER_API_KEY:
-        ans = _call_openai_compatible(
-            "https://openrouter.ai/api/v1/chat/completions",
-            settings.OPENROUTER_API_KEY,
-            "google/gemini-2.0-flash-exp:free",
-            system_prompt,
-            message,
-            max_tokens,
+        response = gemini_model.generate_content(
+            parts or [message],
+            generation_config={"max_output_tokens": max_tokens},
         )
-        if ans:
-            return ans
+        return response.text
+    except Exception:
+        logger.exception("LLM call failed; returning a safe fallback response")
+        return "Sorry, I couldn't reach the LLM just now - please try again."
 
-    # 5. Try Ollama local
-    ollama_ans = _call_ollama(system_prompt, message)
-    if ollama_ans:
-        return ollama_ans
 
-    # 6. Socratic pedagogical fallback when keys are unset
-    return (
-        f"### Socratic Guidance & Derivation\n\n"
-        f"You asked: **\"{message}\"**\n\n"
-        f"1. **Core Concept**:\n"
-        f"In this domain, our goal is to model uncertainty and verify prerequisite dependencies before calculating implementations.\n\n"
-        f"2. **Formal Foundation**:\n"
-        f"When evaluating probabilistic bounds, notice how prior hypotheses are updated strictly after evidence is observed.\n\n"
-        f"3. **Worked Insight**:\n"
-        f"Observing calibrated probabilities ensures we build resilient mental models rather than brittle rote memorization.\n\n"
-        f"Would you like to step through a full numerical derivation or try a 2-minute practice quiz?"
-    )
+def extract_question_from_image(image: Dict[str, str]) -> str:
+    """Read the question out of an uploaded image, as plain text.
+
+    This exists so image questions can still go through the *trained* router:
+    the classifier works on text, so we transcribe first, route on the
+    transcription, then hand the original image to the chosen specialist.
+    Keeps the Agent Trace meaningful for image questions.
+    """
+    if not image:
+        return ""
+
+    text = complete(
+        "You transcribe academic questions from images. Reply with ONLY the "
+        "question text you can read - no preamble, no answer, no commentary. "
+        "If the image shows code, transcribe the code. If it shows a diagram "
+        "with no text, briefly describe what it depicts in one sentence.",
+        "Transcribe the question in this image.",
+        max_tokens=400,
+        image=image,
+    ).strip()
+
+    # Don't let the canned-response placeholder leak into routing
+    if text.startswith("[canned response"):
+        return ""
+    return text

@@ -88,6 +88,7 @@ class BaseAgent:
         student_id: str,
         context: Optional[SpecialistResponse] = None,
         student_context: Optional[str] = None,
+        image: Optional[dict] = None,
     ) -> SpecialistResponse:
         # Imported here to keep the module import-light for tests
         from app.agents.llm_client import complete
@@ -102,4 +103,4 @@ class BaseAgent:
                 f"Add only what your subject contributes. Do not repeat their points."
             )
 
-        return SpecialistResponse(response=complete(prompt, message))
+        return SpecialistResponse(response=complete(prompt, message, image=image))

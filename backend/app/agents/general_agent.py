@@ -23,9 +23,10 @@ class GeneralAgent(BaseAgent):
         student_id: str,
         context: Optional[SpecialistResponse] = None,
         student_context: Optional[str] = None,
+        image: Optional[dict] = None,
     ) -> SpecialistResponse:
         # General never receives a mid-turn handoff, so `context` is ignored
         # by design - the coordinator guarantees it is never passed here.
         return SpecialistResponse(
-            response=complete(self.build_prompt(student_context), message)
+            response=complete(self.build_prompt(student_context), message, image=image)
         )

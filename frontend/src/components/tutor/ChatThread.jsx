@@ -9,10 +9,19 @@ function MessageBubble({ message }) {
   if (isStudent) {
     return (
       <div className="flex justify-end">
-        <div className="max-w-[80%] rounded-2xl rounded-br-sm bg-[#1C1917] px-4 py-2.5">
-          <p className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-white">
-            {message.content}
-          </p>
+        <div className="max-w-[80%] overflow-hidden rounded-2xl rounded-br-sm bg-[#1C1917]">
+          {message.imageUrl && (
+            <img
+              src={message.imageUrl}
+              alt="Question attached by the student"
+              className="max-h-64 w-full object-contain"
+            />
+          )}
+          {message.content && (
+            <p className="whitespace-pre-wrap px-4 py-2.5 font-sans text-sm leading-relaxed text-white">
+              {message.content}
+            </p>
+          )}
         </div>
       </div>
     );
