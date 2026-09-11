@@ -107,5 +107,7 @@ class BaseAgent:
         # prompts, while keeping a turn responsive - generation time scales
         # with tokens produced, and this is the dominant cost of a turn.
         return SpecialistResponse(
-            response=complete(prompt, message, max_tokens=700, image=image)
+            # 700 truncated answers mid-sentence on reasoning models -
+            # thinking tokens count against the same budget.
+            response=complete(prompt, message, max_tokens=1600, image=image)
         )

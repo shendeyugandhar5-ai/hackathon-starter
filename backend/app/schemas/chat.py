@@ -70,6 +70,20 @@ class KnowledgeCheckOut(BaseModel):
     topic: Optional[str] = None
 
 
+class OCROut(BaseModel):
+    """What was read out of an attached image. Null on text-only turns."""
+
+    ok: bool
+    engine: str                   # rapidocr | tesseract | none
+    source: str = ""              # engine name, or 'vision_model' when OCR failed
+    text: str = ""                # the extracted question, as routed
+    confidence: float = 0.0
+    line_count: int = 0
+    chars: int = 0
+    duration_ms: float = 0.0
+    error: Optional[str] = None
+
+
 class ChatResponse(BaseModel):
     conversation_id: Optional[str] = None
     agent: AgentName
@@ -88,6 +102,7 @@ class ChatResponse(BaseModel):
     supporting_agents: List[AgentName] = []
     retrieved_context: List[RetrievedChunk] = []
     verification: Optional[VerificationOut] = None
+    ocr: Optional[OCROut] = None
     knowledge_check: Optional[KnowledgeCheckOut] = None
     # Ordered execution record driving the Agent Trace panel
     trace_events: List[TraceEventOut] = []

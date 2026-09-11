@@ -69,7 +69,7 @@ def verify(question: str, answer: str) -> Dict[str, Any]:
     raw = complete(
         _VERDICT_PROMPT,
         f"QUESTION:\n{question}\n\nANSWER TO REVIEW:\n{answer[:4000]}",
-        max_tokens=300,
+        max_tokens=600,
     )
 
     parsed = _parse_verdict(raw)

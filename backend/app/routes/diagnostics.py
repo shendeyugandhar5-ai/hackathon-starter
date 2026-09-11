@@ -1,21 +1,25 @@
-"""LLM diagnostics.
+"""LLM and OCR diagnostics.
 
 Answers one question quickly: *is the LLM setup actually working, and if
 not, exactly why?* Three failure modes look identical from the chat UI -
 a bad key, a retired/unavailable model, and an exhausted quota - but each
 needs a different fix. These endpoints separate them.
 
+The OCR endpoint answers the same kind of question for image questions,
+which depend on OCR entirely: the chat model is text-only.
+
 Safe to expose in development: no key is ever returned, only a masked
 prefix (enough to tell 'gsk_' from 'AIza' from an OAuth token).
 """
 import logging
 import time
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter
 
 from app.agents.llm_client import active_provider, complete, is_real_answer
 from app.core.config import settings
+from app.services.ocr import extract_text, ocr_status
 
 logger = logging.getLogger("learnos.diagnostics")
 
@@ -106,6 +110,85 @@ def llm_diagnostics() -> Dict[str, Any]:
 
     return {"ok": False, "reason": reason, "config": config,
             "latency_ms": latency_ms, "error_reply": answer.strip()[:300], "hint": hint}
+
+
+@router.get("/diagnostics/ocr", summary="Is OCR working on uploaded images?")
+def ocr_diagnostics() -> Dict[str, Any]:
+    """Reports the OCR engine and proves it by reading a generated test image.
+
+    Image questions depend on this: the chat model is text-only, so if OCR is
+    unavailable a photographed question cannot be answered at all. Worth being
+    able to check in one request rather than by uploading a screenshot.
+    """
+    status = ocr_status()
+
+    if not status["available"]:
+        return {
+            "ok": False, "reason": "no_engine_installed", "config": status,
+            "hint": "Install the offline engine: pip install rapidocr-onnxruntime "
+                    "(no system binary needed), then restart the backend.",
+        }
+
+    # Render a known phrase, OCR it back, and compare. A self-test beats
+    # reporting "installed" - the packages can import and still fail to run.
+    probe = _render_probe_image("OCR IS WORKING 123")
+    if probe is None:
+        return {"ok": True, "reason": "engine_loaded_not_verified", "config": status,
+                "hint": "Pillow could not render a test image; the engine itself loaded."}
+
+    started = time.perf_counter()
+    result = extract_text({"mime_type": "image/png", "data": probe})
+    latency_ms = round((time.perf_counter() - started) * 1000, 1)
+
+    read = result.text.upper().replace(" ", "")
+    recognised = "OCRISWORKING" in read
+
+    if result.ok and recognised:
+        return {"ok": True, "reason": "working", "config": status,
+                "latency_ms": latency_ms, "self_test": result.as_dict(),
+                "extracted_text": result.text, "hint": None}
+
+    return {
+        "ok": False,
+        "reason": "self_test_failed" if result.ok else "no_text_extracted",
+        "config": status, "latency_ms": latency_ms,
+        "self_test": result.as_dict(), "extracted_text": result.text,
+        "hint": "The engine ran but misread a clean test image. Real photos "
+                "will be worse - check the installed version of the engine.",
+    }
+
+
+def _render_probe_image(text: str) -> Optional[bytes]:
+    """A PNG containing `text`, for the OCR self-test.
+
+    Prefers a real TrueType face at a readable size. Pillow's built-in bitmap
+    font is a poor probe: upscaled it goes blurry, the engine drops spaces,
+    and the self-test then fails on an image no student would ever send.
+    """
+    try:
+        import io
+
+        from PIL import Image, ImageDraw, ImageFont
+
+        font = None
+        for path in ("C:/Windows/Fonts/arial.ttf", "C:/Windows/Fonts/segoeui.ttf",
+                     "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"):
+            try:
+                font = ImageFont.truetype(path, 34)
+                break
+            except OSError:
+                continue
+
+        image = Image.new("RGB", (620, 110), "white")
+        draw = ImageDraw.Draw(image)
+        draw.text((30, 35), text, fill="black", font=font)
+
+        buffer = io.BytesIO()
+        image.save(buffer, format="PNG")
+        return buffer.getvalue()
+    except Exception:
+        logger.warning("Could not render OCR probe image", exc_info=True)
+        return None
 
 
 @router.get("/diagnostics/llm/models",

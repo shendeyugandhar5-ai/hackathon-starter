@@ -36,6 +36,9 @@ The main endpoint. One turn: understand → route → collaborate → verify →
 one of the two is required. Voice input is transcribed in the browser and arrives
 as ordinary `message` text.
 
+When an image is attached it is OCR'd first and the extracted text is what gets
+routed; the result comes back in the `ocr` field. Max image size is 6 MB.
+
 ```json
 // Response
 {
@@ -58,6 +61,15 @@ as ordinary `message` text.
   "retrieved_context": [
     { "subject": "aiml", "topic": "naive_bayes", "source": "ml_notes", "score": 0.3475 }
   ],
+
+  // null on text-only turns; `text` is what was routed and answered
+  "ocr": {
+    "ok": true, "engine": "rapidocr", "source": "rapidocr",
+    "text": "Q3. Normalize this table to 3NF.
+Student(id, name, dept, dept_head)",
+    "confidence": 0.995, "line_count": 3, "chars": 81,
+    "duration_ms": 2986.9, "error": null
+  },
   "verification": { "passed": true, "confidence": 0.94, "issues": [], "status": "ok" },
   "knowledge_check": { "question": "…", "subject": "maths", "topic": "conditional_probability" },
   "trace_events": [
@@ -169,6 +181,34 @@ a topic 3+ times with mastery still under 40%.
 
 Valid `misconception_type`: `sign_error`, `unit_confusion`, `definition_confusion`,
 `off_by_one`, `base_case_missing`, `formula_misapplication`, `logic_error`, `other`.
+
+---
+
+## Diagnostics
+
+Setup checks. Both make a real call rather than reporting what is configured -
+the failure modes look identical from the chat UI but need different fixes.
+
+### `GET /api/diagnostics/llm`
+Round-trips the configured provider and names the failure:
+`no_provider_configured` / `invalid_key` / `quota_exhausted` / `call_failed`,
+each with a `hint`. Never returns a key - only a masked prefix and what it looks
+like (`groq_api_key`, `gemini_api_key`, `oauth_token_NOT_an_api_key`, ...).
+
+### `GET /api/diagnostics/llm/models`
+Lists the models the key can actually use, with `configured_model_available`.
+Provider catalogues change; a model that worked last month can 404.
+
+### `GET /api/diagnostics/ocr`
+Renders a known phrase, OCRs it back, and compares. Reports the active engine
+and which packages are installed. `no_engine_installed` means image questions
+cannot be answered - `pip install rapidocr-onnxruntime` and restart.
+
+```json
+{ "ok": true, "reason": "working", "latency_ms": 2518.1,
+  "extracted_text": "OCR IS WORKING 123",
+  "config": { "active_engine": "rapidocr", "packages": { "rapidocr_onnxruntime": true } } }
+```
 
 ---
 

@@ -22,6 +22,27 @@ function MessageBubble({ message }) {
               {message.content}
             </p>
           )}
+          {/* What OCR actually read. Shown so a misread is visible to the
+              student rather than silently answered as if it were correct. */}
+          {message.ocr?.ok && (
+            <div className="border-t border-white/10 px-4 py-2.5">
+              <p className="font-mono text-[10px] uppercase tracking-wider text-white/40">
+                Read from image &middot; {message.ocr.engine} &middot;{' '}
+                {Math.round((message.ocr.confidence || 0) * 100)}%
+              </p>
+              <p className="mt-1 whitespace-pre-wrap font-mono text-xs leading-relaxed text-white/70">
+                {message.ocr.text}
+              </p>
+            </div>
+          )}
+          {message.ocr && !message.ocr.ok && (
+            <div className="border-t border-white/10 px-4 py-2.5">
+              <p className="font-sans text-xs text-amber-300/80">
+                No text could be read from this image &mdash; try a sharper photo
+                or type the question.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     );

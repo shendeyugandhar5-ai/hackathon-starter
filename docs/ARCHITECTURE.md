@@ -21,7 +21,7 @@ every step.
                       └───────────┬────────────┘
                                   v
                       ┌────────────────────────┐
-                      │  coordinator.coordinate│  image pre-processing
+                      │  coordinator.coordinate│  OCR (images) -> text
                       └───────────┬────────────┘
                                   v
                    ═══ LangGraph  app/agents/graph.py ═══
@@ -45,6 +45,27 @@ every step.
 Every node appends a `TraceEvent`. Steps the coordinator deliberately skips are
 recorded as `skipped`, so the panel shows real decisions rather than a fixed
 storyboard.
+
+**Image questions run OCR before the graph** (`app/services/ocr.py`). Whenever a
+picture is attached, the text is extracted first and the *extracted text* is what
+the router classifies, so a photographed question reaches the right specialist
+instead of defaulting to General. This is a hard requirement rather than an
+optimisation: the chat model is text-only, so a question has to become text
+before anyone can answer it.
+
+The engine is `rapidocr-onnxruntime` - pure pip, offline, no Tesseract binary or
+system install. Models load on a background thread at startup (~10-15s) so the
+first student upload is not the one that pays for it. If OCR finds nothing, the
+turn falls back to a vision model when the provider has one, and otherwise says
+the image was unreadable. An `ocr_extraction` event is recorded either way, and
+the extracted text is returned to the UI so a misread is visible rather than
+silently answered.
+
+Known limitation: the bundled recogniser is the Chinese PP-OCRv4 model, which
+occasionally drops spaces between English words on small text
+(`Q3.Normalizethistableto3NF.`). This degrades the TF-IDF router, not the answer
+- the LLM reads merged text fine, and the stage-2 LLM fallback recovers the
+subject when stage-1 confidence drops.
 
 ---
 

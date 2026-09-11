@@ -15,6 +15,7 @@ from pydantic import BaseModel, Field
 # Step identifiers, in the order they normally occur. The UI uses these to
 # pick an icon/label, so keep them stable.
 STEP_QUERY_RECEIVED = "query_received"
+STEP_OCR = "ocr_extraction"
 STEP_ROUTER = "ml_router"
 STEP_STUDENT_CONTEXT = "student_context"
 STEP_COORDINATOR = "coordinator_decision"

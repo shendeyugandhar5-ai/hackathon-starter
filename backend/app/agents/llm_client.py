@@ -23,6 +23,10 @@ logger = logging.getLogger("learnos.llm")
 # bigger than this - and it bounds the request size from the browser.
 MAX_IMAGE_BYTES = 6 * 1024 * 1024
 
+# Floor under every completion budget. See the note in
+# `_complete_openai_compatible`: below this, reasoning models return nothing.
+MIN_COMPLETION_TOKENS = 192
+
 _client = None
 _client_load_attempted = False
 
@@ -142,6 +146,11 @@ def _complete_openai_compatible(system_prompt: str, message: str, model: Optiona
     """
     import httpx
 
+    # Reasoning models spend the same budget thinking before they write, so a
+    # cap tuned for a one-word answer returns an empty message rather than a
+    # short one. Measured floor for a single-label reply: ~80 tokens.
+    max_tokens = max(max_tokens, MIN_COMPLETION_TOKENS)
+
     content: Any = message
     if image:
         # OpenAI-style multimodal content parts
@@ -188,6 +197,13 @@ def _complete_openai_compatible(system_prompt: str, message: str, model: Optiona
                 f"(finish_reason=length). Reasoning models need a larger budget."
             )
         raise RuntimeError(f"Model returned an empty response (finish_reason={finish}).")
+
+    if choice.get("finish_reason") == "length":
+        # Content came back, but the model was cut off mid-sentence. Surfacing
+        # this is how a too-small budget gets noticed instead of shipping
+        # half-finished tutoring answers.
+        logger.warning("Answer truncated at %s tokens (finish_reason=length) - "
+                       "raise max_tokens for this call site", max_tokens)
 
     return content
 

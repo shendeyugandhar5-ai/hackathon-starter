@@ -103,7 +103,12 @@ def llm_classify(message: str) -> Optional[AgentName]:
     the trained router's own pick: falling back to a hardcoded 'general'
     would replace a real (if uncertain) prediction with a worse one.
     """
-    raw = complete(ROUTER_SYSTEM_PROMPT, message, max_tokens=10)
+    # Budget looks absurd for a one-word answer, and is not. Reasoning
+    # models (Groq's gpt-oss) spend tokens thinking before they emit any
+    # content: measured at 36-82 completion tokens to reply 'dbms'. At 10
+    # the reply came back empty, the fallback silently never fired, and
+    # ambiguous questions kept a 0.25-confidence guess.
+    raw = complete(ROUTER_SYSTEM_PROMPT, message, max_tokens=192)
 
     # A placeholder or error string is not a classification
     if not is_real_answer(raw):

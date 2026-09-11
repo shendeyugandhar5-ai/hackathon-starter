@@ -29,5 +29,5 @@ class GeneralAgent(BaseAgent):
         # by design - the coordinator guarantees it is never passed here.
         return SpecialistResponse(
             response=complete(self.build_prompt(student_context), message,
-                              max_tokens=700, image=image)
+                              max_tokens=1600, image=image)
         )

@@ -83,8 +83,17 @@ export function useChat(studentId) {
         retrievedContext: d.retrieved_context || [],
         verification: d.verification || null,
         knowledgeCheck: d.knowledge_check || null,
+        ocr: d.ocr || null,
       };
       setLastTrace(trace);
+
+      // Attach what OCR read back onto the student's own message, so the
+      // extracted text sits directly under the image it came from.
+      if (d.ocr) {
+        setMessages((prev) =>
+          prev.map((m) => (m.id === studentMsg.id ? { ...m, ocr: d.ocr } : m)),
+        );
+      }
 
       setMessages((prev) => [
         ...prev,

@@ -363,7 +363,7 @@ def knowledge_check_node(state: EduHiveState) -> EduHiveState:
             "Reply with only the question - no preamble, answer, or numbering.",
             f"The student just learned about this:\n{state['final_response'][:1200]}\n\n"
             f"Write one short question checking that understanding.",
-            max_tokens=160,
+            max_tokens=400,
         ).strip()
 
         if is_real_answer(question):

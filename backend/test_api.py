@@ -26,6 +26,50 @@ def record(name, ok, detail="", skipped=False):
     print(f"  [{mark}] {name}" + (f"  - {detail}" if detail else ""))
 
 
+def _png_data_url(image) -> str:
+    import base64
+    import io
+
+    buffer = io.BytesIO()
+    image.save(buffer, format="PNG")
+    return "data:image/png;base64," + base64.b64encode(buffer.getvalue()).decode()
+
+
+def _question_image(lines):
+    """A rendered exam-question image, as the browser would upload it.
+
+    Drawn with a real TrueType face at a readable size: OCR quality tracks
+    pixels-per-character, so a bitmap-font probe would test something no
+    student ever sends. Returns None if Pillow is unavailable.
+    """
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+    except ImportError:
+        return None
+
+    font = None
+    for path in ("C:/Windows/Fonts/arial.ttf", "C:/Windows/Fonts/segoeui.ttf",
+                 "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"):
+        try:
+            font = ImageFont.truetype(path, 34)
+            break
+        except OSError:
+            continue
+
+    image = Image.new("RGB", (1000, 60 + 52 * len(lines)), "white")
+    draw = ImageDraw.Draw(image)
+    for i, line in enumerate(lines):
+        draw.text((30, 25 + 52 * i), line, fill="black", font=font)
+    return _png_data_url(image)
+
+
+def _blank_image():
+    """A blank page - the 'OCR found nothing' path."""
+    from PIL import Image
+
+    return _png_data_url(Image.new("RGB", (300, 120), "white"))
+
+
 def run(client):
     print("\n== Core ==")
     r = client.get("/")
@@ -212,6 +256,50 @@ def run(client):
     b2 = r2.json()
     record("Single-subject stays single-agent", not b2.get("supporting_agents"),
            f"agent={b2.get('agent')}, supporting={b2.get('supporting_agents') or 'none'}")
+
+    print("\n== Image questions (OCR) ==")
+    image_url = _question_image([
+        "Q3. Normalize this table to 3NF.",
+        "Student(id, name, dept, dept_head)",
+        "Explain each step.",
+    ])
+    if image_url is None:
+        record("OCR engine self-test", False,
+               "Pillow not installed - cannot build a test image", skipped=True)
+    else:
+        r = client.get("/api/diagnostics/ocr")
+        d = r.json()
+        record("GET  /api/diagnostics/ocr", d.get("ok") is True,
+               f"engine={d.get('config', {}).get('active_engine')}, "
+               f"read {d.get('extracted_text')!r}",
+               skipped=d.get("reason") == "no_engine_installed")
+
+        r = client.post("/api/chat", json={
+            "student_id": STUDENT, "message": "", "image": image_url})
+        b = r.json()
+        ocr = b.get("ocr") or {}
+        record("Image question -> OCR extracts text", bool(ocr.get("ok")),
+               f"{ocr.get('chars')} chars via {ocr.get('engine')} "
+               f"@ {ocr.get('confidence')}")
+
+        # The point of OCR-first: an image question still reaches the right
+        # specialist, because the extracted text goes through the same router.
+        record("Image question routes to a specialist", b.get("agent") == "dbms",
+               f"agent={b.get('agent')}, reason={(b.get('routed_reason') or '')[:70]}")
+
+        steps = [e["step"] for e in b.get("trace_events", [])]
+        record("OCR appears in the Agent Trace", "ocr_extraction" in steps,
+               f"{len(steps)} events, first={steps[0] if steps else 'none'}")
+
+        # An unreadable image must degrade to an answer, never a 500.
+        blank = _blank_image()
+        r = client.post("/api/chat", json={
+            "student_id": STUDENT, "message": "what is this?", "image": blank})
+        b = r.json()
+        record("Unreadable image degrades gracefully",
+               r.status_code == 200 and bool(b.get("response"))
+               and (b.get("ocr") or {}).get("ok") is False,
+               f"HTTP {r.status_code}, ocr.error={(b.get('ocr') or {}).get('error')}")
 
     print("\n== Trained models ==")
     try:
