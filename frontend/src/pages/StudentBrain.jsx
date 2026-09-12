@@ -14,47 +14,6 @@ import { useStudentId } from '../hooks/useStudentId';
 import { AGENT_STYLES } from '../services/api';
 import { studentProfile, prerequisiteBlocker, curricularFacets } from '../data/mockData';
 
-// Page-level Error Boundary to ensure the page never renders blank
-class StudentBrainErrorBoundary extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false, error: null };
-  }
-
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error('StudentBrain Error Boundary caught error:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="min-h-screen bg-[#FAF7F2] p-8 flex items-center justify-center">
-          <div className="bg-white rounded-xl border border-[#EAE5DC] p-6 max-w-lg shadow-sm text-center space-y-4">
-            <div className="w-12 h-12 rounded-full bg-[#FDF0ED] text-[#B93826] flex items-center justify-center mx-auto">
-              <AlertTriangle className="w-6 h-6" />
-            </div>
-            <h2 className="font-serif text-2xl text-[#1C1917]">{t('brain.unableToLoad')}</h2>
-            <p className="text-xs text-[#57534E]">
-              {t('brain.loadErrorHint')}
-            </p>
-            <button
-              onClick={() => this.setState({ hasError: false })}
-              className="px-4 py-2 bg-[#A8421E] text-white rounded-lg text-xs font-semibold hover:bg-[#8E3516] transition-colors cursor-pointer"
-            >
-              {t('brain.retry')}
-            </button>
-          </div>
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
-
 function toFacet(subject, topics) {
   const mine = topics.filter((topic) => topic.subject === subject.subject);
   const weakest = mine.reduce(
@@ -337,7 +296,7 @@ function StudentBrainContent() {
                 {t('brain.weak')}
               </span>
             </div>
-          )}
+          </div>
         </div>
         <LiveMasteryPanel
           subjects={subjects}

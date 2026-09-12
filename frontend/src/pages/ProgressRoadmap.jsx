@@ -10,6 +10,8 @@ import TelemetryStream from "../components/brain/TelemetryStream";
 import { useAuth } from "../context/AuthContext";
 import { progressService } from "../services/progressService";
 import { studentProfile } from "../data/mockData";
+import { useStudentId } from "../hooks/useStudentId";
+import { useTrace } from "../hooks/useStudent";
 
 export default function ProgressRoadmap() {
   const { t } = useTranslation();
@@ -54,6 +56,9 @@ export default function ProgressRoadmap() {
 
   if (loading || !progressData) return <div className="min-h-screen bg-[#FAF7F2]"><TopBar onMenuClick={() => setSidebarOpen(true)} /><div className="max-w-7xl mx-auto p-8 text-sm font-mono text-[#8C827A]">Loading your learner model…</div></div>;
 
+  return (
+    <div className="min-h-screen bg-[#FAF7F2]">
+      <TopBar onMenuClick={() => setSidebarOpen(true)} />
       {/* Main Workspace Body */}
       <div className="max-w-7xl mx-auto px-4 md:px-8 pt-6 space-y-6">
         {/* Page Title & Top Stats Banner */}
