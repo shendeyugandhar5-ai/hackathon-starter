@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/assets/eduhive-logo.png" alt="EduHive — AI Tutors, Brighter Learners" width="720"/>
+<img src="docs/eduhive-logo.png" alt="EduHive — AI Tutors, Brighter Learners" width="720"/>
 
 ### One student. A hive of AI tutors. One intelligent learning journey.
 
