@@ -129,16 +129,17 @@ function KnowledgeMapContent() {
   const [inspectorOpen, setInspectorOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Dynamic Graph Data from Real Backend
+  // Dynamic Graph Data from Real Backend — starts empty; assembleDynamicGraph
+  // fills it in from the actual API response once it loads.
   const [graphSummary, setGraphSummary] = useState({
-    total_concepts: 12,
-    mastered_concepts: 1,
-    learning_concepts: 6,
-    weak_concepts: 5,
-    subjects_covered: ['dsa', 'dbms', 'aiml', 'maths'],
-    agents_used: ['DSA Agent', 'Maths Agent', 'AIML Agent', 'DBMS Agent', 'General Agent'],
-    total_questions: 8,
-    top_bottleneck: 'Conditional Probability',
+    total_concepts: 0,
+    mastered_concepts: 0,
+    learning_concepts: 0,
+    weak_concepts: 0,
+    subjects_covered: [],
+    agents_used: [],
+    total_questions: 0,
+    top_bottleneck: null,
   });
 
   const [activeNodesList, setActiveNodesList] = useState([]);
@@ -162,15 +163,18 @@ function KnowledgeMapContent() {
   const assembleDynamicGraph = useCallback((apiData) => {
     const nodes = [];
     const edges = [];
+    // No fallback numbers here: when the API has no data for this student
+    // (or the request failed), the honest summary is all zeros, not a
+    // plausible-looking made-up snapshot.
     const summary = apiData?.summary || {
-      total_concepts: 12,
-      mastered_concepts: 1,
-      learning_concepts: 6,
-      weak_concepts: 5,
-      subjects_covered: ['dsa', 'dbms', 'aiml', 'maths'],
-      agents_used: ['DSA Agent', 'Maths Agent', 'AIML Agent', 'DBMS Agent', 'General Agent'],
-      total_questions: 8,
-      top_bottleneck: 'Conditional Probability',
+      total_concepts: 0,
+      mastered_concepts: 0,
+      learning_concepts: 0,
+      weak_concepts: 0,
+      subjects_covered: [],
+      agents_used: [],
+      total_questions: 0,
+      top_bottleneck: null,
     };
 
     setGraphSummary(summary);
@@ -178,9 +182,9 @@ function KnowledgeMapContent() {
     // 1. Add Central Student Journey Hub
     const hubNode = {
       ...CANONICAL_LAYOUT.student_journey,
-      interactions: summary.total_questions || 8,
-      subjects: summary.subjects_covered?.length || 4,
-      concepts: summary.total_concepts || 12,
+      interactions: summary.total_questions ?? 0,
+      subjects: summary.subjects_covered?.length ?? 0,
+      concepts: summary.total_concepts ?? 0,
       vx: 0,
       vy: 0,
       origX: 700,
@@ -210,9 +214,13 @@ function KnowledgeMapContent() {
     Object.keys(CANONICAL_LAYOUT).forEach((cId) => {
       const template = CANONICAL_LAYOUT[cId];
       if (template.type === 'concept') {
+        // CANONICAL_LAYOUT only supplies this concept's fixed x/y position,
+        // color and label — never its mastery. A topic the backend hasn't
+        // reported real mastery for reads as untouched (0% / new), not the
+        // template's placeholder score.
         const live = apiNodeMap[cId];
-        const score = live?.mastery !== undefined ? live.mastery : template.score;
-        const state = live?.state || template.state;
+        const score = live?.mastery !== undefined ? live.mastery : 0;
+        const state = live?.state || 'new';
         nodes.push({
           ...template,
           score,
@@ -616,22 +624,22 @@ function KnowledgeMapContent() {
             <div className="hidden xl:flex items-center gap-2 bg-white border border-[#E7E1D7] px-3.5 py-1.5 rounded-xl shadow-xs font-mono text-xs">
               <div className="flex items-center gap-1.5 text-[#D94F83] pr-2 border-r border-[#E7E1D7]">
                 <MessageSquare className="w-3.5 h-3.5" />
-                <span className="font-bold text-[#171717]">{graphSummary.total_questions || activeNodesList.filter(n => n.type === 'question').length}</span>
+                <span className="font-bold text-[#171717]">{graphSummary.total_questions ?? activeNodesList.filter(n => n.type === 'question').length}</span>
                 <span className="text-[10px] text-[#6B6861]">Q&A</span>
               </div>
               <div className="flex items-center gap-1.5 text-[#C58A24] pr-2 border-r border-[#E7E1D7] pl-1">
                 <BookOpen className="w-3.5 h-3.5" />
-                <span className="font-bold text-[#171717]">{graphSummary.subjects_covered?.length || 4}</span>
+                <span className="font-bold text-[#171717]">{graphSummary.subjects_covered?.length ?? 0}</span>
                 <span className="text-[10px] text-[#6B6861]">Subjects</span>
               </div>
               <div className="flex items-center gap-1.5 text-[#3F7D58] pr-2 border-r border-[#E7E1D7] pl-1">
                 <Network className="w-3.5 h-3.5" />
-                <span className="font-bold text-[#171717]">{graphSummary.total_concepts || 12}</span>
+                <span className="font-bold text-[#171717]">{graphSummary.total_concepts ?? 0}</span>
                 <span className="text-[10px] text-[#6B6861]">Concepts</span>
               </div>
               <div className="flex items-center gap-1.5 text-[#7657A8] pl-1">
                 <Bot className="w-3.5 h-3.5" />
-                <span className="font-bold text-[#171717]">{graphSummary.agents_used?.length || 5}</span>
+                <span className="font-bold text-[#171717]">{graphSummary.agents_used?.length ?? 0}</span>
                 <span className="text-[10px] text-[#6B6861]">Agents</span>
               </div>
             </div>
@@ -753,15 +761,15 @@ function KnowledgeMapContent() {
             <div className="space-y-1.5 text-[#6B6861] text-[11px] leading-relaxed">
               <p className="flex items-start gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#C58A24] shrink-0 mt-1"></span>
-                <span>Top Focus: <strong>{graphSummary.top_bottleneck || 'Foundational DSA'}</strong></span>
+                <span>Top Focus: <strong>{graphSummary.top_bottleneck || 'No diagnostic data yet'}</strong></span>
               </p>
               <p className="flex items-start gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#D94F83] shrink-0 mt-1"></span>
-                <span>{graphSummary.weak_concepts || 3} concepts identified as weak or needing reinforcement.</span>
+                <span>{graphSummary.weak_concepts ?? 0} concepts identified as weak or needing reinforcement.</span>
               </p>
               <p className="flex items-start gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#3F7D58] shrink-0 mt-1"></span>
-                <span>{graphSummary.mastered_concepts || 1} concept fully mastered across curriculum.</span>
+                <span>{graphSummary.mastered_concepts ?? 0} concept{graphSummary.mastered_concepts === 1 ? '' : 's'} fully mastered across curriculum.</span>
               </p>
             </div>
           </div>
@@ -1185,15 +1193,15 @@ function KnowledgeMapContent() {
                   <div className="p-3.5 rounded-xl bg-[#FAF8F3] border border-[#E7E1D7] font-mono text-xs space-y-2">
                     <div className="flex justify-between">
                       <span className="text-[#6B6861]">Total Interactions:</span>
-                      <span className="text-[#171717] font-bold">86 turns</span>
+                      <span className="text-[#171717] font-bold">{activeNode.interactions ?? 0} turns</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-[#6B6861]">Domains Active:</span>
-                      <span className="text-[#3F7D58] font-bold">4 subjects</span>
+                      <span className="text-[#3F7D58] font-bold">{activeNode.subjects ?? 0} subjects</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-[#6B6861]">Concepts Mapped:</span>
-                      <span className="text-[#7657A8] font-bold">12 key concepts</span>
+                      <span className="text-[#7657A8] font-bold">{activeNode.concepts ?? 0} key concepts</span>
                     </div>
                   </div>
                 </div>
@@ -1251,7 +1259,7 @@ function KnowledgeMapContent() {
                     </div>
                     <div className="flex justify-between text-[10px] font-mono text-[#6B6861] pt-1">
                       <span>State: <strong className="uppercase text-[#171717]">{activeNode.state}</strong></span>
-                      <span>BKT Confidence: 0.88</span>
+                      <span>{activeNode.metadata?.attempts ? `${activeNode.metadata.attempts} attempts` : 'No attempts yet'}</span>
                     </div>
                   </div>
 

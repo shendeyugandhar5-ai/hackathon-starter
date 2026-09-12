@@ -34,7 +34,7 @@ export default function PersonalInfoCard({ name, setName, email }) {
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Rahul Sharma"
+              placeholder="e.g. Alex Morgan"
               className="w-full px-3.5 py-2.5 bg-[#FAF7F2] border border-[#EAE5DC] rounded-lg text-xs font-sans text-[#1C1917] focus:outline-none focus:ring-1 focus:ring-[#A8421E] focus:bg-white transition-all shadow-2xs"
             />
             <div className="absolute right-3 top-2.5 text-[#8C827A]">

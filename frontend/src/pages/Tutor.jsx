@@ -41,6 +41,7 @@ export default function Tutor() {
   const [searchParams, setSearchParams] = useSearchParams();
   const resumeId = searchParams.get('conversation');
   const agentParam = searchParams.get('agent');
+  const [prefillText, setPrefillText] = useState('');
 
   useEffect(() => {
     if (resumeId) {
@@ -51,9 +52,10 @@ export default function Tutor() {
 
   useEffect(() => {
     if (agentParam) {
-      setInputQuery(`@${agentParam} `);
+      setPrefillText(`@${agentParam} `);
+      setSearchParams({}, { replace: true });
     }
-  }, [agentParam]);
+  }, [agentParam, setSearchParams]);
 
   // Prompts that exercise each routing path — handy during a demo
   const suggestedPrompts = [
@@ -200,7 +202,7 @@ export default function Tutor() {
             )}
 
             {/* Composer: type, speak, or attach an image */}
-            <Composer onSend={send} sending={sending} error={error} />
+            <Composer onSend={send} sending={sending} error={error} initialText={prefillText} />
           </div>
 
           {/* Agent Trace */}

@@ -12,8 +12,9 @@ import {
   LogOut,
   UserCheck,
 } from "lucide-react";
-import EduLogo from "../ui/EduLogo";
+
 import { useAuth } from "../../context/AuthContext";
+import EduLogo from "../ui/EduLogo";
 
 export default function Sidebar({ isOpen, onClose }) {
   const location = useLocation();
@@ -133,7 +134,7 @@ export default function Sidebar({ isOpen, onClose }) {
 
             <span className="flex items-center gap-1 text-[10px] font-mono font-medium px-2 py-0.5 rounded-full bg-[#1F2C23] text-[#4ADE80] border border-[#2E5E3B]">
               <span className="w-1.5 h-1.5 rounded-full bg-[#4ADE80] animate-pulse"></span>
-              5 Ready
+              4 Ready
             </span>
           </div>
 

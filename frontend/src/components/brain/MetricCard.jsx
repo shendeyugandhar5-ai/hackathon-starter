@@ -41,13 +41,15 @@ export default function MetricCard({ type, data }) {
   }
 
   if (type === 'retention') {
-    const retention = topicCount ? Math.min(99, Math.max(1, Math.round(55 + mastery * 0.44))) : 0;
-    return <Card label="RETENTION SIGNAL" badge={topicCount ? 'Estimated' : 'NO DATA'}>
+    // No spaced-repetition / recall-interval tracking exists in the schema,
+    // so there is no real retention half-life to show — attempts logged is
+    // the honest, actually-measured substitute for this card.
+    return <Card label="PRACTICE VOLUME" badge={topicCount ? 'Live' : 'NO DATA'}>
       <div className="flex items-center justify-between my-3">
-        <div><div className="text-xl font-bold font-mono">{retention}%</div><div className="text-[11px] text-[#8C827A]">derived from current mastery</div></div>
+        <div><div className="text-xl font-bold font-mono">{attempts}</div><div className="text-[11px] text-[#8C827A]">attempts recorded</div></div>
         <TrendingUp className="w-6 h-6 text-[#A8421E]" />
       </div>
-      <Footer left="Evidence" right={topicCount ? `${attempts} attempts` : 'Awaiting activity'} />
+      <Footer left="Evidence" right={topicCount ? `${topicCount} topics touched` : 'Awaiting activity'} />
     </Card>;
   }
 

@@ -10,12 +10,20 @@ import { useImageAttachment } from '../../hooks/useImageAttachment';
  * student can edit it before sending. Images are downscaled client-side and
  * sent as a data URL alongside whatever text was typed.
  */
-export default function Composer({ onSend, sending, error }) {
+export default function Composer({ onSend, sending, error, initialText = '' }) {
   const [text, setText] = useState('');
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
 
   const image = useImageAttachment();
+
+  // Prefill from a parent-driven shortcut (e.g. "@maths " from an agent link).
+  useEffect(() => {
+    if (!initialText) return;
+    setText(initialText);
+    textareaRef.current?.focus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialText]);
 
   const speech = useSpeechRecognition({
     onResult: (transcript) => {

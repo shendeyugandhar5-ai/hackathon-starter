@@ -263,11 +263,17 @@ def build_learning_graph(student_id: str) -> Dict[str, Any]:
                     agent_interactions[ag]["concepts"].add(c["name"])
 
     # A. Add Concept Nodes
+    #
+    # Only a topic the student actually has a student_mastery row for gets a
+    # real score/state. Everything else is genuinely untouched, so it must
+    # read as 0% / "new" rather than the ontology's fabricated default_score
+    # — showing a made-up mastery number for a topic the student has never
+    # attempted is exactly the fake-data failure mode this graph must avoid.
     for c in CANONICAL_CONCEPTS:
         cid = c["id"]
         m = mastery_map.get(cid)
-        score = round(m["score"] * 100) if m else round(c["default_score"] * 100)
-        state = m["state"] if m else (c["default_state"] if has_activity else "new")
+        score = round(m["score"] * 100) if m else 0
+        state = m["state"] if m else "new"
         attempts = m["attempts"] if m else 0
         rec = rec_map.get(cid)
 
@@ -425,7 +431,11 @@ def build_learning_graph(student_id: str) -> Dict[str, Any]:
             "concept": matched_concept.replace("_", " "),
         })
 
-    # D. Add Agent Nodes (Only agents that have been actively used)
+    # D. Add Agent Nodes. The four core specialists are always drawn as part
+    # of the fixed faculty roster (same as the frontend's static layout), but
+    # their metadata must say how much THIS student actually used them —
+    # defaulting an unused agent's interaction_count to 1 or its last_used to
+    # "Active" would claim engagement that never happened.
     for ag_name, ag_data in agent_interactions.items():
         if ag_data["count"] > 0 or ag_name in ["dsa", "maths", "aiml", "dbms"]:
             agent_id = f"agent_{ag_name}"
@@ -436,9 +446,9 @@ def build_learning_graph(student_id: str) -> Dict[str, Any]:
                 "subject": ag_name,
                 "metadata": {
                     "agent": ag_name,
-                    "interaction_count": ag_data["count"] or 1,
-                    "last_used": str(ag_data["last_used"] or "Active"),
-                    "top_concepts": list(ag_data["concepts"]) or [ag_name.upper() + " Foundations"],
+                    "interaction_count": ag_data["count"],
+                    "last_used": str(ag_data["last_used"]) if ag_data["last_used"] else None,
+                    "top_concepts": list(ag_data["concepts"]),
                 },
             })
 
@@ -490,12 +500,25 @@ def build_learning_graph(student_id: str) -> Dict[str, Any]:
         })
 
     # 3. Calculate Summary Statistics
+    #
+    # "new" (never attempted) must never be counted as "weak" just because
+    # its score defaults to 0 — that would tell a brand-new student they are
+    # struggling at everything before they have tried anything.
     concept_nodes = [n for n in nodes if n["node_type"] == "concept"]
-    mastered = [n for n in concept_nodes if n.get("state") == "mastered" or (n.get("mastery") or 0) >= 80]
-    weak = [n for n in concept_nodes if n.get("state") == "weak" or (n.get("mastery") or 0) < 50]
-    learning = [n for n in concept_nodes if n.get("state") == "learning"]
-    active_subjects = list({n.get("subject") for n in concept_nodes if n.get("subject")})
-    agents_used = [n["label"] for n in nodes if n["node_type"] == "agent"]
+    touched_nodes = [n for n in concept_nodes if n.get("state") != "new"]
+    mastered = [n for n in touched_nodes if n.get("state") == "mastered" or (n.get("mastery") or 0) >= 80]
+    weak = [n for n in touched_nodes if n.get("state") == "weak" or (n.get("mastery") or 0) < 50]
+    learning = [n for n in touched_nodes if n.get("state") == "learning"]
+    # Subjects the student has actually engaged with — not every subject the
+    # curriculum ontology happens to contain.
+    active_subjects = list({n.get("subject") for n in touched_nodes if n.get("subject")})
+    # "agents_used" means used, not "exists on the roster" — the graph still
+    # draws all four specialist nodes above for the visual layout, but this
+    # summary count must reflect real routing activity only.
+    agents_used = [
+        n["label"] for n in nodes
+        if n["node_type"] == "agent" and n["metadata"].get("interaction_count", 0) > 0
+    ]
 
     # Subject diversification score (0.0 to 1.0 based on cross-subject balance)
     diversification_score = round(min(1.0, len(active_subjects) / 4.0), 2)
@@ -513,7 +536,7 @@ def build_learning_graph(student_id: str) -> Dict[str, Any]:
         "agents_used": agents_used,
         "total_questions": total_questions_count if total_questions_count > 0 else len(recent_questions),
         "diversification_score": diversification_score,
-        "top_bottleneck": top_bottleneck or "Conditional Probability",
+        "top_bottleneck": top_bottleneck,
     }
 
     return {
