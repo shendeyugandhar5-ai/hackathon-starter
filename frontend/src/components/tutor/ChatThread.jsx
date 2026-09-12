@@ -1,6 +1,113 @@
 import { useTranslation } from '../../i18n';
 import React, { useEffect, useRef } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
+import rehypeHighlight from 'rehype-highlight';
+import 'katex/dist/katex.min.css';
+import 'highlight.js/styles/github-dark.min.css';
 import { AGENT_STYLES } from '../../services/api';
+
+/**
+ * Renders an agent's Markdown/LaTeX response (GFM tables/lists/bold, inline
+ * and block math via KaTeX, syntax-highlighted code fences) as formatted
+ * HTML instead of raw syntax.
+ */
+function AgentMarkdown({ content, isError }) {
+  return (
+    <div
+      className={`markdown-body font-sans text-sm leading-relaxed ${
+        isError ? 'text-red-700' : 'text-[#1C1917]'
+      }`}
+    >
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm, remarkMath]}
+        rehypePlugins={[rehypeKatex, [rehypeHighlight, { detect: true }]]}
+        components={{
+          p: ({ children }) => <p className="mb-2.5 last:mb-0">{children}</p>,
+          h1: ({ children }) => (
+            <h1 className="mb-2 mt-3 font-sans text-lg font-bold text-[#1C1917] first:mt-0">
+              {children}
+            </h1>
+          ),
+          h2: ({ children }) => (
+            <h2 className="mb-2 mt-3 font-sans text-base font-bold text-[#1C1917] first:mt-0">
+              {children}
+            </h2>
+          ),
+          h3: ({ children }) => (
+            <h3 className="mb-1.5 mt-2.5 font-sans text-sm font-bold text-[#1C1917] first:mt-0">
+              {children}
+            </h3>
+          ),
+          ul: ({ children }) => (
+            <ul className="mb-2.5 ml-4 list-disc space-y-1 last:mb-0">{children}</ul>
+          ),
+          ol: ({ children }) => (
+            <ol className="mb-2.5 ml-4 list-decimal space-y-1 last:mb-0">{children}</ol>
+          ),
+          li: ({ children }) => <li className="pl-0.5">{children}</li>,
+          a: ({ children, href }) => (
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#A8421E] underline underline-offset-2 hover:text-[#8C351A]"
+            >
+              {children}
+            </a>
+          ),
+          strong: ({ children }) => (
+            <strong className="font-bold text-[#1C1917]">{children}</strong>
+          ),
+          blockquote: ({ children }) => (
+            <blockquote className="mb-2.5 border-l-2 border-[#EAE5DC] pl-3 text-[#57534E] last:mb-0">
+              {children}
+            </blockquote>
+          ),
+          hr: () => <hr className="my-3 border-[#EAE5DC]" />,
+          table: ({ children }) => (
+            <div className="mb-2.5 overflow-x-auto last:mb-0">
+              <table className="min-w-full border-collapse text-xs">{children}</table>
+            </div>
+          ),
+          thead: ({ children }) => <thead className="bg-[#FAF7F2]">{children}</thead>,
+          th: ({ children }) => (
+            <th className="border border-[#EAE5DC] px-2 py-1 text-left font-bold text-[#1C1917]">
+              {children}
+            </th>
+          ),
+          td: ({ children }) => (
+            <td className="border border-[#EAE5DC] px-2 py-1 align-top">{children}</td>
+          ),
+          // react-markdown v10 no longer passes an `inline` flag; fenced
+          // blocks are the only ones that arrive with a `language-*`
+          // className (added by rehype-highlight), so its absence means
+          // this is inline code.
+          code: ({ className, children, ...props }) =>
+            className ? (
+              <code className={`block p-3 font-mono text-[0.85em] leading-relaxed ${className}`} {...props}>
+                {children}
+              </code>
+            ) : (
+              <code
+                className="rounded bg-[#F2ECE0] px-1 py-0.5 font-mono text-[0.85em] text-[#A8421E]"
+                {...props}
+              >
+                {children}
+              </code>
+            ),
+          pre: ({ children }) => (
+            <pre className="mb-2.5 overflow-x-auto rounded-lg last:mb-0">{children}</pre>
+          ),
+        }}
+      >
+        {content}
+      </ReactMarkdown>
+    </div>
+  );
+}
 
 /** One message bubble. Agent messages carry the badge of whichever agent answered. */
 function MessageBubble({ message }) {
@@ -72,13 +179,7 @@ function MessageBubble({ message }) {
               : 'border-[#EAE5DC] bg-white'
           }`}
         >
-          <p
-            className={`whitespace-pre-wrap font-sans text-sm leading-relaxed ${
-              message.isError ? 'text-red-700' : 'text-[#1C1917]'
-            }`}
-          >
-            {message.content}
-          </p>
+          <AgentMarkdown content={message.content} isError={message.isError} />
         </div>
       </div>
     </div>
