@@ -1,4 +1,3 @@
-import { useTranslation } from '../../i18n';
 import React, { useEffect, useRef, useState } from 'react';
 import { Send, Mic, MicOff, ImagePlus, X, Loader2 } from 'lucide-react';
 import { useSpeechRecognition } from '../../hooks/useSpeechRecognition';
@@ -11,13 +10,20 @@ import { useImageAttachment } from '../../hooks/useImageAttachment';
  * student can edit it before sending. Images are downscaled client-side and
  * sent as a data URL alongside whatever text was typed.
  */
-export default function Composer({ onSend, sending, error }) {
-  const { t } = useTranslation();
+export default function Composer({ onSend, sending, error, initialText = '' }) {
   const [text, setText] = useState('');
   const textareaRef = useRef(null);
   const fileInputRef = useRef(null);
 
   const image = useImageAttachment();
+
+  // Prefill from a parent-driven shortcut (e.g. "@maths " from an agent link).
+  useEffect(() => {
+    if (!initialText) return;
+    setText(initialText);
+    textareaRef.current?.focus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialText]);
 
   const speech = useSpeechRecognition({
     onResult: (transcript) => {
@@ -70,7 +76,7 @@ export default function Composer({ onSend, sending, error }) {
         <div className="mb-2 inline-flex items-center gap-2 rounded-lg border border-[#EAE5DC] bg-[#FAF7F2] p-1.5 pr-2">
           <img
             src={image.image.dataUrl}
-            alt={t('tutor.attachedQuestion')}
+            alt="Attached question"
             className="h-12 w-12 rounded object-cover"
           />
           <div className="min-w-0">
@@ -85,7 +91,7 @@ export default function Composer({ onSend, sending, error }) {
             type="button"
             onClick={image.clear}
             className="rounded p-1 text-[#8C827A] transition-colors hover:bg-white hover:text-[#1C1917]"
-            title={t('tutor.removeImage')}
+            title="Remove image"
           >
             <X className="h-3.5 w-3.5" />
           </button>
@@ -123,7 +129,7 @@ export default function Composer({ onSend, sending, error }) {
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={image.processing}
-          title={t('tutor.attachImage')}
+          title="Attach a question as an image"
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#EAE5DC] bg-white text-[#57534E] transition-colors hover:bg-[#FAF7F2] disabled:opacity-40"
         >
           {image.processing ? (

@@ -43,14 +43,14 @@ export const progressService = {
         target: 'Based on your attempts',
         pacePercentile: attempts ? `${Math.min(99, 50 + Math.round(velocity * 3))}th pace` : 'Awaiting data',
       },
+      // There is no session-duration or spaced-retention column anywhere in
+      // the schema, so "hours studied" and "retention %" have no real value
+      // to report — attempts recorded is the one thing actually measured.
       focusedHours: {
-        // There is no duration column in the supplied schema, so we only
-        // estimate from recorded attempts instead of pretending fixed hours.
-        total: Math.round(attempts * 0.25 * 10) / 10,
-        recentDelta: attempts ? `${Math.min(9.9, Math.round(attempts * 0.1 * 10) / 10)} hrs activity` : 'No activity yet',
+        attempts,
+        activeDomains: data.subjects?.length || 0,
         scope: `${data.subjects?.length || 0} active domain${data.subjects?.length === 1 ? '' : 's'}`,
       },
-      retentionRate: topics.length ? `${Math.min(99, Math.max(1, Math.round(overall * 0.9 + 10)))}%` : '0%',
       milestones: buildMilestones(topics, overall, targetRole),
     };
   },

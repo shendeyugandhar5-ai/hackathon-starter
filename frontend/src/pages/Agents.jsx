@@ -18,7 +18,6 @@ import {
 import TopBar from '../components/layout/TopBar';
 import { useAgents, useTrace } from '../hooks/useStudent';
 import { useStudentId } from '../hooks/useStudentId';
-import { specialistAgents } from '../data/mockData';
 
 export default function Agents() {
   const { t } = useTranslation();

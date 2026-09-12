@@ -106,28 +106,26 @@ export const knowledgeService = {
   async getConceptGraph(studentId) {
     const masteryRes = await studentService.getMastery(studentId);
     const topics = masteryRes?.data?.topics || [];
-    const nodes = topics.length
-      ? topics.map((topic) => {
-          const metadata = metadataFor(topic.topic);
-          return {
-            ...(metadata || {}),
-            id: topic.topic,
-            name: metadata?.name || pretty(topic.topic),
-            subject: topic.subject,
-            score: Math.round(Number(topic.score || 0) * 100),
-            state: topic.state || "new",
-            description:
-              metadata?.description ||
-              `${pretty(topic.topic)} tracked from your activity.`,
-            prerequisites: metadata?.prerequisites || [],
-            unlocks: metadata?.unlocks || [],
-          };
-        })
-      : BASE_CONCEPT_NODES.map((node) => ({
-          ...node,
-          score: node.baseScore,
-          state: node.defaultState,
-        }));
+    // No mastery rows yet is a genuinely empty graph, not a cue to fill the
+    // screen with BASE_CONCEPT_NODES' placeholder scores — those exist only
+    // to enrich a REAL topic (name/description/prerequisites) once one shows
+    // up, never to stand in for one.
+    const nodes = topics.map((topic) => {
+      const metadata = metadataFor(topic.topic);
+      return {
+        ...(metadata || {}),
+        id: topic.topic,
+        name: metadata?.name || pretty(topic.topic),
+        subject: topic.subject,
+        score: Math.round(Number(topic.score || 0) * 100),
+        state: topic.state || "new",
+        description:
+          metadata?.description ||
+          `${pretty(topic.topic)} tracked from your activity.`,
+        prerequisites: metadata?.prerequisites || [],
+        unlocks: metadata?.unlocks || [],
+      };
+    });
 
     const edges = [];
     nodes.forEach((node) => {
