@@ -1,10 +1,35 @@
-# EduHive
+<div align="center">
 
-**One student. A hive of AI tutors. One intelligent learning journey.**
+<img src="docs/assets/eduhive-logo.png" alt="EduHive — AI Tutors, Brighter Learners" width="720"/>
 
-EduHive is an agentic learning platform for Indian tech-placement prep. A trained classifier and an LLM coordinator route every question to the right specialist tutor (DSA, DBMS, Maths, AIML, or General), ground the answer in retrieved reference material, verify it, and fold the result back into a persistent, queryable model of what that student actually knows — mastery scores, typed misconceptions, and cross-subject prerequisite gaps. Every routing decision is logged and shown back to the user as a live **Agent Trace**, so the system's reasoning is inspectable rather than a black box.
+### One student. A hive of AI tutors. One intelligent learning journey.
 
-> Internal modules still carry the original project codename **LearnOS** in comments and a couple of doc titles — same codebase, `EduHive` is the current product name.
+**EduHive** is an agentic learning platform for Indian tech-placement preparation that combines
+trained ML routing, specialist AI tutors, retrieval, verification, learner modeling, and adaptive recommendations.
+
+<p>
+  <a href="#whats-actually-implemented">Features</a> •
+  <a href="#architecture">Architecture</a> •
+  <a href="#request-flow-one-chat-turn">Request Flow</a> •
+  <a href="#the-five-agents">AI Tutors</a> •
+  <a href="#getting-started">Getting Started</a> •
+  <a href="#api-reference">API</a>
+</p>
+
+</div>
+
+---
+
+## Why EduHive?
+
+EduHive treats learning as a **continuous, observable system**, not just a chatbot.
+
+**Question → Route → Understand learner → Teach → Verify → Assess → Update mastery → Recommend next action**
+
+Every routing decision is captured in an **Agent Trace**, making the system inspectable rather than a black box.
+
+> **Product name:** EduHive  
+> **Original internal codename:** LearnOS — a few comments and document titles may still use the old name.
 
 ---
 
