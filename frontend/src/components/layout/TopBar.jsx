@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Menu, Bell, User, LogOut, Sparkles, ChevronDown } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation } from '../../i18n';
+import LanguageSwitcher from '../ui/LanguageSwitcher';
 import { studentProfile } from '../../data/mockData';
 
 export default function TopBar({
@@ -153,6 +154,8 @@ export default function TopBar({
           rightActions
         ) : (
           <div className="flex items-center gap-2" ref={dropdownRef}>
+            <LanguageSwitcher />
+
             <button
               title={t('common.notifications')}
               className="p-1.5 rounded-full hover:bg-[#EAE5DC] text-[#57534E] transition-colors relative cursor-pointer"

@@ -10,6 +10,8 @@ import {
   isSupabaseConfigured,
 } from "../lib/supabase";
 
+import { useTranslation } from "../i18n";
+
 const AuthContext = createContext(null);
 
 const LOCAL_STORAGE_SESSION_KEY =
@@ -28,6 +30,7 @@ const DEFAULT_AGENTS = [
 ];
 
 export function AuthProvider({ children }) {
+  const { setLanguage } = useTranslation();
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -1235,6 +1238,8 @@ export function AuthProvider({ children }) {
       setSession(null);
 
       setProfile(null);
+
+      setLanguage("en");
     };
 
   // =========================================================
