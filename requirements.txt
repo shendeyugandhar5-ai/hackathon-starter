@@ -1,0 +1,17 @@
+# ML / DL training dependencies (ml/notebooks/)
+# The backend only needs scikit-learn + joblib to *load* the router artifacts;
+# these are for training.
+
+scikit-learn>=1.4.0,<2.0.0
+joblib>=1.3.0,<2.0.0
+pandas>=2.0.0,<3.0.0
+numpy>=1.26.0
+
+# Notebook 02 (DKT-LSTM) only
+torch>=2.2.0
+
+# Optional - for the loss curve plot in notebook 02
+matplotlib>=3.8.0
+
+# To run the notebooks
+jupyter>=1.0.0
